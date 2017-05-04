@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gamebuilder.controller;
+package server.gamebuilder.controller;
 
 /**
- *
+ * This class handles the invitations provided by host to his contacts.
  * @author Hernán Darío Vanegas Madrigal
  */
-public class SessionBuilder {
+public class InvitationHandler {
     
 }

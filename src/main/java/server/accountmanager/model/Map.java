@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package accountmanager.model;
+package server.accountmanager.model;
 
 /**
  *
  * @author Hernán Darío Vanegas Madrigal
  */
 public class Map {
-    private String name;
+    public String name;
 
     public Map(String name) {
         this.name = name;

@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package accountmanager.controller;
+package server.accountmanager.controller;
 
-import accountmanager.model.Account;
+import server.accountmanager.model.Account;
 
 /**
  * 

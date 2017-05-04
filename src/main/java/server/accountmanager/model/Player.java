@@ -3,18 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package accountmanager.model;
+package server.accountmanager.model;
 
 /**
  *
  * @author Hernán Darío Vanegas Madrigal
  */
-public class Request {
-    int id;
-    RequestState state;
+public class Player extends User{
+    
+    public Color color;
 
-    public Request(int id, RequestState state) {
-        this.id = id;
-        this.state = state;
+    public Player(Account account) {
+        super(account);
     }
+    
+    public boolean takeOut() {
+        return true;
+    }
+
 }

@@ -3,18 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package accountmanager.model;
+package server.accountmanager.model;
 
 /**
  *
- * @author Hernán Darío Vanegas Madrigal
+ * @author lemark
  */
-public class Player extends User{
+public class Contact extends User{
     
-    private Color color;
-
-    public Player(Account account) {
+    public Contact(Account account) {
         super(account);
     }
-
+    
 }

@@ -3,16 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package accountmanager.model;
+package server.gamebuilder.controller;
 
 /**
  *
  * @author Hernán Darío Vanegas Madrigal
  */
-public class User {
-    private Account account;
-
-    public User(Account account) {
-        this.account = account;
-    }
+public class SessionBuilder {
+    
 }
