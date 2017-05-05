@@ -3,12 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gamebuilder.controller;
+package server.accountmanager.model;
 
 /**
- * This class handles the invitations provided by host to his contacts.
+ *
  * @author Hernán Darío Vanegas Madrigal
  */
-public class InvitationHandler {
+public class Player extends User{
     
+    public Color color;
+
+    public Player(Account account) {
+        super(account);
+    }
+    
+    public boolean takeOut() {
+        return true;
+    }
+
 }

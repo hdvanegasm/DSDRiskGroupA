@@ -3,16 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package accountmanager.model;
+package server.accountmanager.model;
 
 /**
  *
- * @author Hernán Darío Vanegas Madrigal
+ * @author lemark
  */
-public class User {
-    private Account account;
-
-    public User(Account account) {
-        this.account = account;
+public class Contact extends User{
+    
+    public Contact(Account account) {
+        super(account);
     }
+    
 }

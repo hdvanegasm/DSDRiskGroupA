@@ -3,18 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package accountmanager.model;
+package server.accountmanager.model;
 
 /**
  *
  * @author Hernán Darío Vanegas Madrigal
  */
-public class Player extends User{
-    
-    private Color color;
+public class Map {
+    public String name;
 
-    public Player(Account account) {
-        super(account);
+    public Map(String name) {
+        this.name = name;
     }
-
 }

@@ -3,18 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package accountmanager.model;
+package server.accountmanager.model;
 
 /**
  *
  * @author Hernán Darío Vanegas Madrigal
  */
-public class Host extends Player{
-    
-    public Host(Account account) {
-        super(account);
-    }
-    
- 
-    
+public class User {
+    public Account account;
+
+    public User(Account account) {
+        this.account = account;
+    }  
 }

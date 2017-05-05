@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package accountmanager.model;
+package server.accountmanager.model;
 
 /**
  *
  * @author Admin
  */
 public class SessionInvitation {
-    private SessionInvitationState state;
+    public SessionInvitationState state;
 
     public SessionInvitation(SessionInvitationState state) {
         this.state = state;

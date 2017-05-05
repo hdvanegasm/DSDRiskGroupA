@@ -3,18 +3,26 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package accountmanager.model;
+package server.accountmanager.model;
 
 /**
  *
  * @author Hernán Darío Vanegas Madrigal
  */
 public class Request {
-    int id;
-    RequestState state;
+    public int id;
+    public RequestState state;
 
     public Request(int id, RequestState state) {
         this.id = id;
         this.state = state;
+    }
+    
+    public void make() {
+        
+    }
+    
+    public boolean answer() {
+        return true;
     }
 }

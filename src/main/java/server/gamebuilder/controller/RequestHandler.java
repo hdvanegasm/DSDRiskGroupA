@@ -1,5 +1,5 @@
 
-package gamebuilder.controller;
+package server.gamebuilder.controller;
 
 /**
  * THis class handles the requests and route the answers to database and the host of the session
