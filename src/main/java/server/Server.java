@@ -12,8 +12,11 @@ import static spark.Spark.post;
 import server.accountmanager.controller.AccountManager;
 import server.accountmanager.model.Account;
 import server.accountmanager.model.AccountStatus;
+import server.accountmanager.model.Session;
+import server.accountmanager.model.SessionState;
+import server.accountmanager.model.SessionType;
 import server.accountmanager.model.User;
-
+import server.gamebuilder.controller.SessionBuilder;
 /**
  *
  * @author root
@@ -76,6 +79,42 @@ public class Server {
             User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
 
             return AccountManager.logOut(user);
+        });
+        
+        post("/createSession", (request, response) -> {
+            JSONParser parser = new JSONParser();
+            String jsonToString = "[" + request.body() + "]";
+            Object obj = parser.parse(jsonToString);
+            JSONArray jsonArray = (JSONArray) obj;
+
+            JSONObject parsedObject = (JSONObject) jsonArray.get(0);
+
+            //TODO Get attributes
+            String hostUsername = (String) parsedObject.get("username");
+            int numberOfPlayers = (int) parsedObject.get("username");
+            String sessionType = (String) parsedObject.get("type");
+            String mapName = (String) parsedObject.get("type");
+            
+            SessionType sessionTypeEnum;
+            
+          
+            if(sessionType.equals("world domination risk")) {
+                sessionTypeEnum = SessionType.WORLD_DOMINATION_RISK;
+            } else if(sessionType.equals("secret mission risk")){
+                sessionTypeEnum = SessionType.SECRET_MISSION_RISK;
+            } else if(sessionType.equals("capital risk")) {
+                sessionTypeEnum = SessionType.CAPITAL_RISK;
+            } else {
+                sessionTypeEnum = SessionType.RISK_FOR_TWO_PLAYERS;
+            }
+            
+            Session newSession = Session.create(0, numberOfPlayers, sessionTypeEnum, SessionState.CREATING);
+            
+            // TODO Read Players
+            Account account = Account.create(AccountStatus.ONLINE, hostUsername, null, null);
+            User hostUser = new User(account);
+            
+            return SessionBuilder.createSession(hostUser, newSession);
         });
     }
 }

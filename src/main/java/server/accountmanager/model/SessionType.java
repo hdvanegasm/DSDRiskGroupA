@@ -9,7 +9,7 @@ package server.accountmanager.model;
  *
  * @author Admin
  */
-enum SessionType {
+public enum SessionType {
     WORLD_DOMINATION_RISK,
     SECRET_MISSION_RISK,
     CAPITAL_RISK,

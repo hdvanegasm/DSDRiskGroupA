@@ -9,7 +9,7 @@ package server.accountmanager.model;
  *
  * @author Admin
  */
-enum SessionState {
+public enum SessionState {
     PLAYING,
     FINISHED,
     CREATING
