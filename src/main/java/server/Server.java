@@ -19,30 +19,63 @@ import server.accountmanager.model.User;
  * @author root
  */
 public class Server {
+
     public static void main(String[] args) {
+
         // TODO Implement services
-        
         post("/createAccount", (request, response) -> {
             JSONParser parser = new JSONParser();
-            String jsonToString = "["+ request.body() +"]";           
+            String jsonToString = "[" + request.body() + "]";
             Object obj = parser.parse(jsonToString);
             JSONArray jsonArray = (JSONArray) obj;
 
             JSONObject parsedObject = (JSONObject) jsonArray.get(0);
-            
-            //TODO Get attributes
+
             String username = (String) parsedObject.get("username");
             String password = (String) parsedObject.get("password");
             String confirmPass = (String) parsedObject.get("confirmPass");
             String email = (String) parsedObject.get("e-mail");
-            
-            if(confirmPass.equals(password)) {
+
+            if (confirmPass.equals(password)) {
                 Account newAccount = Account.create(AccountStatus.OFFLINE, username, password, email);
                 User user = new User(newAccount);
                 return AccountManager.createAccount(user);
             } else {
                 return false;
             }
+        });
+
+        post("/login", (request, response) -> {
+            JSONParser parser = new JSONParser();
+            String jsonToString = "[" + request.body() + "]";
+            Object obj = parser.parse(jsonToString);
+            JSONArray jsonArray = (JSONArray) obj;
+
+            JSONObject parsedObject = (JSONObject) jsonArray.get(0);
+
+            //TODO Get attributes
+            String username = (String) parsedObject.get("username");
+            String password = (String) parsedObject.get("password");
+
+            User user = new User(Account.create(AccountStatus.OFFLINE, username, password, null));
+
+            return AccountManager.logIn(user);
+        });
+
+        post("/logout", (request, response) -> {
+            JSONParser parser = new JSONParser();
+            String jsonToString = "[" + request.body() + "]";
+            Object obj = parser.parse(jsonToString);
+            JSONArray jsonArray = (JSONArray) obj;
+
+            JSONObject parsedObject = (JSONObject) jsonArray.get(0);
+
+            //TODO Get attributes
+            String username = (String) parsedObject.get("username");
+
+            User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
+
+            return AccountManager.logOut(user);
         });
     }
 }
