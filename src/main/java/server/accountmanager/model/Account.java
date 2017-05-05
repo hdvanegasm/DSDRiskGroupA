@@ -23,7 +23,7 @@ public class Account {
     public LinkedList<SessionInvitation> sessionInvitations;
     public float percentajeOfWins;
 
-    public Account(AccountStatus status, String username, String password, String email, int numberOfSessionLost, int numberOfSessionWon, float percentajeOfWins) {
+    private Account(AccountStatus status, String username, String password, String email, int numberOfSessionLost, int numberOfSessionWon, float percentajeOfWins) {
         this.status = status;
         this.username = username;
         this.password = password;

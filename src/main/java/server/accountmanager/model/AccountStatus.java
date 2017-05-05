@@ -9,7 +9,7 @@ package server.accountmanager.model;
  *
  * @author Admin
  */
-enum AccountStatus {
+public enum AccountStatus {
     ONLINE,
     OFFLINE,
     PLAYING

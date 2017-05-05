@@ -9,6 +9,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import static spark.Spark.post;
+import server.accountmanager.controller.AccountManager;
+import server.accountmanager.model.Account;
+import server.accountmanager.model.AccountStatus;
+import server.accountmanager.model.User;
 
 /**
  *
@@ -29,12 +33,16 @@ public class Server {
             //TODO Get attributes
             String username = (String) parsedObject.get("username");
             String password = (String) parsedObject.get("password");
-            String confirmPass = (String) parsedObject.get("password");
-            String email = (String) parsedObject.get("password");
+            String confirmPass = (String) parsedObject.get("confirmPass");
+            String email = (String) parsedObject.get("e-mail");
             
-            //TODO get response from DBA
-            return true;
-
+            if(confirmPass.equals(password)) {
+                Account newAccount = Account.create(AccountStatus.OFFLINE, username, password, email);
+                User user = new User(newAccount);
+                return AccountManager.createAccount(user);
+            } else {
+                return false;
+            }
         });
     }
 }

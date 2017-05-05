@@ -14,5 +14,5 @@ public class User {
 
     public User(Account account) {
         this.account = account;
-    }
+    }  
 }
