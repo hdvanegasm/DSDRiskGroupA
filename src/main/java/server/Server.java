@@ -28,6 +28,9 @@ public class Server {
             
             //TODO Get attributes
             String username = (String) parsedObject.get("username");
+            String password = (String) parsedObject.get("password");
+            String confirmPass = (String) parsedObject.get("password");
+            String email = (String) parsedObject.get("password");
             
             //TODO get response from DBA
             return true;

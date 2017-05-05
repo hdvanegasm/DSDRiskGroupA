@@ -13,15 +13,15 @@ import java.util.LinkedList;
  */
 public class Account {
 
-    private AccountStatus status;
-    private String username;
-    private String password;
-    private String email;
-    private int numberOfSessionLost;
-    private int numberOfSessionWon;
-    private LinkedList<Contact> contactList;
-    private LinkedList<SessionInvitation> sessionInvitations;
-    private float percentajeOfWins;
+    public AccountStatus status;
+    public String username;
+    public String password;
+    public String email;
+    public int numberOfSessionLost;
+    public int numberOfSessionWon;
+    public LinkedList<Contact> contactList;
+    public LinkedList<SessionInvitation> sessionInvitations;
+    public float percentajeOfWins;
 
     public Account(AccountStatus status, String username, String password, String email, int numberOfSessionLost, int numberOfSessionWon, float percentajeOfWins) {
         this.status = status;
