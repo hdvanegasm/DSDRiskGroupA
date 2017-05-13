@@ -1,13 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package server.accountmanager.model;
 
 /**
- *
- * @author Admin
+ * This enumeration class represents the states of a session. There are three possible states: playing (if the session was created successfully and it was started), finished (if the session was finished) and creating (if the session is in the creating process but not started).
+ * @author Hernán Darío Vanegas Madrigal
  */
 public enum SessionState {
     PLAYING,
