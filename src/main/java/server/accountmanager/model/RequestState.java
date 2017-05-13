@@ -1,13 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package server.accountmanager.model;
 
 /**
- *
- * @author Admin
+ * This enumeration represents the possible states of the request. This states can change with the answer() method in the Request class.
+ * @author Hernán Darío Vanegas Madrigal.
  */
 enum RequestState {
     ACCEPTED,
