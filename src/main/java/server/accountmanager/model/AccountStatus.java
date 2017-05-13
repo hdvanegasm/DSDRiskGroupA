@@ -1,13 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package server.accountmanager.model;
 
 /**
- *
- * @author Admin
+ * This enumeration class represents the status of the account. There are three types of states: online (after the login of the user), offline(after the logout of the user) and playing (when the user is online and he is playing in a session).
+ * @author Hernán Dario Vanegas Madrigal
  */
 public enum AccountStatus {
     ONLINE,

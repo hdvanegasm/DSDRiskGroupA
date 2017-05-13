@@ -1,13 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package server.accountmanager.model;
 
 /**
- *
- * @author Admin
+ * This enumeration class represents the possible color of a player in a session. There are only six possible values, one for each player.
+ * @author Hernán Darío Vanegas Madrigal.
  */
 enum Color {
     YELLOW,
