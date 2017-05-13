@@ -1,14 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package server.accountmanager.controller;
 
 import server.accountmanager.model.User;
 import java.sql.*;
 
 /**
+ * This class manage all queries necessary handle the user´s account
  *
  * @author David Ochoa Uribe
  */
@@ -26,7 +22,9 @@ public class AccountManager {
     private static Connection connection;
     private static Statement statement;
 
-    //connection method
+    /**
+     * This method allows the connection with the server´s data base
+     */
     public static void connectMySQL() {
         try {
             Class.forName(driver);
@@ -37,6 +35,12 @@ public class AccountManager {
         }
     }
 
+    /**
+     * This method allows to create a new user´s account
+     *
+     * @param user this object has the account's attributes of the new user
+     * @return a boolean that indicates the success of the query
+     */
     public static boolean createAccount(User user) {
         //insert into account table the new user
         String query = "INSERT INTO ACCOUNT VALUES ( " + user.account.username
@@ -55,6 +59,12 @@ public class AccountManager {
         return true;
     }
 
+    /**
+     * This method update the status of the user in the database after logout
+     *
+     * @param user this object has the account's attributes of the user
+     * @return a boolean that indicates the success of the query
+     */
     public static boolean logOut(User user) {
         // set user's status to offline
         String query = "UPDATE USER SET status = 'Offline' WHERE username = " + user.account.username;
@@ -67,6 +77,13 @@ public class AccountManager {
         return true;
     }
 
+    /**
+     * This method compare the user´s log-in information with the database, if
+     * it´s correct updates the status of the user in the database
+     *
+     * @param user this object has the account's attributes of the user
+     * @return a boolean that indicates the success of the query
+     */
     public static boolean logIn(User user) {
         String query1 = "SELECT username, password FROM ACCOUNT WHERE username = " + user.account.username;
         String query2 = "UPDATE USER SET status = 'Online' WHERE username = " + user.account.username;
