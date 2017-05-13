@@ -31,19 +31,42 @@ public class Session {
         this.players = new LinkedList<>();
     } 
     
+    /**
+     * This method allows to a common user to join to the session through the request system. Once the request is accepted, the user can join to the session an he is downgraded to Player in the hierarchy level.
+     * @param user This is the reference to the user that will be joined to the session.
+     * @return The method returns true if the user was successfully joined, otherwise it returns false.
+     */
     public boolean join(User user) {
         return true;
     }
     
+    /**
+     * This method allows to a contact to join to the session through the invitation system. If the contact accepts the invitation, he will join to the session and it will be converted to a Player.
+     * @param contact It is the contact that will be joined to the session.
+     * @return The method returns true if the contact was joined successfully, and it returns false if not.
+     */
     public boolean join(Contact contact) {
         return true;
     }
     
+    /**
+     * This method creates a session with a given set of parameters. This is the only way to create a session.
+     * @param id This parameter represents the ID of the session. This number will identify the session in the game.
+     * @param numberOfPlayers This number represents the number of players that will participate in the game.
+     * @param type This parameter determines the type of session that will be played. The value of this attribute will determine the rules of the game and the number of players that will be playing.
+     * @param state This parameter represents the actual state of the session. There are three possible values for this parameter: playing, creating and finished.
+     * @return The method returns a reference to the new object created.
+     */
     public static Session create(int id, int numberOfPlayers, SessionType type, SessionState state) {
         return new Session(id, numberOfPlayers, type, state);
     }
     
-    public static boolean leave() {
+    /**
+     * This method allows to a player to leave the session in the "creating" phase. It will change the status of the player to 
+     * @param player This parameter represents the player that will leave the session.
+     * @return The method returns true if the player leaves the session successfully, otherwise, it returns false.
+     */
+    public static boolean leave(Player player) {
         return true;
     }
 }
