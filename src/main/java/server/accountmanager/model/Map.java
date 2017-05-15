@@ -1,17 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package server.accountmanager.model;
 
 /**
- *
+ * This class represents the basic information of a map used in the Setup Module.
  * @author Hernán Darío Vanegas Madrigal
  */
 public class Map {
     public String name;
 
+    /**
+     * This method creates a map with the specified name.
+     * @param name This is the name of the map, it is a unique identifier in the system.
+     */
     public Map(String name) {
         this.name = name;
     }

@@ -1,13 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package server.accountmanager.controller;
 
 /**
- *
- * @author Admin
+ * This class has all the basic functions that supports the management of contacts.
+ * @author Hernán Darío Vanegas Madrigal
  */
 public class ContactManager {
     

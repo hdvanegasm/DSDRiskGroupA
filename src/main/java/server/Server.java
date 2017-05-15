@@ -1,7 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * 
  */
 package server;
 
@@ -17,15 +15,25 @@ import server.accountmanager.model.SessionState;
 import server.accountmanager.model.SessionType;
 import server.accountmanager.model.User;
 import server.gamebuilder.controller.SessionBuilder;
+
 /**
- *
- * @author root
+ * This class is the main class of the server. It has all of the services used by the server, and redirects the work to other modules.
+ * @author Hernan Dario Vanegas Madrigal
  */
 public class Server {
 
+    /**
+     * Method main that has the implementation of the services.
+     * @param args 
+     */
     public static void main(String[] args) {
 
-        // TODO Implement services
+        System.out.println("Starting server...");
+        System.out.println("Server online.");
+        System.out.println("Turning on database (setting up database controllers)...");
+        AccountManager.connectMySQL();
+        SessionBuilder.connectMySQL();
+        System.out.println("Database online.");
         post("/createAccount", (request, response) -> {
             JSONParser parser = new JSONParser();
             String jsonToString = "[" + request.body() + "]";
@@ -73,7 +81,6 @@ public class Server {
 
             JSONObject parsedObject = (JSONObject) jsonArray.get(0);
 
-            //TODO Get attributes
             String username = (String) parsedObject.get("username");
 
             User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
