@@ -28,7 +28,12 @@ public class Server {
      */
     public static void main(String[] args) {
 
-        
+        System.out.println("Starting server...");
+        System.out.println("Server online.");
+        System.out.println("Turning on database (setting up database controllers)...");
+        AccountManager.connectMySQL();
+        SessionBuilder.connectMySQL();
+        System.out.println("Database online.");
         post("/createAccount", (request, response) -> {
             JSONParser parser = new JSONParser();
             String jsonToString = "[" + request.body() + "]";
@@ -76,7 +81,6 @@ public class Server {
 
             JSONObject parsedObject = (JSONObject) jsonArray.get(0);
 
-            //TODO Get attributes
             String username = (String) parsedObject.get("username");
 
             User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
