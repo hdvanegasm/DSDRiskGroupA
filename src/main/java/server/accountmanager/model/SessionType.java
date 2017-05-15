@@ -1,13 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package server.accountmanager.model;
 
 /**
- *
- * @author Admin
+ * This enumeration class represents the possible types of the session. Each possible type is based on the rules of the game, and each type determines the rules of the session and the dynamic of the game. Also it determines the number of players supported in the session.
+ * @author Hernán Darío Vanegas Madrigal
  */
 public enum SessionType {
     WORLD_DOMINATION_RISK,
