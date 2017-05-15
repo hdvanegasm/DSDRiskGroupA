@@ -48,7 +48,7 @@ public class SessionBuilder {
     public static boolean createSession(User user, Session session) {
         Host host = new Host(user.account);
         // get actual session id and update in the class
-        String query1 = "SELECT MAX(id) FROM SESSION";
+        String query1 = "SELECT MAX(id) FROM session";
         try {
             ResultSet resultset = statement.executeQuery(query1);
             boolean first = true;
@@ -67,22 +67,22 @@ public class SessionBuilder {
             return false;
         }
         //create session in database
-        String query2 = "INSERT INTO SESSION VALUES ( " + session.map + ", " + session.id + ", 'Start', " + session.type + ")";
+        String query2 = "INSERT INTO session VALUES ( " + session.map + ", " + session.id + ", 'Start', " + session.type + ")";
         //update host table
-        String query3 = "INSERT INTO HOST VALUES ( " + host.account.username + ",  " + session.id + " )";
+        String query3 = "INSERT INTO host VALUES ( " + host.account.username + ",  " + session.id + " )";
         //update player table with host, remember delete player rows when game fihish and make colors dinamic
-        String query4 = "INSERT INTO PLAYER VALUES(" + host.account.username
-                + ", 'YELLOW' , 'non-captured', 0, 0, 0,false,'HOST')";
+        String query4 = "INSERT INTO player VALUES(" + host.account.username
+                + ", 'YELLOW' , 'non-captured', 0, 0, 0,false,'host')";
         //simulate another 3 players, this is for the first increment later the request handle this
         Player playerAux1 = new Player(Account.create(AccountStatus.ONLINE, "dochoau", "123", null));
         Player playerAux2 = new Player(Account.create(AccountStatus.ONLINE, "sareiza", "123", null));
         Player playerAux3 = new Player(Account.create(AccountStatus.ONLINE, "edalpin", "123", null));
         //inert the simulated  players into player table
-        String query5 = "INSERT INTO PLAYER VALUES(" + playerAux1.account.username
+        String query5 = "INSERT INTO player VALUES(" + playerAux1.account.username
                 + ", 'RED' , 'non-captured', 0, 0, 0,false,NULL)";
-        String query6 = "INSERT INTO PLAYER VALUES(" + playerAux2.account.username
+        String query6 = "INSERT INTO player VALUES(" + playerAux2.account.username
                 + ", 'BLUE' , 'non-captured', 0, 0, 0,false,NULL)";
-        String query7 = "INSERT INTO PLAYER VALUES(" + playerAux3.account.username
+        String query7 = "INSERT INTO player VALUES(" + playerAux3.account.username
                 + ", 'GREEN' , 'non-captured', 0, 0, 0,false,NULL)";
 
         try {
