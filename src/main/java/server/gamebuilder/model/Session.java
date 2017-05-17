@@ -24,13 +24,16 @@ public class Session {
      * @param type It represents the type of game that will be played. Each type of game has different rules and number of players.
      * @param state This attribute shows what is the actual state of the session. A session can be in a "creating" status, a "playing" status (this status is selected when the host pushes the "Start game" button), and "finished". 
      */
+
     private Session(int numberOfPlayers, SessionType type, SessionState state, Map map) {
+
         this.numberOfPlayers = numberOfPlayers;
         this.type = type;
         this.state = state;
         this.requests = new LinkedList<>();
         this.players = new LinkedList<>();
         this.map = map;
+
     } 
     
     /**
@@ -59,6 +62,7 @@ public class Session {
      * @param state This parameter represents the actual state of the session. There are three possible values for this parameter: playing, creating and finished.
      * @return The method returns a reference to the new object created.
      */
+
     public static Session create(int numberOfPlayers, SessionType type, SessionState state, Map map) {
         return new Session(numberOfPlayers, type, state, map);
     }
