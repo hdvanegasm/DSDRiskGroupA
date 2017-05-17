@@ -2,6 +2,7 @@ package server.accountmanager.controller;
 
 import server.accountmanager.model.User;
 import java.sql.*;
+import server.DatabaseConnector;
 import server.accountmanager.model.AccountStatus;
 
 /**
@@ -11,31 +12,10 @@ import server.accountmanager.model.AccountStatus;
  */
 public class AccountManager {
 
-    //connection attributes
-    private static final int port = 3306;
-    private static final String serverPath = "localhost";
-    private static final String dataBaseName = "dsdrisk";
-    private final static String dataBaseUser = "dsdriskuser";
-    private final static String dataBasePassword = "12345";
-
-    private final static String driver = "com.mysql.jdbc.Driver";
-    private final static String dataBase = "jdbc:mysql://" + serverPath + ":" + port + "/" + dataBaseName;
-    private static Connection connection;
-    private static Statement statement;
 
     /**
      * This method allows the connection with the server´s data base
      */
-    public static void connectMySQL() {
-        try {
-            Class.forName(driver);
-            connection = DriverManager.getConnection(dataBase, dataBaseUser, dataBasePassword);
-            statement = connection.createStatement();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     /**
      * This method allows to create a new user´s account
      *
@@ -48,10 +28,10 @@ public class AccountManager {
         try {
             String query = "INSERT INTO user VALUES (NULL, \"" + user.account.username + "\");";
             
-            statement.executeUpdate(query);
+            DatabaseConnector.getInstance().getStatement().executeUpdate(query);
             query = "INSERT INTO account VALUES ( \"" + user.account.username
                 + "\" , \"" + user.account.password + "\", \"" + user.account.email + "\", 0, 0, 0,'" + AccountStatus.OFFLINE +"');";
-            statement.executeUpdate(query);
+            DatabaseConnector.getInstance().getStatement().executeUpdate(query);
         } catch (Exception e) {
             System.out.println("Fatal error: createAccount() - " + e);
             return false;
@@ -74,7 +54,7 @@ public class AccountManager {
         // set user's status to offline
         String query = "UPDATE account SET status = '" + AccountStatus.OFFLINE + "' WHERE username = \"" + user.account.username + "\";";
         try {
-            statement.executeUpdate(query);
+            DatabaseConnector.getInstance().getStatement().executeUpdate(query);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
@@ -94,14 +74,14 @@ public class AccountManager {
         String queryUpdate = "UPDATE account SET status = '"+ AccountStatus.ONLINE +"' WHERE username = \"" + user.account.username + "\";";
         //search the username and password
         try {
-            ResultSet resultset = statement.executeQuery(querySelect);
+            ResultSet resultset = DatabaseConnector.getInstance().getStatement().executeQuery(querySelect);
             while (resultset.next()) {
                 String auxUsername = resultset.getString("username");
                 String auxPassword = resultset.getString("password");
                 //compare ussername and password in database
                 if (auxUsername.equals(user.account.username) && auxPassword.equals(user.account.password)) {
                     try {
-                        statement.executeUpdate(queryUpdate);
+                        DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdate);
                         return true;
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
