@@ -1,4 +1,4 @@
-package server.accountmanager.model;
+package server.gamebuilder.model;
 
 /**
  *

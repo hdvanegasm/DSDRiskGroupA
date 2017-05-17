@@ -1,4 +1,7 @@
-package server.accountmanager.model;
+package server.gamebuilder.model;
+
+import server.accountmanager.model.Account;
+import server.accountmanager.model.User;
 
 /**
  * This class represents a player. A player is a user that is in the session construction phase or he is in a session.
