@@ -34,6 +34,8 @@ public class Server {
         AccountManager.connectMySQL();
         SessionBuilder.connectMySQL();
         System.out.println("Database online.");
+        
+        // Creating account service
         post("/createAccount", (request, response) -> {
             JSONParser parser = new JSONParser();
             String jsonToString = "[" + request.body() + "]";
@@ -56,6 +58,7 @@ public class Server {
             }
         });
 
+        // Login account service
         post("/login", (request, response) -> {
             JSONParser parser = new JSONParser();
             String jsonToString = "[" + request.body() + "]";
@@ -64,7 +67,6 @@ public class Server {
 
             JSONObject parsedObject = (JSONObject) jsonArray.get(0);
 
-            //TODO Get attributes
             String username = (String) parsedObject.get("username");
             String password = (String) parsedObject.get("password");
 
@@ -73,6 +75,7 @@ public class Server {
             return AccountManager.logIn(user);
         });
 
+        // Logout account service
         post("/logout", (request, response) -> {
             JSONParser parser = new JSONParser();
             String jsonToString = "[" + request.body() + "]";
@@ -88,6 +91,7 @@ public class Server {
             return AccountManager.logOut(user);
         });
         
+        // Create session service
         post("/createSession", (request, response) -> {
             JSONParser parser = new JSONParser();
             String jsonToString = "[" + request.body() + "]";
@@ -98,11 +102,11 @@ public class Server {
 
             //TODO Get attributes
             String hostUsername = (String) parsedObject.get("username");
-            int numberOfPlayers = (int) parsedObject.get("username");
+            int numberOfPlayers = (int) parsedObject.get("numberOfPlayers");
             String sessionType = (String) parsedObject.get("type");
-            String mapName = (String) parsedObject.get("type");
+            String mapName = (String) parsedObject.get("mapName");
             
-            SessionType sessionTypeEnum;
+            SessionType sessionTypeEnum = null;
             
           
             if(sessionType.equals("world domination risk")) {
@@ -111,7 +115,7 @@ public class Server {
                 sessionTypeEnum = SessionType.SECRET_MISSION_RISK;
             } else if(sessionType.equals("capital risk")) {
                 sessionTypeEnum = SessionType.CAPITAL_RISK;
-            } else {
+            } else if(sessionType.equals("risk for two players")){
                 sessionTypeEnum = SessionType.RISK_FOR_TWO_PLAYERS;
             }
             
