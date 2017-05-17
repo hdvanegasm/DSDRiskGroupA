@@ -1,4 +1,4 @@
-package server.accountmanager.model;
+package server.gamebuilder.model;
 
 /**
  * This enumeration represents the possible states of the request. This states can change with the answer() method in the Request class.

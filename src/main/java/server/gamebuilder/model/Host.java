@@ -1,4 +1,6 @@
-package server.accountmanager.model;
+package server.gamebuilder.model;
+
+import server.accountmanager.model.Account;
 
 /**
  * This class represents a host. A host is a user that creates a session. This user can customize a new session in the Game Setup View.

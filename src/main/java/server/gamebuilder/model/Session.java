@@ -1,6 +1,8 @@
-package server.accountmanager.model;
+package server.gamebuilder.model;
 
 import java.util.LinkedList;
+import server.accountmanager.model.Contact;
+import server.accountmanager.model.User;
 
 /**
  * This class represents a session in the game. It has the basic attributes in order to create and manage a session in the game.
@@ -22,13 +24,13 @@ public class Session {
      * @param type It represents the type of game that will be played. Each type of game has different rules and number of players.
      * @param state This attribute shows what is the actual state of the session. A session can be in a "creating" status, a "playing" status (this status is selected when the host pushes the "Start game" button), and "finished". 
      */
-    private Session(int id, int numberOfPlayers, SessionType type, SessionState state) {
-        this.id = id;
+    private Session(int numberOfPlayers, SessionType type, SessionState state, Map map) {
         this.numberOfPlayers = numberOfPlayers;
         this.type = type;
         this.state = state;
         this.requests = new LinkedList<>();
         this.players = new LinkedList<>();
+        this.map = map;
     } 
     
     /**
@@ -57,8 +59,8 @@ public class Session {
      * @param state This parameter represents the actual state of the session. There are three possible values for this parameter: playing, creating and finished.
      * @return The method returns a reference to the new object created.
      */
-    public static Session create(int id, int numberOfPlayers, SessionType type, SessionState state) {
-        return new Session(id, numberOfPlayers, type, state);
+    public static Session create(int numberOfPlayers, SessionType type, SessionState state, Map map) {
+        return new Session(numberOfPlayers, type, state, map);
     }
     
     /**
