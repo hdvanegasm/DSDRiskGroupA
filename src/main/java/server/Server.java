@@ -10,9 +10,9 @@ import static spark.Spark.post;
 import server.accountmanager.controller.AccountManager;
 import server.accountmanager.model.Account;
 import server.accountmanager.model.AccountStatus;
-import server.accountmanager.model.Session;
-import server.accountmanager.model.SessionState;
-import server.accountmanager.model.SessionType;
+import server.gamebuilder.model.Session;
+import server.gamebuilder.model.SessionState;
+import server.gamebuilder.model.SessionType;
 import server.accountmanager.model.User;
 import server.gamebuilder.controller.SessionBuilder;
 

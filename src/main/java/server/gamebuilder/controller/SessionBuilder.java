@@ -5,13 +5,13 @@
  */
 package server.gamebuilder.controller;
 
-import server.accountmanager.model.Host;
-import server.accountmanager.model.Session;
+import server.gamebuilder.model.Host;
+import server.gamebuilder.model.Session;
 import java.sql.*;
 import server.accountmanager.model.User;
 import server.accountmanager.model.AccountStatus;
 import server.accountmanager.model.Account;
-import server.accountmanager.model.Player;
+import server.gamebuilder.model.Player;
 
 /**
  *
