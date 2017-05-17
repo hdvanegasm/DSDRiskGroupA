@@ -1,4 +1,4 @@
-package server.accountmanager.model;
+package server.gamebuilder.model;
 
 /**
  * This class represents the basic information of a map used in the Setup Module.

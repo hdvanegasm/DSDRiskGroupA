@@ -1,6 +1,7 @@
 
 package server.accountmanager.model;
 
+import server.gamebuilder.model.SessionInvitation;
 import java.util.LinkedList;
 
 /**

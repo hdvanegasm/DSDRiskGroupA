@@ -10,9 +10,10 @@ import static spark.Spark.post;
 import server.accountmanager.controller.AccountManager;
 import server.accountmanager.model.Account;
 import server.accountmanager.model.AccountStatus;
-import server.accountmanager.model.Session;
-import server.accountmanager.model.SessionState;
-import server.accountmanager.model.SessionType;
+import server.gamebuilder.model.Map;
+import server.gamebuilder.model.Session;
+import server.gamebuilder.model.SessionState;
+import server.gamebuilder.model.SessionType;
 import server.accountmanager.model.User;
 import server.gamebuilder.controller.SessionBuilder;
 
@@ -102,7 +103,7 @@ public class Server {
 
             //TODO Get attributes
             String hostUsername = (String) parsedObject.get("username");
-            int numberOfPlayers = (int) parsedObject.get("numberOfPlayers");
+            int numberOfPlayers = Integer.parseInt((String) parsedObject.get("numberOfPlayers"));
             String sessionType = (String) parsedObject.get("type");
             String mapName = (String) parsedObject.get("mapName");
             
@@ -118,8 +119,8 @@ public class Server {
             } else if(sessionType.equals("risk for two players")){
                 sessionTypeEnum = SessionType.RISK_FOR_TWO_PLAYERS;
             }
-            
-            Session newSession = Session.create(0, numberOfPlayers, sessionTypeEnum, SessionState.CREATING);
+            Map map = new Map(mapName);
+            Session newSession = Session.create(numberOfPlayers, sessionTypeEnum, SessionState.CREATING, map);
             
             // TODO Read Players
             Account account = Account.create(AccountStatus.ONLINE, hostUsername, null, null);
