@@ -32,8 +32,6 @@ public class Server {
         System.out.println("Starting server...");
         System.out.println("Server online.");
         System.out.println("Turning on database (setting up database controllers)...");
-        AccountManager.connectMySQL();
-        SessionBuilder.connectMySQL();
         System.out.println("Database online.");
         
         // Creating account service

@@ -10,6 +10,7 @@ import server.gamebuilder.model.Color;
 import server.gamebuilder.model.Host;
 import server.gamebuilder.model.Session;
 import java.sql.*;
+import server.DatabaseConnector;
 import server.accountmanager.model.User;
 import server.accountmanager.model.AccountStatus;
 import server.accountmanager.model.Account;
@@ -25,34 +26,16 @@ public class SessionBuilder {
 
     //connection attributes
 
-    private static final int port = 3306;
-    private static final String serverPath = "localhost";
-    private static final String dataBaseName = "dsdrisk";
-    private final static String dataBaseUser = "dsdriskuser";
-    private final static String dataBasePassword = "12345";
 
-    private final static String driver = "com.mysql.jdbc.Driver";
-    private final static String dataBase = "jdbc:mysql://" + serverPath + ":" + port + "/" + dataBaseName;
-    private static Connection connection;
-    private static Statement statement;
     
-    //connection method
-    public static void connectMySQL() {
-        try {
-            Class.forName(driver);
-            connection = DriverManager.getConnection(dataBase, dataBaseUser, dataBasePassword);
-            statement = connection.createStatement();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+  
 
     public static boolean createSession(User user, Session session) {
         Host host = new Host(user.account);
         // get actual session id and update in the class
         String querySelectId = "SELECT MAX(id) as id FROM session";
         try {
-            ResultSet resultset = statement.executeQuery(querySelectId);
+            ResultSet resultset = DatabaseConnector.getInstance().getStatement().executeQuery(querySelectId);
             boolean first = true;
             while (resultset.next()) {
                 session.id = resultset.getInt("id") + 1;
@@ -90,19 +73,19 @@ public class SessionBuilder {
 
         try {
             // update tables: session, player,host, this the original update
-            statement.executeUpdate(queryUpdateHostStatus);
-            statement.executeUpdate(queryInsertSession);
-            statement.executeUpdate(queryInsertHostToPlayer);
-            statement.executeUpdate(queryInsertHost);
-            statement.executeUpdate(queryUpdateUserStatus);
+            DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdateHostStatus);
+            DatabaseConnector.getInstance().getStatement().executeUpdate(queryInsertSession);
+            DatabaseConnector.getInstance().getStatement().executeUpdate(queryInsertHostToPlayer);
+            DatabaseConnector.getInstance().getStatement().executeUpdate(queryInsertHost);
+            DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdateUserStatus);
             
             session.numberOfPlayers++;
             //simulate new players, in the final increment this is done by the requestHandler class
-            statement.executeUpdate(query5);
+            DatabaseConnector.getInstance().getStatement().executeUpdate(query5);
             session.numberOfPlayers++;
-            statement.executeUpdate(query6);
+            DatabaseConnector.getInstance().getStatement().executeUpdate(query6);
             session.numberOfPlayers++;
-            statement.executeUpdate(query7);
+            DatabaseConnector.getInstance().getStatement().executeUpdate(query7);
             session.numberOfPlayers++;
         } catch (Exception e) {
             System.out.println("error: createSession() (2) - " + e.getMessage());
