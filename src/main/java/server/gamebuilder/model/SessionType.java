@@ -1,4 +1,4 @@
-package server.accountmanager.model;
+package server.gamebuilder.model;
 
 /**
  * This enumeration class represents the possible types of the session. Each possible type is based on the rules of the game, and each type determines the rules of the session and the dynamic of the game. Also it determines the number of players supported in the session.
