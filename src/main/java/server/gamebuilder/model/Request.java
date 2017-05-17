@@ -1,4 +1,4 @@
-package server.accountmanager.model;
+package server.gamebuilder.model;
 
 /**
  * This class represents a request from a user to a host of a session in order to include the user into the session construction phase.

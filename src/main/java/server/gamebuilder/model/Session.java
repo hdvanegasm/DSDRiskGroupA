@@ -1,6 +1,8 @@
-package server.accountmanager.model;
+package server.gamebuilder.model;
 
 import java.util.LinkedList;
+import server.accountmanager.model.Contact;
+import server.accountmanager.model.User;
 
 /**
  * This class represents a session in the game. It has the basic attributes in order to create and manage a session in the game.
