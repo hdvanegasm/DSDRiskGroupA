@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package server.gamebuilder.controller;
 
 
@@ -19,19 +14,14 @@ import server.gamebuilder.model.SessionState;
 
 
 /**
- *
+ * 
  * @author David Ochoa
  */
 public class SessionBuilder {
 
-    //connection attributes
-
-
-    
-  
-
     public static boolean createSession(User user, Session session) {
         Host host = new Host(user.account);
+        
         // get actual session id and update in the class
         String querySelectId = "SELECT MAX(id) as id FROM session";
         try {
