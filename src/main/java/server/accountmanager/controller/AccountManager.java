@@ -2,6 +2,7 @@ package server.accountmanager.controller;
 
 import server.accountmanager.model.User;
 import java.sql.*;
+import server.accountmanager.model.AccountStatus;
 
 /**
  * This class manage all queries necessary handle the user´s account
@@ -45,10 +46,11 @@ public class AccountManager {
         //insert into account table the new user
         
         try {
-            String query = "INSERT INTO account VALUES ( \"" + user.account.username
-                + "\" , \"" + user.account.password + "\", \"" + user.account.email + "\", 0, 0, 0);";
+            String query = "INSERT INTO user VALUES (NULL, \"" + user.account.username + "\");";
+            
             statement.executeUpdate(query);
-            query = "INSERT INTO user VALUES (\"offline\", NULL, \"" + user.account.username + "\");";
+            query = "INSERT INTO account VALUES ( \"" + user.account.username
+                + "\" , \"" + user.account.password + "\", \"" + user.account.email + "\", 0, 0, 0,'" + AccountStatus.OFFLINE +"');";
             statement.executeUpdate(query);
         } catch (Exception e) {
             System.out.println("Fatal error: createAccount() - " + e);
@@ -70,7 +72,7 @@ public class AccountManager {
      */
     public static boolean logOut(User user) {
         // set user's status to offline
-        String query = "UPDATE user SET status = 'offline' WHERE username = \"" + user.account.username + "\";";
+        String query = "UPDATE account SET status = '" + AccountStatus.OFFLINE + "' WHERE username = \"" + user.account.username + "\";";
         try {
             statement.executeUpdate(query);
         } catch (Exception e) {
@@ -88,18 +90,18 @@ public class AccountManager {
      * @return a boolean that indicates the success of the query
      */
     public static boolean logIn(User user) {
-        String query1 = "SELECT username, password FROM account WHERE username = \"" + user.account.username + "\";";
-        String query2 = "UPDATE user SET status = 'online' WHERE username = \"" + user.account.username + "\";";
+        String querySelect = "SELECT username, password FROM account WHERE username = \"" + user.account.username + "\";";
+        String queryUpdate = "UPDATE account SET status = '"+ AccountStatus.ONLINE +"' WHERE username = \"" + user.account.username + "\";";
         //search the username and password
         try {
-            ResultSet resultset = statement.executeQuery(query1);
+            ResultSet resultset = statement.executeQuery(querySelect);
             while (resultset.next()) {
                 String auxUsername = resultset.getString("username");
                 String auxPassword = resultset.getString("password");
                 //compare ussername and password in database
                 if (auxUsername.equals(user.account.username) && auxPassword.equals(user.account.password)) {
                     try {
-                        statement.executeUpdate(query2);
+                        statement.executeUpdate(queryUpdate);
                         return true;
                     } catch (Exception e) {
                         System.out.println(e.getMessage());

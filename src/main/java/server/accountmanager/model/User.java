@@ -6,6 +6,7 @@ package server.accountmanager.model;
  */
 public class User {
     public Account account;
+    public AccountStatus status;
 
     /**
      * This is the constructor of the class. The constructor only receives an account associated with the user. The username in the account attribute is a unique identifier to the user. 
