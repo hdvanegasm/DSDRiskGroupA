@@ -97,4 +97,8 @@ public class AccountManager {
         }
         return true;
     }
+    
+    public static boolean changePassword(User user) {
+        return true;
+    }
 }

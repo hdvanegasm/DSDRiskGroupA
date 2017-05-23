@@ -9,6 +9,7 @@ import server.DatabaseConnector;
 import server.accountmanager.model.User;
 import server.accountmanager.model.AccountStatus;
 import server.accountmanager.model.Account;
+import server.accountmanager.model.Contact;
 import server.gamebuilder.model.Player;
 import server.gamebuilder.model.SessionState;
 
@@ -84,4 +85,20 @@ public class SessionBuilder {
 
         return true;
     }
+    
+    public static boolean joinSession(Contact contact) {
+        return true;
+    }
+    
+    public static boolean joinSession(User user) {
+        return true;
+    }
+    
+    public static boolean leaveSession(Player player) {
+        return true;
+    }
+    
+    public static boolean takeOutPlayer(Player player) {
+        return true;
+    } 
 }
