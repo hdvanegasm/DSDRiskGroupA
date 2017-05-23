@@ -98,7 +98,15 @@ public class AccountManager {
         return true;
     }
     
-    public static boolean changePassword(User user) {
+    public static boolean changePassword(User user, String newPassword) {
+        String queryUpdate = "UPDATE account SET password = '" + newPassword + "' + WHERE username = '" + user.account.username +"'";
+        try {
+            DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdate);
+        } catch (Exception e) {
+            System.out.println("Error at changePassword()");
+            e.printStackTrace();
+            return false;
+        }
         return true;
     }
 }

@@ -42,7 +42,7 @@ public class Session {
         this.players = new LinkedList<>();
         this.map = map;
 
-    } 
+    }
     
     /**
      * This method allows to a common user to join to the session through the request system. Once the request is accepted, the user can join to the session an he is downgraded to Player in the hierarchy level.
