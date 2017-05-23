@@ -135,7 +135,7 @@ public class Server {
             // TODO review JSON
             
             String username = (String) parsedObject.get("username");
-            String password = (String) parsedObject.get("actualPassword");
+            String password = (String) parsedObject.get("password");
             String newPassword = (String) parsedObject.get("newPassword");
             
             User user = new User(Account.create(AccountStatus.ONLINE, username, password, null));
