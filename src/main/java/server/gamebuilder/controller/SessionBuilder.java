@@ -21,7 +21,7 @@ import server.gamebuilder.model.SessionState;
 public class SessionBuilder {
 
     public static boolean createSession(User user, Session session) {
-        Host host = new Host(user.account);
+        Host host = new Host(user.account, Color.YELLOW);
         
         // get actual session id and update in the class
         String querySelectId = "SELECT MAX(id) as id FROM session";
@@ -50,9 +50,9 @@ public class SessionBuilder {
         String queryUpdateHostStatus = "UPDATE user SET typeOfUser = '"+ Player.class +"' WHERE username = \"" + user.account.username + "\";";
         String queryUpdateUserStatus = "UPDATE account SET status = \"" + AccountStatus.PLAYING + "\" WHERE username = \"" + host.account.username + "\";";
         //simulate another 3 players, this is for the first increment later the request handle this
-        Player playerAux1 = new Player(Account.create(AccountStatus.ONLINE, "dochoau", "123", null));
-        Player playerAux2 = new Player(Account.create(AccountStatus.ONLINE, "sareiza", "123", null));
-        Player playerAux3 = new Player(Account.create(AccountStatus.ONLINE, "edalpin", "123", null));
+        Player playerAux1 = new Player(Account.create(AccountStatus.ONLINE, "dochoau", "123", null), Color.RED);
+        Player playerAux2 = new Player(Account.create(AccountStatus.ONLINE, "sareiza", "123", null), Color.BLUE);
+        Player playerAux3 = new Player(Account.create(AccountStatus.ONLINE, "edalpin", "123", null), Color.GREEN);
        
         //insert the simulated  players into player table
         String query5 = "INSERT INTO player VALUES(\"" + playerAux1.account.username

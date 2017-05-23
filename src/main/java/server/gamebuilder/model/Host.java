@@ -7,15 +7,11 @@ import server.accountmanager.model.Account;
  * @author Hernán Darío Vanegas Madrigal
  */
 public class Host extends Player{
-    
     /**
      * This is the constructor of the class, this constructor is created in order to convert a User into a specific type, but without change the account attributes.
      * @param account 
      */
-    public Host(Account account) {
-        super(account);
+    public Host(Account account, Color color) {
+        super(account, color);
     }
-    
- 
-    
 }
