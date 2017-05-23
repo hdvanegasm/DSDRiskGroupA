@@ -28,11 +28,8 @@ public class Server {
      * @param args 
      */
     public static void main(String[] args) {
-
-        System.out.println("Starting server...");
-        System.out.println("Server online.");
-        System.out.println("Turning on database (setting up database controllers)...");
-        System.out.println("Database online.");
+        
+        
         
         // Creating account service
         post("/createAccount", (request, response) -> {
@@ -125,6 +122,27 @@ public class Server {
             User hostUser = new User(account);
             
             return SessionBuilder.createSession(hostUser, newSession);
+        });
+        
+        post("/changePassword", (request, response) ->
+        {
+            JSONParser parser = new JSONParser();
+            String jsonToString = "[" + request.body() + "]";
+            Object obj = parser.parse(jsonToString);
+            JSONArray jsonArray = (JSONArray) obj;
+            JSONObject parsedObject = (JSONObject) jsonArray.get(0);
+            
+            // TODO review JSON
+            
+            String username = (String) parsedObject.get("username");
+            String password = (String) parsedObject.get("password");
+            String newPassword = (String) parsedObject.get("newPassword");
+            
+            User user = new User(Account.create(AccountStatus.ONLINE, username, password, null));
+            
+            AccountManager.changePassword(user, newPassword);
+            
+            return 1;
         });
     }
 }
