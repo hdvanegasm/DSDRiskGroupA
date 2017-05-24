@@ -124,6 +124,7 @@ public class Server {
             return SessionBuilder.createSession(hostUser, newSession);
         });
         
+        // Change password services
         post("/changePassword", (request, response) ->
         {
             JSONParser parser = new JSONParser();
@@ -140,9 +141,7 @@ public class Server {
             
             User user = new User(Account.create(AccountStatus.ONLINE, username, password, null));
             
-            AccountManager.changePassword(user, newPassword);
-            
-            return 1;
+            return AccountManager.changePassword(user, newPassword);
         });
     }
 }
