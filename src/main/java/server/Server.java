@@ -16,6 +16,9 @@ import server.gamebuilder.model.SessionState;
 import server.gamebuilder.model.SessionType;
 import server.accountmanager.model.User;
 import server.gamebuilder.controller.SessionBuilder;
+import server.gamebuilder.model.Request;
+import server.gamebuilder.model.RequestState;
+
 
 /**
  * This class is the main class of the server. It has all of the services used by the server, and redirects the work to other modules.
@@ -125,15 +128,12 @@ public class Server {
         });
         
         // Change password services
-        post("/changePassword", (request, response) ->
-        {
+        post("/changePassword", (request, response) -> {
             JSONParser parser = new JSONParser();
             String jsonToString = "[" + request.body() + "]";
             Object obj = parser.parse(jsonToString);
             JSONArray jsonArray = (JSONArray) obj;
             JSONObject parsedObject = (JSONObject) jsonArray.get(0);
-            
-            // TODO review JSON
             
             String username = (String) parsedObject.get("username");
             String password = (String) parsedObject.get("actualPassword");
@@ -142,6 +142,22 @@ public class Server {
             User user = new User(Account.create(AccountStatus.ONLINE, username, password, null));
             
             return AccountManager.changePassword(user, newPassword);
+        });
+        
+        // Make request service
+        post("/makeRequest", (request, response) -> {
+            JSONParser parser = new JSONParser();
+            String jsonToString = "[" + request.body() + "]";
+            Object obj = parser.parse(jsonToString);
+            JSONArray jsonArray = (JSONArray) obj;
+            JSONObject parsedObject = (JSONObject) jsonArray.get(0);
+            
+            String username = (String) parsedObject.get("username");
+            int idSession = Integer.parseInt((String) parsedObject.get("idSession"));
+            
+            Request userRequest = new Request(RequestState.UNANSWERED);
+            
+            return true;
         });
     }
 }

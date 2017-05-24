@@ -11,7 +11,8 @@ import server.DatabaseConnector;
  * @author Hernán Darío Vanegas Madrigal
  */
 public class RequestHandler {
-    public static boolean makeRequest(User username, Session session) {
+    public static boolean makeRequest(Request request) {
+        
         return true;
     }
     
