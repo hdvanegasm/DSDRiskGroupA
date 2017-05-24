@@ -21,8 +21,7 @@ public class Request {
      * possible values of this attribute are: accepted, not accepted and
      * unanswered.
      */
-    public Request(int id, RequestState state) {
-        this.id = id;
+    public Request(RequestState state) {
         this.state = state;
     }
 
@@ -30,8 +29,8 @@ public class Request {
      * This method sends the request from the user to the specified session.
      * After the execution of this method, a host can answer the request.
      */
-    public static void make(Session session, int id) {
-        Request request = new Request(id, RequestState.UNANSWERED);
+    public static void make(Session session) {
+        Request request = new Request(RequestState.UNANSWERED);
         session.requests.add(request);
     }
 

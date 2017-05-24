@@ -113,6 +113,7 @@ public class AccountManager {
         try {
             result = DatabaseConnector.getInstance().getStatement().executeQuery(querySelect);
         } catch (Exception e) {
+            System.out.println("Error at changePassword()");
             e.printStackTrace();
         }
         
