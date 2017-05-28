@@ -3,6 +3,8 @@ package server.gamebuilder.controller;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import server.accountmanager.model.User;
 import server.gamebuilder.model.Request;
 import server.gamebuilder.model.Session;
@@ -19,36 +21,64 @@ public class RequestHandler {
     
     
     // TODO add documentation
-    public static boolean makeRequest(Request request, Session session, User user) throws ClassNotFoundException, SQLException {
+    public static boolean makeRequest(Request request, Session session, User user) {
         
-        //Verify if the session is creating
-        String querySession = "SELECT state FROM session WHERE id=" + session.id + ";";
-        ResultSet resultQuerySession = DatabaseConnector.getInstance().getStatement().executeQuery(querySession);
-        if(resultQuerySession.next()) {
-            String stateSession = resultQuerySession.getString("state");
-            if(!stateSession.equals(SessionState.CREATING.toString())) {
+        try {
+            
+            //Verify if the session is creating
+            String querySession = "SELECT state FROM session WHERE id=" + session.id + ";";
+            ResultSet resultQuerySession = null;
+            try {
+                resultQuerySession = DatabaseConnector.getInstance().getStatement().executeQuery(querySession);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(RequestHandler.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            } catch (SQLException ex) {
+                Logger.getLogger(RequestHandler.class.getName()).log(Level.SEVERE, null, ex);
                 return false;
             }
-        } else {
+            try {
+                if(resultQuerySession.next()) {
+                    String stateSession = resultQuerySession.getString("state");
+                    if(!stateSession.equals(SessionState.CREATING.toString())) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(RequestHandler.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
+            
+            // Obtain the next ID to the register
+            String queryId = "SELECT MAX(id) AS id FROM request;";
+            ResultSet result = DatabaseConnector.getInstance().getStatement().executeQuery(queryId);
+            int newId = 1;
+            try {
+                if(result.next()) {
+                    newId = result.getInt("id") + 1;
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(RequestHandler.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
+            
+            request.id = newId;
+            
+            String insertRequestQuery = "INSERT INTO request(id, session, state, username) VALUES(" + newId + ", " + session.id + ", '" +
+                    request.state + "', '" + user.account.username + "');";
+            System.out.println(insertRequestQuery);
+            DatabaseConnector.getInstance().getStatement().executeUpdate(insertRequestQuery);
+            
+            return true;
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(RequestHandler.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        } catch (SQLException ex) {
+            Logger.getLogger(RequestHandler.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
-        
-        // Obtain the next ID to the register
-        String queryId = "SELECT MAX(id) AS id FROM request;";
-        ResultSet result = DatabaseConnector.getInstance().getStatement().executeQuery(queryId);
-        int newId = 1;
-        if(result.next()) {
-            newId = result.getInt("id") + 1;
-        }
-        
-        request.id = newId;
-        
-        String insertRequestQuery = "INSERT INTO request(id, session, state, username) VALUES(" + newId + ", " + session.id + ", '" +
-                                request.state + "', '" + user.account.username + "');";
-        System.out.println(insertRequestQuery);
-        DatabaseConnector.getInstance().getStatement().executeUpdate(insertRequestQuery);
-
-        return true;
     }
     
     // TODO add documentation

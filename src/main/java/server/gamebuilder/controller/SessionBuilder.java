@@ -8,7 +8,6 @@ import java.sql.*;
 import server.DatabaseConnector;
 import server.accountmanager.model.User;
 import server.accountmanager.model.AccountStatus;
-import server.accountmanager.model.Account;
 import server.accountmanager.model.Contact;
 import server.gamebuilder.model.Player;
 import server.gamebuilder.model.SessionState;
@@ -21,7 +20,8 @@ import server.gamebuilder.model.SessionState;
 public class SessionBuilder {
 
     public static boolean createSession(User user, Session session) {
-        Host host = new Host(user.account, Color.YELLOW);
+        Host host = new Host(user.account);
+        session.join(host);
         
         // get actual session id and update in the class
         String querySelectId = "SELECT MAX(id) as id FROM session";
@@ -67,18 +67,36 @@ public class SessionBuilder {
         return true;
     }
     
+    // TODO add documentation
     public static Session joinSession(Contact contact, Session session) {   
         return session;
     }
     
-    public static boolean joinSession(User user, Session session) {
-        return true;
+    // TODO add documentation
+    public static Player joinSession(User user, Session session) throws SQLException, ClassNotFoundException {
+        Player newPlayer = session.join(user);
+        
+        // Insert player to the database associated with the session
+        String insertPlayerQuery = "INSERT INTO player VALUES('" + newPlayer.account.username + "', '" +newPlayer.color +"',\"non-captured\",0,0,0,FALSE,NULL," + session.id +")";  
+        DatabaseConnector.getInstance().getStatement().executeUpdate(insertPlayerQuery);
+        
+        // Update user status
+        String queryUpdateUserStatus = "UPDATE account SET status = \"" + newPlayer.account.status + "\" WHERE username = \"" + newPlayer.account.username + "\";";
+        DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdateUserStatus);
+        
+        // Update player type
+        String queryUpdatePlayerType = "UPDATE user SET typeOfUser = '"+ Player.class +"' WHERE username = \"" + newPlayer.account.username + "\";";
+        DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdatePlayerType);
+        
+        return newPlayer;
     }
     
+    // TODO add documentation
     public static boolean leaveSession(Player player) {
         return true;
     }
     
+    // TODO add documentation
     public static boolean takeOutPlayer(Player player) {
         return true;
     } 

@@ -16,7 +16,7 @@ public class Player extends User {
      * @param account This is the base account to create a player. In a normal process, this account belongs to the user that will be transformed to a player when he joins to a session.
      * @param color This attribute represents the color assigned to the session
      */
-    public Player(Account account, Color color) {
+    public Player(Account account) {
         super(account);
     }
  
