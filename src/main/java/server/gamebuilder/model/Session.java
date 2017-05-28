@@ -44,6 +44,11 @@ public class Session {
 
     }
     
+    // TODO Add documentation
+    private Session(int id) {
+        this.id = id;
+    }
+    
     /**
      * This method allows to a common user to join to the session through the request system. Once the request is accepted, the user can join to the session an he is downgraded to Player in the hierarchy level.
      * @param user This is the reference to the user that will be joined to the session.
@@ -88,6 +93,12 @@ public class Session {
 
     public static Session create(int numberOfPlayers, SessionType type, SessionState state, Map map) {
         return new Session(numberOfPlayers, type, state, map);
+    }
+    
+    
+    // TODO add documentation
+    public static Session create(int id) {
+        return new Session(id);
     }
     
     /**
