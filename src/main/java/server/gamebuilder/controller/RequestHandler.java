@@ -7,6 +7,7 @@ import server.accountmanager.model.User;
 import server.gamebuilder.model.Request;
 import server.gamebuilder.model.Session;
 import server.DatabaseConnector;
+import server.gamebuilder.model.Host;
 import server.gamebuilder.model.RequestState;
 import server.gamebuilder.model.SessionState;
 
@@ -17,7 +18,7 @@ import server.gamebuilder.model.SessionState;
 public class RequestHandler {
     
     
-    
+    // TODO add documentation
     public static boolean makeRequest(Request request, Session session, User user) throws ClassNotFoundException, SQLException {
         
         //Verify if the session is creating
@@ -28,7 +29,9 @@ public class RequestHandler {
             if(!stateSession.equals(SessionState.CREATING.toString())) {
                 return false;
             }
-        } 
+        } else {
+            return false;
+        }
         
         // Obtain the next ID to the register
         String queryId = "SELECT MAX(id) AS id FROM request;";
@@ -40,15 +43,24 @@ public class RequestHandler {
         
         request.id = newId;
         
-        String insertSession = "INSERT INTO request(id, session, state, user) VALUES(" + newId + ", " + session.id + ", '" +
-                                request.state + "', '" + user.account.username + "';";
-        
-        DatabaseConnector.getInstance().getStatement().executeUpdate(insertSession);
+        String insertRequestQuery = "INSERT INTO request(id, session, state, username) VALUES(" + newId + ", " + session.id + ", '" +
+                                request.state + "', '" + user.account.username + "');";
+        System.out.println(insertRequestQuery);
+        DatabaseConnector.getInstance().getStatement().executeUpdate(insertRequestQuery);
 
         return true;
     }
     
-    public boolean answerRequest(Request request) {
-        return true;
+    // TODO add documentation
+    public static boolean answerRequest(Request request, RequestState response) throws ClassNotFoundException, SQLException {
+        boolean answer = false;
+        if(request.state == RequestState.UNANSWERED) {
+            answer = request.answer(response);
+            
+            // Update query
+            String queryUpdate = "UPDATE request SET state= '" + request.state + "' WHERE id = " + request.id +";";
+            DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdate);
+        }
+        return answer;
     }
 }
