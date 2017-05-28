@@ -12,6 +12,9 @@ import server.accountmanager.model.Account;
 import server.accountmanager.model.AccountStatus;
 import server.accountmanager.model.User;
 import server.gamebuilder.controller.RequestHandler;
+import server.gamebuilder.controller.SessionBuilder;
+import server.gamebuilder.model.Map;
+import server.gamebuilder.model.Player;
 import server.gamebuilder.model.Request;
 import server.gamebuilder.model.RequestState;
 import server.gamebuilder.model.Session;
@@ -32,15 +35,7 @@ public class Test {
         Session session = Session.create(idSession);
         User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
         
-        try {
-            return RequestHandler.makeRequest(userRequest, session, user);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        } catch (SQLException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
+        return RequestHandler.makeRequest(userRequest, session, user);
     }
     
     public static boolean answerRequestTest() {
@@ -58,8 +53,30 @@ public class Test {
         }
         return response;
     }
+    
+    public static Player joinSessionTest() {
+        Map map = new Map("Prado Centro");
+        Session session = Session.create(4, SessionType.WORLD_DOMINATION_RISK, SessionState.CREATING, map);
+        User userCreator = new User(Account.create(AccountStatus.ONLINE, "hernan", "1234", "hdvanegasm@unal.edu.co"));
+        
+        SessionBuilder.createSession(userCreator, session);
+        
+        User userJoin = new User(Account.create(AccountStatus.ONLINE, "spinos", "1234", "s@unal"));
+        Player newPlayer;
+        try {
+            newPlayer = SessionBuilder.joinSession(userJoin, session);
+        } catch (SQLException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+        
+        return newPlayer;
+    }
 
     public static void main(String[] args) {
-        answerRequestTest();
+        joinSessionTest();
     }
 }

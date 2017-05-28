@@ -1,9 +1,11 @@
 package server.gamebuilder.model;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import server.accountmanager.model.Contact;
 import server.accountmanager.model.User;
 import java.util.Random;
+import server.accountmanager.model.AccountStatus;
 
 /**
  * This class represents a session in the game. It has the basic attributes in
@@ -58,6 +60,10 @@ public class Session {
 
     // TODO Add documentation
     private Session(int id) {
+        availableColors = new LinkedList<>();
+        for (int i = 0; i < Color.values().length; i++) {
+            availableColors.add(Color.values()[i]);
+        }
         this.id = id;
         this.requests = new LinkedList<>();
         this.players = new LinkedList<>();
@@ -73,16 +79,19 @@ public class Session {
      * @return The method returns true if the user was successfully joined,
      * otherwise it returns false.
      */
-    public boolean join(User user) {
+    public Player join(User user) {
         // Creates a random number to select the available
         Random random = new Random();
         int randomIndex = (int) (random.nextFloat() * availableColors.size());
 
         // Creates a player based on the user parameter
-        Player player = new Player(user.account, availableColors.remove(randomIndex));
+        Player player = new Player(user.account);
+        player.color = availableColors.remove(randomIndex);
         players.add(player);
+        
+        player.account.status = AccountStatus.PLAYING;
 
-        return true;
+        return player;
     }
 
     /**
@@ -100,8 +109,12 @@ public class Session {
         int randomIndex = (int) (random.nextFloat() * availableColors.size());
 
         // Creates a player based on the contact parameter
-        Player player = new Player(contact.account, availableColors.remove(randomIndex));
+        Player player = new Player(contact.account);
+        player.color = availableColors.remove(randomIndex);
         players.add(player);
+        
+        player.account.status = AccountStatus.PLAYING;
+        
         return true;
     }
 
