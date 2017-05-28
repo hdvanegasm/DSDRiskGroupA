@@ -97,4 +97,46 @@ public class AccountManager {
         }
         return true;
     }
+    
+    /**
+     * Method used in order to change the password of the account
+     * @param user It represents the information of the user that will change the password
+     * @param newPassword This attribute represents the new password of the account
+     * @return The method returns true if the password was changed successfully, otherwise it returns false.
+     * @throws SQLException 
+     */
+    public static boolean changePassword(User user, String newPassword) throws SQLException {
+        
+        // Check if the password digited is correct
+        String querySelect = "SELECT password FROM account WHERE username = '" + user.account.username + "';";
+        ResultSet result = null;
+        try {
+            result = DatabaseConnector.getInstance().getStatement().executeQuery(querySelect);
+        } catch (Exception e) {
+            System.out.println("Error at changePassword()");
+            e.printStackTrace();
+        }
+        
+        if(result != null) {
+            result.next();
+        } else {
+            return false;
+        }
+        
+        String oldPassword = result.getString("password");
+        
+        if(!oldPassword.equals(user.account.password)) {
+            return false;
+        }
+        
+        String queryUpdate = "UPDATE account SET password = '" + newPassword + "' WHERE username = '" + user.account.username +"';";
+        try {
+            DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdate);
+        } catch (Exception e) {
+            System.out.println("Error at changePassword()");
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 }

@@ -4,7 +4,7 @@ package server.accountmanager.model;
  * This class represents a User in the system. This is the basic class and it is in the top of the hierarchy of users of the system.
  * @author Hernán Darío Vanegas Madrigal
  */
-public class User {
+public class User implements Comparable<User>{
     public Account account;
     public AccountStatus status;
 
@@ -15,4 +15,9 @@ public class User {
     public User(Account account) {
         this.account = account;
     }  
+
+    @Override
+    public int compareTo(User otherUser) {
+        return this.account.username.compareTo(otherUser.account.username);
+    }
 }
