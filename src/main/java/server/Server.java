@@ -15,6 +15,7 @@ import server.gamebuilder.model.Session;
 import server.gamebuilder.model.SessionState;
 import server.gamebuilder.model.SessionType;
 import server.accountmanager.model.User;
+import server.gamebuilder.controller.RequestHandler;
 import server.gamebuilder.controller.SessionBuilder;
 import server.gamebuilder.model.Request;
 import server.gamebuilder.model.RequestState;
@@ -175,8 +176,10 @@ public class Server {
             int idSession = Integer.parseInt((String) parsedObject.get("idSession"));
 
             Request userRequest = new Request(RequestState.UNANSWERED);
-
-            return true;
+            Session session = Session.create(idSession);
+            User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
+            
+            return RequestHandler.makeRequest(userRequest, session, user);
         });
     }
 }
