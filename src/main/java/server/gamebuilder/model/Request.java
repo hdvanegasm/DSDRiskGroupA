@@ -24,14 +24,21 @@ public class Request {
     public Request(RequestState state) {
         this.state = state;
     }
+    
+    // TODO add documentation
+    public Request(int id, RequestState state) {
+        this.id = id;
+        this.state = state;
+    }
 
     /**
      * This method sends the request from the user to the specified session.
      * After the execution of this method, a host can answer the request.
      */
-    public static void make(Session session) {
+    public static Request make(Session session) {
         Request request = new Request(RequestState.UNANSWERED);
         session.requests.add(request);
+        return request;
     }
 
     /**
