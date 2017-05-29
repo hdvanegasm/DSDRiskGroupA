@@ -9,7 +9,6 @@ import server.accountmanager.model.User;
 import server.gamebuilder.model.Request;
 import server.gamebuilder.model.Session;
 import server.DatabaseConnector;
-import server.gamebuilder.model.Host;
 import server.gamebuilder.model.RequestState;
 import server.gamebuilder.model.SessionState;
 
@@ -23,17 +22,13 @@ public class RequestHandler {
     // TODO add documentation
     public static boolean makeRequest(Request request, Session session, User user) {
         
-        try {
-            
+        try {           
             //Verify if the session is creating
             String querySession = "SELECT state FROM session WHERE id=" + session.id + ";";
             ResultSet resultQuerySession = null;
             try {
                 resultQuerySession = DatabaseConnector.getInstance().getStatement().executeQuery(querySession);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(RequestHandler.class.getName()).log(Level.SEVERE, null, ex);
-                return false;
-            } catch (SQLException ex) {
+            } catch (ClassNotFoundException | SQLException ex) {
                 Logger.getLogger(RequestHandler.class.getName()).log(Level.SEVERE, null, ex);
                 return false;
             }
@@ -72,10 +67,7 @@ public class RequestHandler {
             DatabaseConnector.getInstance().getStatement().executeUpdate(insertRequestQuery);
             
             return true;
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(RequestHandler.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        } catch (SQLException ex) {
+        } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(RequestHandler.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }

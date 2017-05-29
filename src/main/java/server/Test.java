@@ -13,6 +13,7 @@ import server.accountmanager.model.AccountStatus;
 import server.accountmanager.model.User;
 import server.gamebuilder.controller.RequestHandler;
 import server.gamebuilder.controller.SessionBuilder;
+import server.gamebuilder.model.Host;
 import server.gamebuilder.model.Map;
 import server.gamebuilder.model.Player;
 import server.gamebuilder.model.Request;
@@ -20,6 +21,10 @@ import server.gamebuilder.model.RequestState;
 import server.gamebuilder.model.Session;
 import server.gamebuilder.model.SessionState;
 import server.gamebuilder.model.SessionType;
+import server.accountmanager.model.Contact;
+import server.gamebuilder.controller.InvitationHandler;
+import server.gamebuilder.model.SessionInvitation;
+import server.gamebuilder.model.SessionInvitationState;
 
 /**
  *
@@ -44,10 +49,7 @@ public class Test {
         boolean response;
         try {
             response = RequestHandler.answerRequest(request, RequestState.ACCEPTED);
-        } catch (ClassNotFoundException ex) {
-            response = false;
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
+        } catch (ClassNotFoundException | SQLException ex) {
             response = false;
             Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -75,8 +77,20 @@ public class Test {
         
         return newPlayer;
     }
+    
+    public static boolean inviteContactTest() {
+        Host host = new Host(Account.create(AccountStatus.ONLINE, "hernan", "1234", "hdvanegasm@unal.edu.co"));
+        Contact contact = new Contact(Account.create(AccountStatus.ONLINE, "spinos", "1234", "s@unal"));
+        return InvitationHandler.inviteContact(host, contact);
+    }    
+    
+    public static boolean answerInvitationTest() {
+        SessionInvitation invitation = new SessionInvitation(1, SessionInvitationState.UNANSWERED);
+        SessionInvitationState response = SessionInvitationState.ACCEPTED;
+        return InvitationHandler.answerInvitation(invitation, response);
+    }
 
     public static void main(String[] args) {
-        joinSessionTest();
+        System.out.println(Contact.class.getSimpleName());
     }
 }

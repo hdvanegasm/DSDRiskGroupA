@@ -1,5 +1,7 @@
 package server.gamebuilder.model;
 
+// TODO Add documentation
+
 /**
  *
  * @author Admin
@@ -8,24 +10,24 @@ public class SessionInvitation {
     public int id;
     public SessionInvitationState state;
 
-    public SessionInvitation(SessionInvitationState state) {
-        this.state = state;
-    }
-    
+    // TODO Add documentation
     public SessionInvitation(int id, SessionInvitationState state) {
-        this.state = state;
         this.id = id;
+        this.state = state;
     }
     
+    // TODO Add documentation
     public SessionInvitation() {
         this.state = SessionInvitationState.UNANSWERED;
     }
     
-    public void answer(String response) {
-        if(response.equals("accepted")) {
+    // TODO Add documentation
+    public boolean answer(SessionInvitationState response) {
+        if(response == SessionInvitationState.ACCEPTED) {
             this.state = SessionInvitationState.ACCEPTED;
-        } else if(response.equals("not_accepted")) {
-            this.state = SessionInvitationState.NOT_ACCEPTED;
+            return true;
         }
+        this.state = SessionInvitationState.NOT_ACCEPTED;
+        return false;
     }
 }
