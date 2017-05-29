@@ -8,6 +8,7 @@ import java.util.Iterator;
  */
 public class Contact extends User{
     
+    // TODO add documentation
     public Contact(Account account) {
         super(account);
     }
