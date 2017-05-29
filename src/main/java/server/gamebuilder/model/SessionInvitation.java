@@ -21,7 +21,5 @@ public class SessionInvitation {
         } else if(response.equals("not_accepted")) {
             this.state = SessionInvitationState.NOT_ACCEPTED;
         }
-        
-        //TODO Update to database
     }
 }

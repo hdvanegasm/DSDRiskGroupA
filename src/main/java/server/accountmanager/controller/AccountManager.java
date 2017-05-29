@@ -39,10 +39,6 @@ public class AccountManager {
         return true;
     }
 
-    public static boolean updatePassword(User user) {
-        // TODO Update password of the account
-        return true;
-    }
 
     /**
      * This method update the status of the user in the database after logout
