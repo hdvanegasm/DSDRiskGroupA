@@ -35,7 +35,7 @@ public class SessionBuilder {
             if (first) {
                 session.id = 1;
             }
-        } catch (Exception e) {
+        } catch (ClassNotFoundException | SQLException e) {
             System.out.println("error: createSession() - " + e.getMessage());
             return false;
         }

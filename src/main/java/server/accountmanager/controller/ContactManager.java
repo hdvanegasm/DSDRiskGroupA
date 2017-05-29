@@ -7,4 +7,13 @@ package server.accountmanager.controller;
  */
 public class ContactManager {
     
+    // TODO Add documentation
+    public void addContact() {
+        
+    }
+    
+    // TODO Add documentation
+    public void removeContact() {
+        
+    }
 }

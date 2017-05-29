@@ -37,7 +37,6 @@ public class Server {
 
         // Creating account service
         post("/createAccount", (request, response) -> {
-
             JSONParser parser = new JSONParser();
             String jsonToString = "[" + request.body() + "]";
             Object obj = parser.parse(jsonToString);

@@ -2,7 +2,6 @@ package server.gamebuilder.controller;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import server.DatabaseConnector;
@@ -25,10 +24,7 @@ public class InvitationHandler {
         ResultSet result;
         try {
             result = DatabaseConnector.getInstance().getStatement().executeQuery(onlineContactQuery);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(InvitationHandler.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        } catch (SQLException ex) {
+        } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(InvitationHandler.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
@@ -36,7 +32,7 @@ public class InvitationHandler {
         try {
             if(result.next()) {
                 String status = result.getString("status");
-                if(!status.equals(AccountStatus.ONLINE)) {
+                if(!status.equals(AccountStatus.ONLINE.toString())) {
                     return false;
                 }
             } else {
@@ -50,13 +46,10 @@ public class InvitationHandler {
         // Create session invitation objetct
         SessionInvitation invitation = contact.invite();
         
-        String insertInvitationQuery = "INSERT INTO invitation VALUES('" + host.account.username +"', '" + contact.account.username + "', '" + invitation.state + "';";
+        String insertInvitationQuery = "INSERT INTO invitation(host, contact_username, state) VALUES('" + host.account.username +"', '" + contact.account.username + "', '" + invitation.state + "');";
         try {
-            DatabaseConnector.getInstance().getStatement().executeQuery(insertInvitationQuery);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(InvitationHandler.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        } catch (SQLException ex) {
+            DatabaseConnector.getInstance().getStatement().executeUpdate(insertInvitationQuery);
+        } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(InvitationHandler.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }

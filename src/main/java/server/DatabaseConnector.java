@@ -70,4 +70,8 @@ public class DatabaseConnector {
     public Statement getStatement() {
         return statement;
     }
+    
+    public Connection getConnection() {
+        return connection;
+    }
 }

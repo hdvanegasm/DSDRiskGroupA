@@ -39,6 +39,7 @@ public class Account {
         this.numberOfSessionWon = numberOfSessionWon;
         this.percentajeOfWins = percentajeOfWins;
         this.contactList = new LinkedList<>();
+        this.sessionInvitations = new LinkedList<>();
     }
 
     /**
