@@ -1,26 +1,25 @@
 package server.gamebuilder.model;
 
+// TODO Add documentation
+
 /**
  *
  * @author Admin
  */
 public class SessionInvitation {
-    public int id;
     public SessionInvitationState state;
 
+    // TODO Add documentation
     public SessionInvitation(SessionInvitationState state) {
         this.state = state;
     }
     
-    public SessionInvitation(int id, SessionInvitationState state) {
-        this.state = state;
-        this.id = id;
-    }
-    
+    // TODO Add documentation
     public SessionInvitation() {
         this.state = SessionInvitationState.UNANSWERED;
     }
     
+    // TODO Add documentation
     public void answer(String response) {
         if(response.equals("accepted")) {
             this.state = SessionInvitationState.ACCEPTED;
