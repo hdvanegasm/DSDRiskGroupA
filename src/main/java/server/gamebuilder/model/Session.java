@@ -103,7 +103,7 @@ public class Session {
      * @return The method returns true if the contact was joined successfully,
      * and it returns false if not.
      */
-    public boolean join(Contact contact) {
+    public Player join(Contact contact) {
         // Creates a random number to select the available
         Random random = new Random();
         int randomIndex = (int) (random.nextFloat() * availableColors.size());
@@ -115,7 +115,7 @@ public class Session {
         
         player.account.status = AccountStatus.PLAYING;
         
-        return true;
+        return player;
     }
 
     /**
