@@ -15,8 +15,6 @@ public class Request {
      * This is the constructor of the class that determines the initial state of
      * the session.
      *
-     * @param id This is the id of the request. It is used in order to identify
-     * the request in the system.
      * @param state This represents the actual state of the request. The
      * possible values of this attribute are: accepted, not accepted and
      * unanswered.

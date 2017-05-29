@@ -14,10 +14,7 @@ public class AccountManager {
 
 
     /**
-     * This method allows the connection with the server´s data base
-     */
-    /**
-     * This method allows to create a new user´s account
+     * This method allows to create a new user's account
      *
      * @param user this object has the attributes of the new user's account
      * @return a boolean that indicates the success of the query

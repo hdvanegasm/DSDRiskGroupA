@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.6.5.2
--- https://www.phpmyadmin.net/
+-- version 4.5.1
+-- http://www.phpmyadmin.net
 --
--- Host: localhost
--- Generation Time: May 17, 2017 at 10:12 PM
--- Server version: 10.1.21-MariaDB
--- PHP Version: 7.1.1
+-- Host: 127.0.0.1
+-- Generation Time: May 29, 2017 at 04:36 PM
+-- Server version: 10.1.19-MariaDB
+-- PHP Version: 5.6.28
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -41,10 +41,31 @@ CREATE TABLE `account` (
 --
 
 INSERT INTO `account` (`username`, `password`, `email`, `numberOfSessionLost`, `numberOfSessionswon`, `percentageOfWins`, `status`) VALUES
-('carlos', '2341', 'carlos@hola.com', 0, 0, 0, 'OFFLINE'),
-('hernan', '2341', 'hernan@hola.com', 0, 0, 0, 'PLAYING'),
-('NuevoUser1', '1234', 's@uasdsadnal1', 0, 0, 0, 'OFFLINE'),
-('spinos', '1234', 's@unal', 0, 0, 0, 'OFFLINE');
+('carlos', '2341', 'carlos@hola.com', 0, 0, 0, 'ONLINE'),
+('hernan', '1234', 'hdvanegasm@unal.edu.co', 0, 0, 0, 'PLAYING'),
+('NuevoUser1', '1234', 's@uasdsadnal1', 0, 0, 0, 'ONLINE'),
+('spinos', '1234', 's@unal', 0, 0, 0, 'PLAYING');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `contact`
+--
+
+CREATE TABLE `contact` (
+  `username` varchar(80) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `contactlist`
+--
+
+CREATE TABLE `contactlist` (
+  `user_username` varchar(80) NOT NULL,
+  `contact_username` varchar(80) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -79,7 +100,7 @@ CREATE TABLE `map` (
 --
 
 INSERT INTO `map` (`name`) VALUES
-('america');
+('Prado Centro');
 
 -- --------------------------------------------------------
 
@@ -104,10 +125,21 @@ CREATE TABLE `player` (
 --
 
 INSERT INTO `player` (`user`, `color`, `captureState`, `territoryAmount`, `continentAmount`, `cardAmount`, `turn`, `type`, `sessionID`) VALUES
-('dochoau', 'RED', 'non-captured', 0, 0, 0, 0, NULL, 1),
-('edalpin', 'GREEN', 'non-captured', 0, 0, 0, 0, NULL, 1),
 ('hernan', 'YELLOW', 'non-captured', 0, 0, 0, 0, 'class server.gamebuilder.model.Host', 1),
-('sareiza', 'BLUE', 'non-captured', 0, 0, 0, 0, NULL, 1);
+('spinos', 'BLUE', 'non-captured', 0, 0, 0, 0, NULL, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `request`
+--
+
+CREATE TABLE `request` (
+  `id` int(11) NOT NULL,
+  `session` int(11) NOT NULL,
+  `state` varchar(80) NOT NULL,
+  `username` varchar(80) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -127,7 +159,7 @@ CREATE TABLE `session` (
 --
 
 INSERT INTO `session` (`map`, `id`, `state`, `type`) VALUES
-('america', 1, 'CREATING', 'WORLD_DOMINATION_RISK');
+('Prado Centro', 1, 'CREATING', 'WORLD_DOMINATION_RISK');
 
 -- --------------------------------------------------------
 
@@ -152,7 +184,7 @@ INSERT INTO `user` (`typeOfUser`, `username`) VALUES
 (NULL, 'NuevoUser'),
 (NULL, 'NuevoUser1'),
 (NULL, 'sareiza'),
-(NULL, 'spinos');
+('class server.gamebuilder.model.Player', 'spinos');
 
 --
 -- Indexes for dumped tables
@@ -166,10 +198,24 @@ ALTER TABLE `account`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Indexes for table `contact`
+--
+ALTER TABLE `contact`
+  ADD PRIMARY KEY (`username`);
+
+--
+-- Indexes for table `contactlist`
+--
+ALTER TABLE `contactlist`
+  ADD PRIMARY KEY (`user_username`,`contact_username`),
+  ADD KEY `contact_username` (`contact_username`);
+
+--
 -- Indexes for table `host`
 --
 ALTER TABLE `host`
-  ADD PRIMARY KEY (`player`);
+  ADD PRIMARY KEY (`player`),
+  ADD KEY `session` (`session`);
 
 --
 -- Indexes for table `map`
@@ -183,6 +229,14 @@ ALTER TABLE `map`
 ALTER TABLE `player`
   ADD PRIMARY KEY (`user`),
   ADD KEY `sessionID` (`sessionID`);
+
+--
+-- Indexes for table `request`
+--
+ALTER TABLE `request`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `session` (`session`),
+  ADD KEY `username` (`username`);
 
 --
 -- Indexes for table `session`
@@ -208,10 +262,24 @@ ALTER TABLE `account`
   ADD CONSTRAINT `account_ibfk_1` FOREIGN KEY (`username`) REFERENCES `user` (`username`);
 
 --
+-- Constraints for table `contact`
+--
+ALTER TABLE `contact`
+  ADD CONSTRAINT `contact_ibfk_1` FOREIGN KEY (`username`) REFERENCES `user` (`username`);
+
+--
+-- Constraints for table `contactlist`
+--
+ALTER TABLE `contactlist`
+  ADD CONSTRAINT `contactlist_ibfk_1` FOREIGN KEY (`user_username`) REFERENCES `account` (`username`),
+  ADD CONSTRAINT `contactlist_ibfk_2` FOREIGN KEY (`contact_username`) REFERENCES `contact` (`username`);
+
+--
 -- Constraints for table `host`
 --
 ALTER TABLE `host`
-  ADD CONSTRAINT `host_ibfk_1` FOREIGN KEY (`player`) REFERENCES `player` (`user`);
+  ADD CONSTRAINT `host_ibfk_1` FOREIGN KEY (`player`) REFERENCES `player` (`user`),
+  ADD CONSTRAINT `host_ibfk_2` FOREIGN KEY (`session`) REFERENCES `session` (`id`);
 
 --
 -- Constraints for table `player`
@@ -219,6 +287,13 @@ ALTER TABLE `host`
 ALTER TABLE `player`
   ADD CONSTRAINT `player_ibfk_1` FOREIGN KEY (`user`) REFERENCES `user` (`username`),
   ADD CONSTRAINT `player_ibfk_2` FOREIGN KEY (`sessionID`) REFERENCES `session` (`id`);
+
+--
+-- Constraints for table `request`
+--
+ALTER TABLE `request`
+  ADD CONSTRAINT `request_ibfk_1` FOREIGN KEY (`session`) REFERENCES `session` (`id`),
+  ADD CONSTRAINT `request_ibfk_2` FOREIGN KEY (`username`) REFERENCES `user` (`username`);
 
 --
 -- Constraints for table `session`
