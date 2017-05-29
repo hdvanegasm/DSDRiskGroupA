@@ -120,7 +120,6 @@ public class Server {
 
             JSONObject parsedObject = (JSONObject) jsonArray.get(0);
 
-            //TODO Get attributes
             String hostUsername = (String) parsedObject.get("username");
             int numberOfPlayers = Integer.parseInt((String) parsedObject.get("numberOfPlayers"));
             String sessionType = (String) parsedObject.get("type");
@@ -140,7 +139,6 @@ public class Server {
             Map map = new Map(mapName);
             Session newSession = Session.create(numberOfPlayers, sessionTypeEnum, SessionState.CREATING, map);
 
-            // TODO Read Players
             Account account = Account.create(AccountStatus.ONLINE, hostUsername, null, null);
             User hostUser = new User(account);
 
