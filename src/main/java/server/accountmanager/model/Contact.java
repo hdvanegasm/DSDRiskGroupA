@@ -1,7 +1,6 @@
 package server.accountmanager.model;
 
 import java.util.Iterator;
-import server.gamebuilder.model.Host;
 import server.gamebuilder.model.SessionInvitation;
 import server.gamebuilder.model.SessionInvitationState;
 
@@ -28,8 +27,8 @@ public class Contact extends User{
     }
     
     // TODO add documentation
-    public SessionInvitation invite() {
-        SessionInvitation invitation = new SessionInvitation(SessionInvitationState.UNANSWERED);
+    public SessionInvitation invite(int id) {
+        SessionInvitation invitation = new SessionInvitation(id, SessionInvitationState.UNANSWERED);
         this.account.sessionInvitations.add(invitation);
         return invitation;
     }

@@ -46,8 +46,8 @@ public class SessionBuilder {
         String queryInsertHost = "INSERT INTO host VALUES (\"" + host.account.username + "\",  " + session.id + " );";
         //update player table with host, remember delete player rows when game fihish and make colors dinamic
         String queryInsertHostToPlayer = "INSERT INTO player VALUES(\"" + host.account.username
-                + "\", '" + Color.YELLOW + "' , 'non-captured', 0, 0, 0, 0,'"+ Host.class + "'," + session.id + ")";
-        String queryUpdateHostStatus = "UPDATE user SET typeOfUser = '"+ Player.class +"' WHERE username = \"" + user.account.username + "\";";
+                + "\", '" + Color.YELLOW + "' , 'non-captured', 0, 0, 0, 0,'"+ Host.class.getSimpleName().toUpperCase() + "'," + session.id + ")";
+        String queryUpdateHostStatus = "UPDATE user SET typeOfUser = '"+ Player.class.getSimpleName().toUpperCase() +"' WHERE username = \"" + user.account.username + "\";";
         String queryUpdateUserStatus = "UPDATE account SET status = \"" + AccountStatus.PLAYING + "\" WHERE username = \"" + host.account.username + "\";";
         //simulate another 3 players, this is for the first increment later the request handle this
         
@@ -80,7 +80,7 @@ public class SessionBuilder {
         DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdateUserStatus);
         
         // Update player type
-        String queryUpdatePlayerType = "UPDATE user SET typeOfUser = '"+ Player.class +"' WHERE username = \"" + newPlayer.account.username + "\";";
+        String queryUpdatePlayerType = "UPDATE user SET typeOfUser = '"+ Player.class.getSimpleName().toUpperCase() +"' WHERE username = \"" + newPlayer.account.username + "\";";
         DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdatePlayerType);
         
         return newPlayer;
@@ -99,7 +99,7 @@ public class SessionBuilder {
         DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdateUserStatus);
         
         // Update player type
-        String queryUpdatePlayerType = "UPDATE user SET typeOfUser = '"+ Player.class +"' WHERE username = \"" + newPlayer.account.username + "\";";
+        String queryUpdatePlayerType = "UPDATE user SET typeOfUser = '"+ Player.class.getSimpleName().toUpperCase() +"' WHERE username = \"" + newPlayer.account.username + "\";";
         DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdatePlayerType);
         
         return newPlayer;

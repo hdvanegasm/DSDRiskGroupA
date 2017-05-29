@@ -23,6 +23,8 @@ import server.gamebuilder.model.SessionState;
 import server.gamebuilder.model.SessionType;
 import server.accountmanager.model.Contact;
 import server.gamebuilder.controller.InvitationHandler;
+import server.gamebuilder.model.SessionInvitation;
+import server.gamebuilder.model.SessionInvitationState;
 
 /**
  *
@@ -81,8 +83,14 @@ public class Test {
         Contact contact = new Contact(Account.create(AccountStatus.ONLINE, "spinos", "1234", "s@unal"));
         return InvitationHandler.inviteContact(host, contact);
     }    
+    
+    public static boolean answerInvitationTest() {
+        SessionInvitation invitation = new SessionInvitation(1, SessionInvitationState.UNANSWERED);
+        SessionInvitationState response = SessionInvitationState.ACCEPTED;
+        return InvitationHandler.answerInvitation(invitation, response);
+    }
 
     public static void main(String[] args) {
-        inviteContactTest();
+        System.out.println(Contact.class.getSimpleName());
     }
 }
