@@ -10,7 +10,7 @@ public class Request {
 
     public int id;
     public RequestState state;
-
+    
     /**
      * This is the constructor of the class that determines the initial state of
      * the session.
