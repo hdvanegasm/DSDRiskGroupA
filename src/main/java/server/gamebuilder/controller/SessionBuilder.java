@@ -68,8 +68,22 @@ public class SessionBuilder {
     }
     
     // TODO add documentation
-    public static Session joinSession(Contact contact, Session session) {   
-        return session;
+    public static Player joinSession(Contact contact, Session session) throws ClassNotFoundException, SQLException {   
+        Player newPlayer = session.join(contact);
+        
+        // Insert player to the database associated with the session
+        String insertPlayerQuery = "INSERT INTO player VALUES('" + newPlayer.account.username + "', '" +newPlayer.color +"',\"non-captured\",0,0,0,FALSE,NULL," + session.id +")";  
+        DatabaseConnector.getInstance().getStatement().executeUpdate(insertPlayerQuery);
+        
+        // Update user status
+        String queryUpdateUserStatus = "UPDATE account SET status = \"" + newPlayer.account.status + "\" WHERE username = \"" + newPlayer.account.username + "\";";
+        DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdateUserStatus);
+        
+        // Update player type
+        String queryUpdatePlayerType = "UPDATE user SET typeOfUser = '"+ Player.class +"' WHERE username = \"" + newPlayer.account.username + "\";";
+        DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdatePlayerType);
+        
+        return newPlayer;
     }
     
     // TODO add documentation
