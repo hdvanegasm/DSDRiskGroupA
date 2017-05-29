@@ -5,10 +5,16 @@ package server.gamebuilder.model;
  * @author Admin
  */
 public class SessionInvitation {
+    public int id;
     public SessionInvitationState state;
 
     public SessionInvitation(SessionInvitationState state) {
         this.state = state;
+    }
+    
+    public SessionInvitation(int id, SessionInvitationState state) {
+        this.state = state;
+        this.id = id;
     }
     
     public SessionInvitation() {
