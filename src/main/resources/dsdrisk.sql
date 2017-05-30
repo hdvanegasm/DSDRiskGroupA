@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: May 29, 2017 at 04:36 PM
+-- Generation Time: May 30, 2017 at 04:41 AM
 -- Server version: 10.1.19-MariaDB
 -- PHP Version: 5.6.28
 
@@ -42,9 +42,9 @@ CREATE TABLE `account` (
 
 INSERT INTO `account` (`username`, `password`, `email`, `numberOfSessionLost`, `numberOfSessionswon`, `percentageOfWins`, `status`) VALUES
 ('carlos', '2341', 'carlos@hola.com', 0, 0, 0, 'ONLINE'),
+('edalpin', '1234', 'edalpin@unal.edu.co', 0, 0, 0, 'ONLINE'),
 ('hernan', '1234', 'hdvanegasm@unal.edu.co', 0, 0, 0, 'PLAYING'),
-('NuevoUser1', '1234', 's@uasdsadnal1', 0, 0, 0, 'ONLINE'),
-('spinos', '1234', 's@unal', 0, 0, 0, 'PLAYING');
+('spinos', '1234', 's@unal', 0, 0, 0, 'ONLINE');
 
 -- --------------------------------------------------------
 
@@ -55,6 +55,13 @@ INSERT INTO `account` (`username`, `password`, `email`, `numberOfSessionLost`, `
 CREATE TABLE `contact` (
   `username` varchar(80) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `contact`
+--
+
+INSERT INTO `contact` (`username`) VALUES
+('spinos');
 
 -- --------------------------------------------------------
 
@@ -67,6 +74,13 @@ CREATE TABLE `contactlist` (
   `contact_username` varchar(80) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `contactlist`
+--
+
+INSERT INTO `contactlist` (`user_username`, `contact_username`) VALUES
+('edalpin', 'spinos');
+
 -- --------------------------------------------------------
 
 --
@@ -78,12 +92,18 @@ CREATE TABLE `host` (
   `session` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `host`
+-- Table structure for table `invitation`
 --
 
-INSERT INTO `host` (`player`, `session`) VALUES
-('hernan', 1);
+CREATE TABLE `invitation` (
+  `id` int(11) NOT NULL,
+  `host` varchar(80) NOT NULL,
+  `contact_username` varchar(80) NOT NULL,
+  `state` varchar(80) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -120,14 +140,6 @@ CREATE TABLE `player` (
   `sessionID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data for table `player`
---
-
-INSERT INTO `player` (`user`, `color`, `captureState`, `territoryAmount`, `continentAmount`, `cardAmount`, `turn`, `type`, `sessionID`) VALUES
-('hernan', 'YELLOW', 'non-captured', 0, 0, 0, 0, 'class server.gamebuilder.model.Host', 1),
-('spinos', 'BLUE', 'non-captured', 0, 0, 0, 0, NULL, 1);
-
 -- --------------------------------------------------------
 
 --
@@ -154,13 +166,6 @@ CREATE TABLE `session` (
   `type` varchar(80) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data for table `session`
---
-
-INSERT INTO `session` (`map`, `id`, `state`, `type`) VALUES
-('Prado Centro', 1, 'CREATING', 'WORLD_DOMINATION_RISK');
-
 -- --------------------------------------------------------
 
 --
@@ -180,11 +185,11 @@ INSERT INTO `user` (`typeOfUser`, `username`) VALUES
 (NULL, 'carlos'),
 (NULL, 'dochoau'),
 (NULL, 'edalpin'),
-('class server.gamebuilder.model.Player', 'hernan'),
+(NULL, 'hernan'),
 (NULL, 'NuevoUser'),
 (NULL, 'NuevoUser1'),
 (NULL, 'sareiza'),
-('class server.gamebuilder.model.Player', 'spinos');
+('CONTACT', 'spinos');
 
 --
 -- Indexes for dumped tables
@@ -216,6 +221,14 @@ ALTER TABLE `contactlist`
 ALTER TABLE `host`
   ADD PRIMARY KEY (`player`),
   ADD KEY `session` (`session`);
+
+--
+-- Indexes for table `invitation`
+--
+ALTER TABLE `invitation`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `host` (`host`),
+  ADD KEY `contact_username` (`contact_username`);
 
 --
 -- Indexes for table `map`
@@ -280,6 +293,13 @@ ALTER TABLE `contactlist`
 ALTER TABLE `host`
   ADD CONSTRAINT `host_ibfk_1` FOREIGN KEY (`player`) REFERENCES `player` (`user`),
   ADD CONSTRAINT `host_ibfk_2` FOREIGN KEY (`session`) REFERENCES `session` (`id`);
+
+--
+-- Constraints for table `invitation`
+--
+ALTER TABLE `invitation`
+  ADD CONSTRAINT `invitation_ibfk_1` FOREIGN KEY (`host`) REFERENCES `host` (`player`),
+  ADD CONSTRAINT `invitation_ibfk_2` FOREIGN KEY (`contact_username`) REFERENCES `contact` (`username`);
 
 --
 -- Constraints for table `player`
