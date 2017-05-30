@@ -8,6 +8,7 @@ package server;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import server.accountmanager.controller.ContactManager;
 import server.accountmanager.model.Account;
 import server.accountmanager.model.AccountStatus;
 import server.accountmanager.model.User;
@@ -89,8 +90,25 @@ public class Test {
         SessionInvitationState response = SessionInvitationState.ACCEPTED;
         return InvitationHandler.answerInvitation(invitation, response);
     }
+    
+    // TODO implement test
+    public static boolean addContactTest() {
+        User user = new User(Account.create(AccountStatus.ONLINE, "hernan", "1234", "hdvanegasm@unal.edu.co"));
+        User newContact = new User(Account.create(AccountStatus.ONLINE, "spinos", "1234", "spinos@unal"));
+        ContactManager.addContact(user, newContact);
+        
+        user = new User(Account.create(AccountStatus.ONLINE, "edalpin", "1234", "edalpin@unal.edu.co"));
+        return ContactManager.addContact(user, newContact);
+    }
+    
+    // TODO implement test
+    public static boolean removeContactTest() {
+        User user = new User(Account.create(AccountStatus.ONLINE, "hernan", "1234", "hdvanegasm@unal.edu.co"));
+        Contact contact = new Contact(Account.create(AccountStatus.ONLINE, "spinos", "1234", "spinos@unal"));
+        return ContactManager.removeContact(user, contact);
+    }
 
     public static void main(String[] args) {
-        System.out.println(Contact.class.getSimpleName());
+        removeContactTest();
     }
 }

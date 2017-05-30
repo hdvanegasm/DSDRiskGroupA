@@ -18,34 +18,58 @@ import server.accountmanager.model.User;
 public class ContactManager {
 
     // TODO Add documentation
-    public boolean addContact(User user, Contact contact) {
+    public static boolean addContact(User user, User newContact) {
+        Contact contact = new Contact(newContact.account);
+
         contact.add(user);
 
         PreparedStatement preparedStatement = null;
+        ResultSet result = null;
+        // Check if the contact is in the database
+        String checkContact = "SELECT COUNT(username) AS occurrences FROM contact WHERE username=?";
 
-        // Insert the contact in the DB
-        String insertContactQuery = "INSERT INTO contact VALUES(?)";
         try {
-            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(insertContactQuery);
-            preparedStatement.setString(1, user.account.contactList.getLast().account.username);
-            preparedStatement.executeUpdate();
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(checkContact);
+            preparedStatement.setString(1, newContact.account.username);
+            result = preparedStatement.executeQuery();
+            result.next();
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(ContactManager.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
 
-        // Update class state in user table
-        String updateUserType = "UPDATE user SET typeOfUser=? WHERE username=?";
         try {
-            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(updateUserType);
-            preparedStatement.setString(1, Contact.class.getSimpleName().toUpperCase());
-            preparedStatement.setString(2, user.account.contactList.getLast().account.username);
-            preparedStatement.executeUpdate();
-        } catch (ClassNotFoundException | SQLException ex) {
+            if (result.getInt("occurrences") == 0) {
+                
+                // Insert the contact in the DB
+                String insertContactQuery = "INSERT INTO contact VALUES(?)";
+                try {
+                    preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(insertContactQuery);
+                    // Get the last contact of the list, i.e. the new contact
+                    preparedStatement.setString(1, user.account.contactList.getLast().account.username);
+                    preparedStatement.executeUpdate();
+                } catch (ClassNotFoundException | SQLException ex) {
+                    Logger.getLogger(ContactManager.class.getName()).log(Level.SEVERE, null, ex);
+                    return false;
+                }
+                
+                // Update class state in user table
+                String updateUserType = "UPDATE user SET typeOfUser=? WHERE username=?";
+                try {
+                    preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(updateUserType);
+                    preparedStatement.setString(1, Contact.class.getSimpleName().toUpperCase());
+                    preparedStatement.setString(2, user.account.contactList.getLast().account.username);
+                    preparedStatement.executeUpdate();
+                } catch (ClassNotFoundException | SQLException ex) {
+                    Logger.getLogger(ContactManager.class.getName()).log(Level.SEVERE, null, ex);
+                    return false;
+                }
+            }
+        } catch (SQLException ex) {
             Logger.getLogger(ContactManager.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
-
+        
         // Add both user and contact to contact list
         String insertContactListQuery = "INSERT INTO contactlist VALUES(?, ?)";
         try {
@@ -62,7 +86,7 @@ public class ContactManager {
     }
 
     // TODO Add documentation
-    public boolean removeContact(User user, Contact contact) {
+    public static boolean removeContact(User user, Contact contact) {
         //SELECT COUNT(contact_username) AS number FROM contactlist WHERE contact_username='spinos';
 
         contact.remove(user);
@@ -125,8 +149,8 @@ public class ContactManager {
                 return false;
             }
         }
-        
+
         return true;
-    
+
     }
 }
