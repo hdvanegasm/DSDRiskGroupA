@@ -17,11 +17,13 @@ import server.gamebuilder.model.SessionInvitationState;
  * @author Hernán Darío Vanegas Madrigal
  */
 public class InvitationHandler {
-    // TODO add documentation
+    /**
+     * This method allows to invite a contact to a session by a host, it creates a new session invitation and insert it into the database
+     * @param host It represents the host that creates the invitation
+     * @param contact It represents the contact of the host which will receive the invitation
+     * @return The method returns true if the session invitation was sent successfully, otherwise it returns false.
+     */
     public static boolean inviteContact(Host host, Contact contact){
-        
-        
-        // Verify if the user is online
         String onlineContactQuery = "SELECT status FROM account WHERE username='" + contact.account.username + "';";
         ResultSet result;
         try {
@@ -76,7 +78,12 @@ public class InvitationHandler {
         return true;
     }
 
-    // TODO add documentation
+    /**
+     * This method is implemented in order to allow to a user to answer an invitation. It only changes the answer of the invitation to the database and changes his status according to his response.
+     * @param invitation This object represents the invitation that will be answered
+     * @param response This is an ennumeration value that represents the response of the contact that answers the session invitatio
+     * @return The method returns true if the invitation was accepted, otherwise it returns false.
+     */
     public static boolean answerInvitation(SessionInvitation invitation, SessionInvitationState response) {
         boolean result = invitation.answer(response);
         
