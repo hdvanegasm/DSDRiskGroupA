@@ -19,8 +19,13 @@ import server.gamebuilder.model.SessionState;
 public class RequestHandler {
     
     
-    // TODO add documentation
-    public static boolean makeRequest(Request request, Session session, User user) {
+    /**
+     * This method allows to a user to make a request to a session in order to ask for autorization to enter to the session construction. The method creates a new request and adds it to the database.
+     * @param session It represents the session which will receive the request for access
+     * @param user This is a reference to the user that is sending the invitation, this user must be online and the session must have a "creating" status in order to make a successful request
+     * @return The method returns "true" if the method make a request successfully, otherwise the method returns false.
+     */
+    public static boolean makeRequest(Session session, User user) {
         
         try {           
             //Verify if the session is creating
@@ -59,6 +64,7 @@ public class RequestHandler {
                 return false;
             }
             
+            Request request = Request.make(session);
             request.id = newId;
             
             String insertRequestQuery = "INSERT INTO request(id, session, state, username) VALUES(" + newId + ", " + session.id + ", '" +
@@ -73,9 +79,17 @@ public class RequestHandler {
         }
     }
     
-    // TODO add documentation
+    /**
+     * This method allows to the host to anser a request that was sended to his session. The method modify the request status in the database and returns a boolean according to the answer.
+     * @param request It is the object of the request that will be answered. It has all of the information needed to anser the request and update the information in the database.
+     * @param response It is an instance of the ennumeration class that represents the answer of the host of the session.
+     * @return The method returns "true" if the the host "accepts" the request, otherwise it returns "false".
+     */
     public static boolean answerRequest(Request request, RequestState response) throws ClassNotFoundException, SQLException {
+        
+        //Initializes the value of the answer
         boolean answer = false;
+        
         if(request.state == RequestState.UNANSWERED) {
             answer = request.answer(response);
             
