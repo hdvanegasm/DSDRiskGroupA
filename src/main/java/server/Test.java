@@ -34,13 +34,18 @@ import server.gamebuilder.model.SessionInvitationState;
 public class Test {
 
     public static boolean makeRequestTest() {
-        String username = "hernan";
-        int idSession = 1;
-
-        Session session = Session.create(idSession);
-        User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
-        
-        return RequestHandler.makeRequest(session, user);
+        try {
+            String username = "hernan";
+            int idSession = 1;
+            
+            Session session = Session.create(idSession);
+            User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
+            
+            return RequestHandler.makeRequest(session, user);
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
     
     public static boolean answerRequestTest() {
@@ -82,7 +87,12 @@ public class Test {
     public static boolean inviteContactTest() {
         Host host = new Host(Account.create(AccountStatus.ONLINE, "hernan", "1234", "hdvanegasm@unal.edu.co"));
         Contact contact = new Contact(Account.create(AccountStatus.ONLINE, "spinos", "1234", "s@unal"));
-        return InvitationHandler.inviteContact(host, contact);
+        try {
+            return InvitationHandler.inviteContact(host, contact);
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }    
     
     public static boolean answerInvitationTest() {
