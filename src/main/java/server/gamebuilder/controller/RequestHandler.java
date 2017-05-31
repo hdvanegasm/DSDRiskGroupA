@@ -2,8 +2,6 @@ package server.gamebuilder.controller;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import server.accountmanager.model.User;
 import server.gamebuilder.model.Request;
 import server.gamebuilder.model.Session;
@@ -21,7 +19,7 @@ public class RequestHandler {
 
     /**
      * This method allows to a user to make a request to a session in order to
-     * ask for autorization to enter to the session construction. The method
+     * ask for authorization to enter to the session construction. The method
      * creates a new request and adds it to the database.
      *
      * @param session It represents the session which will receive the request
@@ -31,8 +29,10 @@ public class RequestHandler {
      * "creating" status in order to make a successful request
      * @return The method returns "true" if the method make a request
      * successfully, otherwise the method returns false.
-     * @throws java.sql.SQLException
-     * @throws java.lang.ClassNotFoundException
+     * @throws SQLException The method returns the this exception when a
+     * database error occurs.
+     * @throws ClassNotFoundException The method returns the this exception when
+     * a the class is not found in the executeQuery method.
      */
     public static boolean makeRequest(Session session, User user) throws SQLException, ClassNotFoundException {
 
@@ -60,7 +60,7 @@ public class RequestHandler {
             newId = result.getInt("id") + 1;
         }
 
-        Request request = Request.make(session);
+        Request request = Request.make(session, user);
         request.id = newId;
 
         String insertRequestQuery = "INSERT INTO request(id, session, state, username) VALUES(" + newId + ", " + session.id + ", '"
@@ -73,19 +73,21 @@ public class RequestHandler {
     }
 
     /**
-     * This method allows to the host to anser a request that was sended to his
+     * This method allows to the host to answer a request that was sent to his
      * session. The method modify the request status in the database and returns
      * a boolean according to the answer.
      *
      * @param request It is the object of the request that will be answered. It
-     * has all of the information needed to anser the request and update the
+     * has all of the information needed to answer the request and update the
      * information in the database.
-     * @param response It is an instance of the ennumeration class that
+     * @param response It is an instance of the enumeration class that
      * represents the answer of the host of the session.
      * @return The method returns "true" if the the host "accepts" the request,
      * otherwise it returns "false".
-     * @throws java.lang.ClassNotFoundException
-     * @throws java.sql.SQLException
+     * @throws SQLException The method returns the this exception when a
+     * database error occurs.
+     * @throws ClassNotFoundException The method returns the this exception when
+     * a the class is not found in the executeQuery method.
      */
     public static boolean answerRequest(Request request, RequestState response) throws ClassNotFoundException, SQLException {
 

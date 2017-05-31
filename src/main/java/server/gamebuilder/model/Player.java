@@ -14,7 +14,6 @@ public class Player extends User {
     /**
      * This method allows to create a player using a given account. This is in order to create a player based on a existing user.
      * @param account This is the base account to create a player. In a normal process, this account belongs to the user that will be transformed to a player when he joins to a session.
-     * @param color This attribute represents the color assigned to the session
      */
     public Player(Account account) {
         super(account);
@@ -29,6 +28,11 @@ public class Player extends User {
     public boolean takeOut(Session session) {
         session.players.remove(this);
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Player{" + "color=" + color + '}';
     }
 
 }
