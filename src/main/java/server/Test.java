@@ -78,7 +78,7 @@ public class Test {
     }
 
     public static boolean inviteContactTest() {
-        Host host = new Host(Account.create(AccountStatus.ONLINE, "hernan", "1234", "hdvanegasm@unal.edu.co"));
+        Host host = new Host(Account.create(AccountStatus.ONLINE, "hernan", "1234", "hdvanegasm@unal.edu.co"), null);
         Contact contact = new Contact(Account.create(AccountStatus.ONLINE, "spinos", "1234", "s@unal"));
         try {
             return InvitationHandler.inviteContact(host, contact);

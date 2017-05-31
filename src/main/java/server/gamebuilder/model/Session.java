@@ -84,8 +84,7 @@ public class Session {
         int randomIndex = (int) (random.nextFloat() * availableColors.size());
 
         // Creates a player based on the user parameter
-        Player player = new Player(user.account);
-        player.color = availableColors.remove(randomIndex);
+        Player player = new Player(user.account, availableColors.remove(randomIndex)); 
         players.add(player);
         
         player.account.status = AccountStatus.PLAYING;
@@ -108,8 +107,7 @@ public class Session {
         int randomIndex = (int) (random.nextFloat() * availableColors.size());
 
         // Creates a player based on the contact parameter
-        Player player = new Player(contact.account);
-        player.color = availableColors.remove(randomIndex);
+        Player player = new Player(contact.account, availableColors.remove(randomIndex));
         players.add(player);
         
         player.account.status = AccountStatus.PLAYING;

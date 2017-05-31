@@ -15,9 +15,11 @@ public class Host extends Player {
      * order to convert a User into a specific type, but without change the
      * account attributes.
      *
-     * @param account This reference represents the account associated to the player that will be created.
+     * @param account This reference represents the account associated to the
+     * player that will be created.
+     * @param color Represents the color of the host.
      */
-    public Host(Account account) {
-        super(account);
+    public Host(Account account, Color color) {
+        super(account, color);
     }
 }
