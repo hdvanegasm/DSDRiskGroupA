@@ -30,6 +30,10 @@ public class InvitationHandler {
      * the invitation
      * @return The method returns true if the session invitation was sent
      * successfully, otherwise it returns false.
+     * @throws SQLException The method returns the this exception when a
+     * database error occurs.
+     * @throws ClassNotFoundException The method returns the this exception when
+     * a the class is not found in the statement reference.
      */
     public static boolean inviteContact(Host host, Contact contact) throws SQLException, ClassNotFoundException {
         String onlineContactQuery = "SELECT status FROM account WHERE username='" + contact.account.username + "';";
@@ -73,24 +77,24 @@ public class InvitationHandler {
      *
      * @param invitation This object represents the invitation that will be
      * answered
-     * @param response This is an ennumeration value that represents the
-     * response of the contact that answers the session invitatio
+     * @param response This is an enumeration value that represents the response
+     * of the contact that answers the session invitation
      * @return The method returns true if the invitation was accepted, otherwise
      * it returns false.
+     * @throws SQLException The method returns the this exception when a
+     * database error occurs.
+     * @throws ClassNotFoundException The method returns the this exception when
+     * a the class is not found in the statement reference.
      */
-    public static boolean answerInvitation(SessionInvitation invitation, SessionInvitationState response) {
+    public static boolean answerInvitation(SessionInvitation invitation, SessionInvitationState response) throws ClassNotFoundException, SQLException {
         boolean result = invitation.answer(response);
 
         String updateInvitationStateQuery = "UPDATE invitation SET state=? WHERE id=?";
-        try {
-            PreparedStatement update = DatabaseConnector.getInstance().getConnection().prepareStatement(updateInvitationStateQuery);
-            update.setString(1, invitation.state.toString());
-            update.setInt(2, invitation.id);
-            update.executeUpdate();
-        } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(InvitationHandler.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
+
+        PreparedStatement update = DatabaseConnector.getInstance().getConnection().prepareStatement(updateInvitationStateQuery);
+        update.setString(1, invitation.state.toString());
+        update.setInt(2, invitation.id);
+        update.executeUpdate();
 
         return result;
     }

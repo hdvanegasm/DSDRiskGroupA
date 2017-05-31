@@ -81,4 +81,9 @@ public class Account {
     public void logout() {
         this.status = AccountStatus.OFFLINE;
     }
+
+    @Override
+    public String toString() {
+        return "Account{" + "status=" + status + ", username=" + username + ", password=" + password + ", email=" + email + ", numberOfSessionLost=" + numberOfSessionLost + ", numberOfSessionWon=" + numberOfSessionWon + ", contactList=" + contactList + ", sessionInvitations=" + sessionInvitations + ", percentajeOfWins=" + percentajeOfWins + '}';
+    }
 }

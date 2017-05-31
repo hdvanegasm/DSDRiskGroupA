@@ -1,6 +1,5 @@
 package server.gamebuilder.model;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import server.accountmanager.model.Contact;
 import server.accountmanager.model.User;
@@ -23,7 +22,7 @@ public class Session {
     public LinkedList<Player> players;
     public SessionState state;
 
-    private LinkedList<Color> availableColors;
+    public LinkedList<Color> availableColors;
 
     /**
      * The constructor of the session is based on basic attributes. It allows to
@@ -154,4 +153,10 @@ public class Session {
         players.remove(player);
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "Session{" + "id=" + id + ", numberOfPlayers=" + numberOfPlayers + ", type=" + type + ", map=" + map + ", requests=" + requests + ", players=" + players + ", state=" + state + ", availableColors=" + availableColors + '}';
+    }
+    
 }

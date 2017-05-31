@@ -10,15 +10,10 @@ import static spark.Spark.post;
 import server.accountmanager.controller.AccountManager;
 import server.accountmanager.model.Account;
 import server.accountmanager.model.AccountStatus;
-import server.gamebuilder.model.Map;
 import server.gamebuilder.model.Session;
-import server.gamebuilder.model.SessionState;
-import server.gamebuilder.model.SessionType;
 import server.accountmanager.model.User;
 import server.gamebuilder.controller.RequestHandler;
-import server.gamebuilder.controller.SessionBuilder;
-import server.gamebuilder.model.Request;
-import server.gamebuilder.model.RequestState;
+import server.gamebuilder.controller.SessionManager;
 
 /**
  * This class is the main class of the server. It has all of the services used
@@ -120,28 +115,11 @@ public class Server {
             JSONObject parsedObject = (JSONObject) jsonArray.get(0);
 
             String hostUsername = (String) parsedObject.get("username");
-            int numberOfPlayers = Integer.parseInt((String) parsedObject.get("numberOfPlayers"));
-            String sessionType = (String) parsedObject.get("type");
-            String mapName = (String) parsedObject.get("mapName");
-
-            SessionType sessionTypeEnum = null;
-
-            if (sessionType.equals("world domination risk")) {
-                sessionTypeEnum = SessionType.WORLD_DOMINATION_RISK;
-            } else if (sessionType.equals("secret mission risk")) {
-                sessionTypeEnum = SessionType.SECRET_MISSION_RISK;
-            } else if (sessionType.equals("capital risk")) {
-                sessionTypeEnum = SessionType.CAPITAL_RISK;
-            } else if (sessionType.equals("risk for two players")) {
-                sessionTypeEnum = SessionType.RISK_FOR_TWO_PLAYERS;
-            }
-            Map map = new Map(mapName);
-            Session newSession = Session.create(numberOfPlayers, sessionTypeEnum, SessionState.CREATING, map);
 
             Account account = Account.create(AccountStatus.ONLINE, hostUsername, null, null);
             User hostUser = new User(account);
 
-            return SessionBuilder.createSession(hostUser, newSession);
+            return SessionManager.createSession(hostUser);
         });
 
         // Change password services
