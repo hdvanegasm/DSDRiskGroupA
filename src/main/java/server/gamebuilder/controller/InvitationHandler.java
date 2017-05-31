@@ -13,80 +13,74 @@ import server.gamebuilder.model.SessionInvitation;
 import server.gamebuilder.model.SessionInvitationState;
 
 /**
- * This class handles the invitations provided by host to his contacts. This class acts as a controller that makes the connection with the database in order to manage the invitations
+ * This class handles the invitations provided by host to his contacts. This
+ * class acts as a controller that makes the connection with the database in
+ * order to manage the invitations
+ *
  * @author Hernán Darío Vanegas Madrigal
  */
 public class InvitationHandler {
+
     /**
-     * This method allows to invite a contact to a session by a host, it creates a new session invitation and insert it into the database
+     * This method allows to invite a contact to a session by a host, it creates
+     * a new session invitation and insert it into the database
+     *
      * @param host It represents the host that creates the invitation
-     * @param contact It represents the contact of the host which will receive the invitation
-     * @return The method returns true if the session invitation was sent successfully, otherwise it returns false.
+     * @param contact It represents the contact of the host which will receive
+     * the invitation
+     * @return The method returns true if the session invitation was sent
+     * successfully, otherwise it returns false.
      */
-    public static boolean inviteContact(Host host, Contact contact){
+    public static boolean inviteContact(Host host, Contact contact) throws SQLException, ClassNotFoundException {
         String onlineContactQuery = "SELECT status FROM account WHERE username='" + contact.account.username + "';";
         ResultSet result;
-        try {
-            result = DatabaseConnector.getInstance().getStatement().executeQuery(onlineContactQuery);
-        } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(InvitationHandler.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-        
-        try {
-            if(result.next()) {
-                String status = result.getString("status");
-                if(!status.equals(AccountStatus.ONLINE.toString())) {
-                    return false;
-                }
-            } else {
+
+        result = DatabaseConnector.getInstance().getStatement().executeQuery(onlineContactQuery);
+
+        if (result.next()) {
+            String status = result.getString("status");
+            if (!status.equals(AccountStatus.ONLINE.toString())) {
                 return false;
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(InvitationHandler.class.getName()).log(Level.SEVERE, null, ex);
+        } else {
             return false;
         }
-        
+
         // Get new ID
         String querySelectId = "SELECT MAX(id) AS id FROM invitation;";
-        try {
-            result = DatabaseConnector.getInstance().getStatement().executeQuery(querySelectId);
-        } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(InvitationHandler.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
+
+        result = DatabaseConnector.getInstance().getStatement().executeQuery(querySelectId);
+
         int newId = 1;
-        try {
-            if(result.next()) {
-                newId = result.getInt("id") + 1; 
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(InvitationHandler.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
+
+        if (result.next()) {
+            newId = result.getInt("id") + 1;
         }
-        
+
         // Create session invitation objetct
         SessionInvitation invitation = contact.invite(newId);
-        String insertInvitationQuery = "INSERT INTO invitation(id, host, contact_username, state) VALUES("+ invitation.id +", '" + host.account.username +"', '" + contact.account.username + "', '" + invitation.state + "');";
-        try {
-            DatabaseConnector.getInstance().getStatement().executeUpdate(insertInvitationQuery);
-        } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(InvitationHandler.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-        
+        String insertInvitationQuery = "INSERT INTO invitation(id, host, contact_username, state) VALUES(" + invitation.id + ", '" + host.account.username + "', '" + contact.account.username + "', '" + invitation.state + "');";
+
+        DatabaseConnector.getInstance().getStatement().executeUpdate(insertInvitationQuery);
+
         return true;
     }
 
     /**
-     * This method is implemented in order to allow to a user to answer an invitation. It only changes the answer of the invitation to the database and changes his status according to his response.
-     * @param invitation This object represents the invitation that will be answered
-     * @param response This is an ennumeration value that represents the response of the contact that answers the session invitatio
-     * @return The method returns true if the invitation was accepted, otherwise it returns false.
+     * This method is implemented in order to allow to a user to answer an
+     * invitation. It only changes the answer of the invitation to the database
+     * and changes his status according to his response.
+     *
+     * @param invitation This object represents the invitation that will be
+     * answered
+     * @param response This is an ennumeration value that represents the
+     * response of the contact that answers the session invitatio
+     * @return The method returns true if the invitation was accepted, otherwise
+     * it returns false.
      */
     public static boolean answerInvitation(SessionInvitation invitation, SessionInvitationState response) {
         boolean result = invitation.answer(response);
-        
+
         String updateInvitationStateQuery = "UPDATE invitation SET state=? WHERE id=?";
         try {
             PreparedStatement update = DatabaseConnector.getInstance().getConnection().prepareStatement(updateInvitationStateQuery);
@@ -97,7 +91,7 @@ public class InvitationHandler {
             Logger.getLogger(InvitationHandler.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
-        
+
         return result;
     }
 }

@@ -172,11 +172,10 @@ public class Server {
             String username = (String) parsedObject.get("username");
             int idSession = Integer.parseInt((String) parsedObject.get("idSession"));
 
-            Request userRequest = new Request(RequestState.UNANSWERED);
             Session session = Session.create(idSession);
             User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
             
-            return RequestHandler.makeRequest(userRequest, session, user);
+            return RequestHandler.makeRequest(session, user);
         });
     }
 }

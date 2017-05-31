@@ -7,7 +7,6 @@ package server.gamebuilder.model;
  */
 
 public enum Color {
-
     YELLOW,
     RED,
     GREEN,

@@ -37,11 +37,10 @@ public class Test {
         String username = "hernan";
         int idSession = 1;
 
-        Request userRequest = new Request(RequestState.UNANSWERED);
         Session session = Session.create(idSession);
         User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
         
-        return RequestHandler.makeRequest(userRequest, session, user);
+        return RequestHandler.makeRequest(session, user);
     }
     
     public static boolean answerRequestTest() {
@@ -62,16 +61,17 @@ public class Test {
         Session session = Session.create(4, SessionType.WORLD_DOMINATION_RISK, SessionState.CREATING, map);
         User userCreator = new User(Account.create(AccountStatus.ONLINE, "hernan", "1234", "hdvanegasm@unal.edu.co"));
         
-        SessionBuilder.createSession(userCreator, session);
+        try {
+            SessionBuilder.createSession(userCreator, session);
+        } catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         User userJoin = new User(Account.create(AccountStatus.ONLINE, "spinos", "1234", "s@unal"));
         Player newPlayer;
         try {
             newPlayer = SessionBuilder.joinSession(userJoin, session);
-        } catch (SQLException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        } catch (ClassNotFoundException ex) {
+        } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
@@ -93,19 +93,33 @@ public class Test {
     
     // TODO implement test
     public static boolean addContactTest() {
-        User user = new User(Account.create(AccountStatus.ONLINE, "hernan", "1234", "hdvanegasm@unal.edu.co"));
-        User newContact = new User(Account.create(AccountStatus.ONLINE, "spinos", "1234", "spinos@unal"));
-        ContactManager.addContact(user, newContact);
-        
-        user = new User(Account.create(AccountStatus.ONLINE, "edalpin", "1234", "edalpin@unal.edu.co"));
-        return ContactManager.addContact(user, newContact);
+        try {
+            User user = new User(Account.create(AccountStatus.ONLINE, "hernan", "1234", "hdvanegasm@unal.edu.co"));
+            User newContact = new User(Account.create(AccountStatus.ONLINE, "spinos", "1234", "spinos@unal"));
+            try {
+                ContactManager.addContact(user, newContact);
+            } catch (ClassNotFoundException | SQLException ex) {
+                Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            user = new User(Account.create(AccountStatus.ONLINE, "edalpin", "1234", "edalpin@unal.edu.co"));
+            return ContactManager.addContact(user, newContact);
+        } catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
     
     // TODO implement test
     public static boolean removeContactTest() {
         User user = new User(Account.create(AccountStatus.ONLINE, "hernan", "1234", "hdvanegasm@unal.edu.co"));
         Contact contact = new Contact(Account.create(AccountStatus.ONLINE, "spinos", "1234", "spinos@unal"));
-        return ContactManager.removeContact(user, contact);
+        try {
+            return ContactManager.removeContact(user, contact);
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
 
     public static void main(String[] args) {
