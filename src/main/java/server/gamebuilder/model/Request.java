@@ -21,13 +21,18 @@ public class Request {
      * @param state This represents the actual state of the request. The
      * possible values of this attribute are: accepted, not accepted and
      * unanswered.
+     * @param sender This represents the user that makes the request and sends it to the session.
      */
     public Request(RequestState state, User sender) {
         this.senderUser = sender;
         this.state = state;
     }
     
-    // TODO add documentation
+    /**
+     * This constructor is other version that construct a request based on a ID and a state of the request.
+     * @param id Represents the id of the request that will be created.
+     * @param state This attribute is an instance of the RequestState class that represents the state of the request.
+     */
     public Request(int id, RequestState state) {
         this.id = id;
         this.state = state;
@@ -37,6 +42,7 @@ public class Request {
      * This method sends the request from the user to the specified session.
      * After the execution of this method, a host can answer the request.
      * @param session This parameter represents the session that will receive the request sent by the user.
+     * @param sender This represents the user that makes the request and sends it to the session.
      * @return The method returns the request made from the user.
      */
     public static Request make(Session session, User sender) {

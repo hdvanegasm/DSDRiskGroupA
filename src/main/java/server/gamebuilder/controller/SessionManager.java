@@ -120,14 +120,58 @@ public class SessionManager {
         return newPlayer;
     }
     
+    /**
+     * This method is used when a contact will be joined to a session after he
+     * accepts an invitation from the host. This method updates the attributes
+     * of the contact to "player" and put his state to "playing". Also the the
+     * system assigns a random color to the user and finally add it to the
+     * player list of the session.
+     *
+     * @param contact This reference represents the contact that will be joined to the
+     * session. This contact is in the contact list of the host.
+     * @param session This reference represents the session in which the contact
+     * will be joined.
+     * @return The method returns a reference to the player that was joined to
+     * the session.
+     * @throws SQLException The method returns the this exception when a
+     * database error occurs.
+     * @throws ClassNotFoundException The method returns the this exception when
+     * a the class is not found in the executeQuery method.
+     */
+    public static Player joinToSession(Contact contact, Session session) throws SQLException, ClassNotFoundException {
+
+        // If the limit of players was reached, then the contact cannot be added
+        if (session.players.size() == session.numberOfPlayers) {
+            return null;
+        }
+
+        Player newPlayer = session.join(contact);
+
+        // Insert player to the database associated with the session
+        String insertPlayerQuery = "INSERT INTO player VALUES('" + newPlayer.account.username + "', '" + newPlayer.color + "',\"non-captured\",0,0,0,FALSE,NULL," + session.id + ")";
+        DatabaseConnector.getInstance().getStatement().executeUpdate(insertPlayerQuery);
+
+        // Update user status
+        String queryUpdateUserStatus = "UPDATE account SET status = \"" + newPlayer.account.status + "\" WHERE username = \"" + newPlayer.account.username + "\";";
+        DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdateUserStatus);
+
+        // Update player type
+        String queryUpdatePlayerType = "UPDATE user SET typeOfUser = '" + Player.class.getSimpleName().toUpperCase() + "' WHERE username = \"" + newPlayer.account.username + "\";";
+        DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdatePlayerType);
+
+        return newPlayer;
+    }
 
     /**
-     * This method is implemented in order to remove a player from the database.
-     * It is important to notice that this
+     * This method is implemented in order to remove a player from the database,
+     * more specifically, this method allows to the host to remove a contact
+     * from the session that is creating.
      *
-     * @param session
-     * @param player
-     * @return
+     * @param session Represents the session in which the player will be removed
+     * @param player This parameter represents the player that will be removed
+     * from the session
+     * @return The method return a boolean which takes a value of "true" if the
+     * player was removed successfully, otherwise it returns "false".
      * @throws SQLException The method returns the this exception when a
      * database error occurs.
      * @throws ClassNotFoundException The method returns the this exception when
@@ -181,7 +225,21 @@ public class SessionManager {
 
         return true;
     }
-    
+
+    /**
+     * This method allows to a player inside a session to leave this session in
+     * the "creating" phase. The method removes the player of the player list of
+     * the corresponding session. Also the method updates the state of the
+     * player to "online".
+     *
+     * @param session This reference represents the session in which the player will be removed.
+     * @param player This is a reference to the player that will be removed from the session.
+     * @return The method returns a boolean that takes the value of "true" if the player leaves the session successfully, otherwise returns false.
+     * @throws SQLException The method returns the this exception when a
+     * database error occurs.
+     * @throws ClassNotFoundException The method returns the this exception when
+     * a the class is not found in the executeQuery method.
+     */
     public static boolean leaveSession(Session session, Player player) throws ClassNotFoundException, SQLException {
         session.leave(player);
         session.availableColors.add(player.color);
