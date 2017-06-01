@@ -59,7 +59,7 @@ public class SessionManager {
         session.join(host);
 
         //create session in database
-        String queryInsertSession = "INSERT INTO session VALUES (NULL, " + session.id + ", \"" + SessionState.CREATING + "\", NULL);";
+        String queryInsertSession = "INSERT INTO session VALUES (NULL, " + session.id + ", \"" + SessionState.CREATING + "\", NULL, 1);";
 
         //update host table
         String queryInsertHost = "INSERT INTO host VALUES (\"" + host.account.username + "\",  " + session.id + " );";

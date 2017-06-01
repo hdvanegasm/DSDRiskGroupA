@@ -120,6 +120,7 @@ public class Session {
      * This method creates a session with a given set of parameters. This is the
      * only way to create a session.
      *
+     * @param sessionId Represents the id of the session that will be created.
      * @param numberOfPlayers This number represents the number of players that
      * will participate in the game.
      * @param type This parameter determines the type of session that will be

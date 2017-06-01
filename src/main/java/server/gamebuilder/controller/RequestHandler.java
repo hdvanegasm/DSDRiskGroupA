@@ -65,7 +65,6 @@ public class RequestHandler {
 
         String insertRequestQuery = "INSERT INTO request(id, session, state, username) VALUES(" + newId + ", " + session.id + ", '"
                 + request.state + "', '" + user.account.username + "');";
-        System.out.println(insertRequestQuery);
         DatabaseConnector.getInstance().getStatement().executeUpdate(insertRequestQuery);
 
         return true;

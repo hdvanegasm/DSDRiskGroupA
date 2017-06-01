@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: May 30, 2017 at 04:41 AM
+-- Generation Time: Jun 01, 2017 at 11:41 AM
 -- Server version: 10.1.19-MariaDB
 -- PHP Version: 5.6.28
 
@@ -41,10 +41,11 @@ CREATE TABLE `account` (
 --
 
 INSERT INTO `account` (`username`, `password`, `email`, `numberOfSessionLost`, `numberOfSessionswon`, `percentageOfWins`, `status`) VALUES
-('carlos', '2341', 'carlos@hola.com', 0, 0, 0, 'ONLINE'),
-('edalpin', '1234', 'edalpin@unal.edu.co', 0, 0, 0, 'ONLINE'),
-('hernan', '1234', 'hdvanegasm@unal.edu.co', 0, 0, 0, 'PLAYING'),
-('spinos', '1234', 's@unal', 0, 0, 0, 'ONLINE');
+('carlos', '2341', 'carlos@hola.com', 0, 0, 0, 'OFFLINE'),
+('edalpin', '1234', 'edalpin@unal.edu.co', 0, 0, 0, 'PLAYING'),
+('hernan', '1234', 'hdvanegasm@unal.edu.co', 0, 0, 0, 'ONLINE'),
+('pedro', '1234', 'pedro@unal.edu.co', 0, 0, 0, 'PLAYING'),
+('spinos', '1234', 's@unal', 0, 0, 0, 'PLAYING');
 
 -- --------------------------------------------------------
 
@@ -61,6 +62,7 @@ CREATE TABLE `contact` (
 --
 
 INSERT INTO `contact` (`username`) VALUES
+('hernan'),
 ('spinos');
 
 -- --------------------------------------------------------
@@ -79,6 +81,7 @@ CREATE TABLE `contactlist` (
 --
 
 INSERT INTO `contactlist` (`user_username`, `contact_username`) VALUES
+('edalpin', 'hernan'),
 ('edalpin', 'spinos');
 
 -- --------------------------------------------------------
@@ -91,6 +94,14 @@ CREATE TABLE `host` (
   `player` varchar(80) NOT NULL,
   `session` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `host`
+--
+
+INSERT INTO `host` (`player`, `session`) VALUES
+('hernan', 1),
+('pedro', 2);
 
 -- --------------------------------------------------------
 
@@ -140,6 +151,16 @@ CREATE TABLE `player` (
   `sessionID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `player`
+--
+
+INSERT INTO `player` (`user`, `color`, `captureState`, `territoryAmount`, `continentAmount`, `cardAmount`, `turn`, `type`, `sessionID`) VALUES
+('edalpin', 'ORANGE', 'non-captured', 0, 0, 0, 0, NULL, 2),
+('hernan', 'YELLOW', 'non-captured', 0, 0, 0, 0, 'HOST', 1),
+('pedro', 'YELLOW', 'non-captured', 0, 0, 0, 0, 'HOST', 2),
+('spinos', 'ORANGE', 'non-captured', 0, 0, 0, 0, NULL, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -153,6 +174,13 @@ CREATE TABLE `request` (
   `username` varchar(80) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `request`
+--
+
+INSERT INTO `request` (`id`, `session`, `state`, `username`) VALUES
+(1, 2, 'ACCEPTED', 'edalpin');
+
 -- --------------------------------------------------------
 
 --
@@ -160,11 +188,20 @@ CREATE TABLE `request` (
 --
 
 CREATE TABLE `session` (
-  `map` varchar(80) NOT NULL,
+  `map` varchar(80) DEFAULT NULL,
   `id` int(11) NOT NULL,
   `state` varchar(80) NOT NULL,
-  `type` varchar(80) NOT NULL
+  `type` varchar(80) DEFAULT NULL,
+  `numberOfPlayers` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `session`
+--
+
+INSERT INTO `session` (`map`, `id`, `state`, `type`, `numberOfPlayers`) VALUES
+(NULL, 1, 'CREATING', NULL, 4),
+(NULL, 2, 'CREATING', NULL, 2);
 
 -- --------------------------------------------------------
 
@@ -183,13 +220,10 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`typeOfUser`, `username`) VALUES
 (NULL, 'carlos'),
-(NULL, 'dochoau'),
-(NULL, 'edalpin'),
-(NULL, 'hernan'),
-(NULL, 'NuevoUser'),
-(NULL, 'NuevoUser1'),
-(NULL, 'sareiza'),
-('CONTACT', 'spinos');
+('PLAYER', 'edalpin'),
+('PLAYER', 'hernan'),
+('PLAYER', 'pedro'),
+('PLAYER', 'spinos');
 
 --
 -- Indexes for dumped tables

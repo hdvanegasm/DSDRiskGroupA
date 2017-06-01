@@ -37,13 +37,12 @@ import server.gamebuilder.model.SessionInvitationState;
 public class Test {
 
     public static boolean createAccountTest() {
-        String username = "hernan";
+        String username = "pedro";
         String password = "1234";
         String confirmPass = "1234";
-        String email = "hdvanegasm@unal.edu.co";
+        String email = "pedro@unal.edu.co";
 
         if (confirmPass.equals(password)) {
-            System.out.println("Account created");
             Account newAccount = Account.create(AccountStatus.OFFLINE, username, password, email);
             User user = new User(newAccount);
             try {
@@ -60,7 +59,7 @@ public class Test {
 
     public static boolean logInTest() {
 
-        String username = "hernan";
+        String username = "pedro";
         String password = "1234";
 
         User user = new User(Account.create(AccountStatus.OFFLINE, username, password, null));
@@ -74,7 +73,7 @@ public class Test {
     }
 
     public static boolean logOutTest() {
-        String username = "hernan";
+        String username = "pedro";
 
         User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
 
@@ -87,7 +86,7 @@ public class Test {
     }
 
     public static boolean createSessionTest() {
-        String hostUsername = "hernan";
+        String hostUsername = "pedro";
 
         Account account = Account.create(AccountStatus.ONLINE, hostUsername, null, null);
         User hostUser = new User(account);
@@ -117,8 +116,8 @@ public class Test {
 
     public static boolean makeRequestTest() {
         try {
-            String username = "hernan";
-            int idSession = 1;
+            String username = "edalpin";
+            int idSession = 2;
 
             Session session = Session.create(idSession);
             User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
@@ -131,7 +130,6 @@ public class Test {
     }
 
     public static boolean answerRequestTest() {
-        Session session = Session.create(1);
         Request request = new Request(1, RequestState.UNANSWERED);
         boolean response;
         try {
@@ -145,9 +143,9 @@ public class Test {
 
     public static Player joinSessionTest() {
         Map map = new Map("Prado Centro");
-        Session session = Session.create(1, 4, SessionType.WORLD_DOMINATION_RISK, SessionState.CREATING, map);
+        Session session = Session.create(2, 2, SessionType.WORLD_DOMINATION_RISK, SessionState.CREATING, map);
 
-        User userJoin = new User(Account.create(AccountStatus.ONLINE, "spinos", "1234", "s@unal"));
+        User userJoin = new User(Account.create(AccountStatus.ONLINE, "edalpin", "1234", "edalpin@unal.edu.co"));
         Player newPlayer;
         try {
             newPlayer = SessionManager.joinToSession(userJoin, session);
@@ -251,6 +249,6 @@ public class Test {
     }
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        addContactTest();
+        joinSessionTest();
     }
 }
