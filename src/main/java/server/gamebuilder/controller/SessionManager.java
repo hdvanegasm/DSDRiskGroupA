@@ -344,7 +344,6 @@ public class SessionManager {
             preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(queryPlayers);
             preparedStatement.setInt(1, sessionId);
             ResultSet resultPlayers = preparedStatement.executeQuery();
-            System.out.println(preparedStatement.toString());
             while (resultPlayers.next()) {
                 String playerUsername = resultPlayers.getString("user");
                 String playerColor = resultPlayers.getString("color");
@@ -424,14 +423,13 @@ public class SessionManager {
         return creatingSessions;
     }
     
-     public static LinkedList<Player> getPlayerFromSession(int sessionId) throws SQLException, ClassNotFoundException {
+     public static LinkedList<Player> getPlayersFromSession(int sessionId) throws SQLException, ClassNotFoundException {
         LinkedList<Player> players = new LinkedList<>();
 
         String queryPlayers = "SELECT * FROM player, account WHERE sessionID=? AND player.user=account.username AND type IS NULL";
         PreparedStatement preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(queryPlayers);
         preparedStatement.setInt(1, sessionId);
         ResultSet resultPlayers = preparedStatement.executeQuery();
-        System.out.println(preparedStatement.toString());
         while (resultPlayers.next()) {
             String playerUsername = resultPlayers.getString("user");
             String playerColor = resultPlayers.getString("color");
