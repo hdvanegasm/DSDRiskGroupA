@@ -213,8 +213,17 @@ public class Test {
             return null;
         }
     }
+    
+    public static LinkedList<Player> getPlayersFromSession(){
+        try {
+            return SessionManager.getPlayersFromSession(1);
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
 
     public static void main(String[] args) {
-        System.out.println(getAllCreatingSessionsTest());
+        System.out.println(getPlayersFromSession());
     }
 }
