@@ -26,6 +26,7 @@ import server.gamebuilder.model.SessionState;
 import server.gamebuilder.model.SessionType;
 import server.accountmanager.model.Contact;
 import server.gamebuilder.controller.InvitationHandler;
+import server.gamebuilder.model.Color;
 import server.gamebuilder.model.SessionInvitation;
 import server.gamebuilder.model.SessionInvitationState;
 
@@ -178,15 +179,10 @@ public class Test {
     // TODO implement test
     public static boolean addContactTest() {
         try {
-            User user = new User(Account.create(AccountStatus.ONLINE, "hernan", "1234", "hdvanegasm@unal.edu.co"));
-            User newContact = new User(Account.create(AccountStatus.ONLINE, "spinos", "1234", "spinos@unal"));
-            try {
-                ContactManager.addContact(user, newContact);
-            } catch (ClassNotFoundException | SQLException ex) {
-                Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-            }
 
-            user = new User(Account.create(AccountStatus.ONLINE, "edalpin", "1234", "edalpin@unal.edu.co"));
+            User newContact = new User(Account.create(AccountStatus.ONLINE, "spinos", "1234", "spinos@unal"));
+
+            User user = new User(Account.create(AccountStatus.ONLINE, "edalpin", "1234", "edalpin@unal.edu.co"));
             return ContactManager.addContact(user, newContact);
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
@@ -195,7 +191,7 @@ public class Test {
     }
 
     public static boolean removeContactTest() {
-        User user = new User(Account.create(AccountStatus.ONLINE, "hernan", "1234", "hdvanegasm@unal.edu.co"));
+        User user = new User(Account.create(AccountStatus.ONLINE, "edalpin", "1234", "edalpin@unal.edu.co"));
         Contact contact = new Contact(Account.create(AccountStatus.ONLINE, "spinos", "1234", "spinos@unal"));
         try {
             return ContactManager.removeContact(user, contact);
@@ -232,7 +228,29 @@ public class Test {
         }
     }
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {   
-        System.out.println(getContactsFromUser());
+    public static boolean takeOutPlayerFromSessionTest() {
+        Session session = Session.create(1, 4, null, SessionState.CREATING, new Map("Prado Centro"));
+        Player player = new Player(Account.create(AccountStatus.ONLINE, "spinos", null, "spinos@unal.edu.co"), Color.RED);
+        try {
+            return SessionManager.takeOutPlayerFromSession(session, player);
+        } catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public static boolean playerLeavesSessionTest() {
+        Session session = Session.create(1, 4, null, SessionState.CREATING, new Map("Prado Centro"));
+        Player player = new Player(Account.create(AccountStatus.ONLINE, "spinos", null, "spinos@unal.edu.co"), Color.RED);
+        try {
+            return SessionManager.leaveSession(session, player);
+        } catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+        addContactTest();
     }
 }

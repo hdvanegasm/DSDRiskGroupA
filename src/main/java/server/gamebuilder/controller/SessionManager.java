@@ -188,7 +188,7 @@ public class SessionManager {
         PreparedStatement preparedStatement = null;
 
         // Remove player from BD
-        String removePlayerQuery = "DELETE FROM player WHERE username=?";
+        String removePlayerQuery = "DELETE FROM player WHERE user=?";
         preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(removePlayerQuery);
         preparedStatement.setString(1, player.account.username);
         preparedStatement.executeUpdate();
@@ -217,7 +217,7 @@ public class SessionManager {
         String changeTypeQuery = "";
         if (type.equals("NULL")) {
             changeTypeQuery = "UPDATE user SET typeOfUser=NULL WHERE username=?";
-            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(type);
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(changeTypeQuery);
             preparedStatement.setString(1, player.account.username);
         } else {
             changeTypeQuery = "UPDATE user SET typeOfUser=? WHERE username=?";
@@ -251,7 +251,7 @@ public class SessionManager {
         PreparedStatement preparedStatement = null;
 
         // Remove player from BD
-        String removePlayerQuery = "DELETE FROM player WHERE username=?";
+        String removePlayerQuery = "DELETE FROM player WHERE user=?";
         preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(removePlayerQuery);
         preparedStatement.setString(1, player.account.username);
         preparedStatement.executeUpdate();
@@ -280,7 +280,7 @@ public class SessionManager {
         String changeTypeQuery = "";
         if (type.equals("NULL")) {
             changeTypeQuery = "UPDATE user SET typeOfUser=NULL WHERE username=?";
-            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(type);
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(changeTypeQuery);
             preparedStatement.setString(1, player.account.username);
         } else {
             changeTypeQuery = "UPDATE user SET typeOfUser=? WHERE username=?";

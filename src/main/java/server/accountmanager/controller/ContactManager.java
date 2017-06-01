@@ -138,7 +138,21 @@ public class ContactManager {
             preparedStatement.setString(1, contact.account.username);
             preparedStatement.executeUpdate();
 
-            String updateUserType = "UPDATE user SET typeOfUser=NULL WHERE username=?";
+            // If the contact was player
+            String checkPlayer = "SELECT COUNT(user) AS number FROM player WHERE user=?";
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(checkPlayer);
+            preparedStatement.setString(1, contact.account.username);
+            result = preparedStatement.executeQuery();
+            result.next();
+            numberOfOccurrences = result.getInt("number");
+
+            String updateUserType = "";
+
+            if (numberOfOccurrences == 0) {
+                updateUserType = "UPDATE user SET typeOfUser=NULL WHERE username=?";
+            } else {
+                updateUserType = "UPDATE user SET typeOfUser='PLAYER' WHERE username=?";
+            }
 
             preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(updateUserType);
             preparedStatement.setString(1, contact.account.username);
@@ -148,31 +162,31 @@ public class ContactManager {
 
         return true;
     }
-            
+
     public static LinkedList<Contact> getContactsFromUser(String username) throws SQLException, ClassNotFoundException {
-        
+
         LinkedList<Contact> contacts = new LinkedList<>();
-        
+
         String queryContact = "SELECT * FROM contactlist, account WHERE user_username=? AND account.username=contactlist.contact_username";
         PreparedStatement preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(queryContact);
         preparedStatement.setString(1, username);
         ResultSet resultContacts = preparedStatement.executeQuery();
-        
-        while(resultContacts.next()) {
+
+        while (resultContacts.next()) {
             String usernameContact = resultContacts.getString("username");
             String emailContact = resultContacts.getString("email");
             int numberOfSessionWon = resultContacts.getInt("numberOfSessionswon");
             int numberOfSessionLost = resultContacts.getInt("numberOfSessionLost");
             float percentageOfWins = resultContacts.getFloat("percentageOfWins");
-            
+
             Contact contact = new Contact(Account.create(AccountStatus.ONLINE, usernameContact, null, emailContact));
             contact.account.numberOfSessionLost = numberOfSessionLost;
             contact.account.numberOfSessionWon = numberOfSessionWon;
             contact.account.percentageOfWins = percentageOfWins;
-            
+
             contacts.add(contact);
         }
-        
+
         return contacts;
     }
 }
