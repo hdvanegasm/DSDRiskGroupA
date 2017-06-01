@@ -98,13 +98,13 @@ public class Test {
             return false;
         }
     }
-    
+
     public static boolean changePasswordTest() {
         String username = "hernan";
-            String password = "1234";
-            String newPassword = "12345";
+        String password = "1234";
+        String newPassword = "12345";
 
-            User user = new User(Account.create(AccountStatus.ONLINE, username, password, null));
+        User user = new User(Account.create(AccountStatus.ONLINE, username, password, null));
 
         try {
             return AccountManager.changePassword(user, newPassword);
@@ -204,7 +204,7 @@ public class Test {
             return false;
         }
     }
-    
+
     public static LinkedList<Session> getAllCreatingSessionsTest() {
         try {
             return SessionManager.getAllCreatingSessions();
@@ -213,8 +213,8 @@ public class Test {
             return null;
         }
     }
-    
-    public static LinkedList<Player> getPlayersFromSession(){
+
+    public static LinkedList<Player> getPlayersFromSession() {
         try {
             return SessionManager.getPlayersFromSession(1);
         } catch (SQLException | ClassNotFoundException ex) {
@@ -223,7 +223,16 @@ public class Test {
         }
     }
 
-    public static void main(String[] args) {
-        System.out.println(getPlayersFromSession());
+    public static LinkedList<Contact> getContactsFromUser() {
+        try {
+            return ContactManager.getContactsFromUser("edalpin");
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {   
+        System.out.println(getContactsFromUser());
     }
 }
