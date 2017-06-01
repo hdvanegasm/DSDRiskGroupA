@@ -40,9 +40,10 @@ public class Session {
      * and "finished".
      */
 
-    private Session(int numberOfPlayers, SessionType type, SessionState state, Map map) {
+    private Session(int sessionId, int numberOfPlayers, SessionType type, SessionState state, Map map) {
 
         // Load available colors
+        this.id = sessionId;
         availableColors = new LinkedList<>();
         for (int i = 0; i < Color.values().length; i++) {
             availableColors.add(Color.values()[i]);
@@ -127,10 +128,11 @@ public class Session {
      * @param state This parameter represents the actual state of the session.
      * There are three possible values for this parameter: playing, creating and
      * finished.
+     * @param map Represents the map in which the game will be played.
      * @return The method returns a reference to the new object created.
      */
-    public static Session create(int numberOfPlayers, SessionType type, SessionState state, Map map) {
-        return new Session(numberOfPlayers, type, state, map);
+    public static Session create(int sessionId, int numberOfPlayers, SessionType type, SessionState state, Map map) {
+        return new Session(sessionId, numberOfPlayers, type, state, map);
     }
 
     // TODO add documentation

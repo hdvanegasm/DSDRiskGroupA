@@ -309,7 +309,7 @@ public class SessionManager {
      * @throws ClassNotFoundException The method returns the this exception when
      * a the class is not found in the executeQuery method.
      */
-    public static LinkedList<Session> gerAllCreatingSessions() throws ClassNotFoundException, SQLException {
+    public static LinkedList<Session> getAllCreatingSessions() throws ClassNotFoundException, SQLException {
         LinkedList<Session> creatingSessions = new LinkedList<>();
 
         PreparedStatement preparedStatement = null;
@@ -326,28 +326,30 @@ public class SessionManager {
             int numberOfPlayers = results.getInt("numberOfPlayers");
 
             SessionType sessionType = null;
-
-            switch (typeString) {
-                case "WORLD_DOMINATION_RISK":
-                    sessionType = SessionType.WORLD_DOMINATION_RISK;
-                    break;
-                case "RISK_FOR_TWO_PLAYERS":
-                    sessionType = SessionType.RISK_FOR_TWO_PLAYERS;
-                    break;
-                case "SECRET_MISSION_RISK":
-                    sessionType = SessionType.SECRET_MISSION_RISK;
-                    break;
-                case "CAPITAL_RISK":
-                    sessionType = SessionType.CAPITAL_RISK;
-                    break;
+            if (typeString != null) {
+                switch (typeString) {
+                    case "WORLD_DOMINATION_RISK":
+                        sessionType = SessionType.WORLD_DOMINATION_RISK;
+                        break;
+                    case "RISK_FOR_TWO_PLAYERS":
+                        sessionType = SessionType.RISK_FOR_TWO_PLAYERS;
+                        break;
+                    case "SECRET_MISSION_RISK":
+                        sessionType = SessionType.SECRET_MISSION_RISK;
+                        break;
+                    case "CAPITAL_RISK":
+                        sessionType = SessionType.CAPITAL_RISK;
+                        break;
+                }
             }
 
-            Session session = Session.create(sessionId, sessionType, SessionState.CREATING, map);
+            Session session = Session.create(sessionId, numberOfPlayers, sessionType, SessionState.CREATING, map);
 
-            String queryPlayers = "SELECT * FROM player, account WHERE sessionID=? AND player.user=account.username";
+            String queryPlayers = "SELECT * FROM player, account WHERE sessionID=? AND player.user=account.username AND type IS NULL";
             preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(queryPlayers);
+            preparedStatement.setInt(1, sessionId);
             ResultSet resultPlayers = preparedStatement.executeQuery();
-
+            System.out.println(preparedStatement.toString());
             while (resultPlayers.next()) {
                 String playerUsername = resultPlayers.getString("user");
                 String playerColor = resultPlayers.getString("color");
@@ -370,10 +372,10 @@ public class SessionManager {
                 session.availableColors.remove(color);
 
                 Player player = new Player(Account.create(AccountStatus.ONLINE, playerUsername, null, playerEmail), color);
-                
+
                 float percentageOfWins = resultPlayers.getFloat("percentageOfWins");
                 int numberOfSessionWon = resultPlayers.getInt("numberOfSessionswon");
-                int numberOfSessionLost = resultPlayers.getInt("numbeOfSessionLost");
+                int numberOfSessionLost = resultPlayers.getInt("numberOfSessionLost");
                 player.account.numberOfSessionLost = numberOfSessionLost;
                 player.account.numberOfSessionWon = numberOfSessionWon;
                 player.account.percentageOfWins = percentageOfWins;
@@ -382,14 +384,15 @@ public class SessionManager {
 
             }
 
-            String queryHost = "SELECT * FROM player, host, account WHERE session=? AND host.player=account.username AND host.player=player.user";
+            String queryHost = "SELECT * FROM player, host, account WHERE host.session=? AND host.player=account.username AND host.player=player.user;";
             preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(queryHost);
+            preparedStatement.setInt(1, sessionId);
             ResultSet hostResult = preparedStatement.executeQuery();
-
-            while (hostResult.next()) {
-                String hostUsername = resultPlayers.getString("user");
-                String hostColor = resultPlayers.getString("color");
-                String hostEmail = resultPlayers.getString("email");
+            
+            while(hostResult.next()) {
+                String hostUsername = hostResult.getString("username");
+                String hostColor = hostResult.getString("color");
+                String hostEmail = hostResult.getString("email");
                 Color color = null;
                 if (hostColor.equals(Color.YELLOW.toString())) {
                     color = Color.YELLOW;
@@ -410,17 +413,17 @@ public class SessionManager {
                 Host host = new Host(Account.create(AccountStatus.ONLINE, hostUsername, null, hostEmail), color);
 
                 // TODO Take statistics of player
-                float percentageOfWins = resultPlayers.getFloat("percentageOfWins");
-                int numberOfSessionWon = resultPlayers.getInt("numberOfSessionswon");
-                int numberOfSessionLost = resultPlayers.getInt("numbeOfSessionLost");
+                float percentageOfWins = hostResult.getFloat("percentageOfWins");
+                int numberOfSessionWon = hostResult.getInt("numberOfSessionswon");
+                int numberOfSessionLost = hostResult.getInt("numberOfSessionLost");
                 host.account.numberOfSessionLost = numberOfSessionLost;
                 host.account.numberOfSessionWon = numberOfSessionWon;
                 host.account.percentageOfWins = percentageOfWins;
 
                 session.players.add(host);
 
-            }    
-            
+            }
+
             creatingSessions.add(session);
 
         }

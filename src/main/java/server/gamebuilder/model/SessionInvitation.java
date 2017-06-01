@@ -50,4 +50,9 @@ public class SessionInvitation {
         this.state = SessionInvitationState.NOT_ACCEPTED;
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "SessionInvitation{" + "id=" + id + ", state=" + state + '}';
+    }
 }

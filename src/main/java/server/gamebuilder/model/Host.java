@@ -22,4 +22,11 @@ public class Host extends Player {
     public Host(Account account, Color color) {
         super(account, color);
     }
+
+    @Override
+    public String toString() {
+        return "Host{" + super.toString() + '}';
+    }
+    
+    
 }
