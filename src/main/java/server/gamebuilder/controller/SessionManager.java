@@ -420,9 +420,49 @@ public class SessionManager {
             }
 
             creatingSessions.add(session);
+        }
+        return creatingSessions;
+    }
+    
+     public static LinkedList<Player> getPlayerFromSession(int sessionId) throws SQLException, ClassNotFoundException {
+        LinkedList<Player> players = new LinkedList<>();
+
+        String queryPlayers = "SELECT * FROM player, account WHERE sessionID=? AND player.user=account.username AND type IS NULL";
+        PreparedStatement preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(queryPlayers);
+        preparedStatement.setInt(1, sessionId);
+        ResultSet resultPlayers = preparedStatement.executeQuery();
+        System.out.println(preparedStatement.toString());
+        while (resultPlayers.next()) {
+            String playerUsername = resultPlayers.getString("user");
+            String playerColor = resultPlayers.getString("color");
+            String playerEmail = resultPlayers.getString("email");
+            Color color = null;
+            if (playerColor.equals(Color.YELLOW.toString())) {
+                color = Color.YELLOW;
+            } else if (playerColor.equals(Color.RED.toString())) {
+                color = Color.RED;
+            } else if (playerColor.equals(Color.BLUE.toString())) {
+                color = Color.BLUE;
+            } else if (playerColor.equals(Color.GREEN.toString())) {
+                color = Color.GREEN;
+            } else if (playerColor.equals(Color.PURPLE.toString())) {
+                color = Color.PURPLE;
+            } else if (playerColor.equals(Color.ORANGE.toString())) {
+                color = Color.ORANGE;
+            }
+
+            Player player = new Player(Account.create(AccountStatus.ONLINE, playerUsername, null, playerEmail), color);
+
+            float percentageOfWins = resultPlayers.getFloat("percentageOfWins");
+            int numberOfSessionWon = resultPlayers.getInt("numberOfSessionswon");
+            int numberOfSessionLost = resultPlayers.getInt("numberOfSessionLost");
+            player.account.numberOfSessionLost = numberOfSessionLost;
+            player.account.numberOfSessionWon = numberOfSessionWon;
+            player.account.percentageOfWins = percentageOfWins;
+
+            players.add(player);
 
         }
-
-        return creatingSessions;
+        return players;
     }
 }
