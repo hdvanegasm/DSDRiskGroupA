@@ -1,12 +1,10 @@
 package server.gamebuilder.controller;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.LinkedList;
 import server.gamebuilder.model.Color;
 import server.gamebuilder.model.Host;
 import server.gamebuilder.model.Session;
+import java.sql.*;
+import java.util.LinkedList;
 import server.DatabaseConnector;
 import server.accountmanager.model.Account;
 import server.accountmanager.model.User;
@@ -61,7 +59,7 @@ public class SessionManager {
         session.join(host);
 
         //create session in database
-        String queryInsertSession = "INSERT INTO session VALUES (NULL, " + session.id + ", \"" + SessionState.CREATING + "\", NULL, 1);";
+        String queryInsertSession = "INSERT INTO session VALUES (NULL, " + session.id + ", \"" + SessionState.CREATING + "\", NULL);";
 
         //update host table
         String queryInsertHost = "INSERT INTO host VALUES (\"" + host.account.username + "\",  " + session.id + " );";
@@ -125,7 +123,7 @@ public class SessionManager {
 
         return newPlayer;
     }
-
+    
     /**
      * This method is used when a contact will be joined to a session after he
      * accepts an invitation from the host. This method updates the attributes
@@ -133,8 +131,8 @@ public class SessionManager {
      * system assigns a random color to the user and finally add it to the
      * player list of the session.
      *
-     * @param contact This reference represents the contact that will be joined
-     * to the session. This contact is in the contact list of the host.
+     * @param contact This reference represents the contact that will be joined to the
+     * session. This contact is in the contact list of the host.
      * @param session This reference represents the session in which the contact
      * will be joined.
      * @return The method returns a reference to the player that was joined to
@@ -238,12 +236,9 @@ public class SessionManager {
      * the corresponding session. Also the method updates the state of the
      * player to "online".
      *
-     * @param session This reference represents the session in which the player
-     * will be removed.
-     * @param player This is a reference to the player that will be removed from
-     * the session.
-     * @return The method returns a boolean that takes the value of "true" if
-     * the player leaves the session successfully, otherwise returns false.
+     * @param session This reference represents the session in which the player will be removed.
+     * @param player This is a reference to the player that will be removed from the session.
+     * @return The method returns a boolean that takes the value of "true" if the player leaves the session successfully, otherwise returns false.
      * @throws SQLException The method returns the this exception when a
      * database error occurs.
      * @throws ClassNotFoundException The method returns the this exception when
@@ -388,7 +383,7 @@ public class SessionManager {
             preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(queryHost);
             preparedStatement.setInt(1, sessionId);
             ResultSet hostResult = preparedStatement.executeQuery();
-            
+
             while(hostResult.next()) {
                 String hostUsername = hostResult.getString("username");
                 String hostColor = hostResult.getString("color");
