@@ -123,7 +123,7 @@ public class SessionManager {
 
         return newPlayer;
     }
-    
+
     /**
      * This method is used when a contact will be joined to a session after he
      * accepts an invitation from the host. This method updates the attributes
@@ -131,8 +131,8 @@ public class SessionManager {
      * system assigns a random color to the user and finally add it to the
      * player list of the session.
      *
-     * @param contact This reference represents the contact that will be joined to the
-     * session. This contact is in the contact list of the host.
+     * @param contact This reference represents the contact that will be joined
+     * to the session. This contact is in the contact list of the host.
      * @param session This reference represents the session in which the contact
      * will be joined.
      * @return The method returns a reference to the player that was joined to
@@ -236,9 +236,12 @@ public class SessionManager {
      * the corresponding session. Also the method updates the state of the
      * player to "online".
      *
-     * @param session This reference represents the session in which the player will be removed.
-     * @param player This is a reference to the player that will be removed from the session.
-     * @return The method returns a boolean that takes the value of "true" if the player leaves the session successfully, otherwise returns false.
+     * @param session This reference represents the session in which the player
+     * will be removed.
+     * @param player This is a reference to the player that will be removed from
+     * the session.
+     * @return The method returns a boolean that takes the value of "true" if
+     * the player leaves the session successfully, otherwise returns false.
      * @throws SQLException The method returns the this exception when a
      * database error occurs.
      * @throws ClassNotFoundException The method returns the this exception when
@@ -383,7 +386,7 @@ public class SessionManager {
             preparedStatement.setInt(1, sessionId);
             ResultSet hostResult = preparedStatement.executeQuery();
 
-            while(hostResult.next()) {
+            while (hostResult.next()) {
                 String hostUsername = hostResult.getString("username");
                 String hostColor = hostResult.getString("color");
                 String hostEmail = hostResult.getString("email");
@@ -422,8 +425,22 @@ public class SessionManager {
         }
         return creatingSessions;
     }
-    
-     public static LinkedList<Player> getPlayersFromSession(int sessionId) throws SQLException, ClassNotFoundException {
+
+    /**
+     * This method is implemented in order to obtain all of the players in a
+     * session from the database in order to send this information to the client
+     * side. It assemble all of the attributes of the player and also extract
+     * the host in a separate query.
+     *
+     * @param sessionId It represents the ID of the session that has all of the
+     * players.
+     * @return The method returns a linked list with all of the players of this session.
+     * @throws SQLException The method returns the this exception when a
+     * database error occurs.
+     * @throws ClassNotFoundException The method returns the this exception when
+     * a the class is not found in the executeQuery method.
+     */
+    public static LinkedList<Player> getPlayersFromSession(int sessionId) throws SQLException, ClassNotFoundException {
         LinkedList<Player> players = new LinkedList<>();
 
         String queryPlayers = "SELECT * FROM player, account WHERE sessionID=? AND player.user=account.username AND type IS NULL";

@@ -163,6 +163,18 @@ public class ContactManager {
         return true;
     }
 
+    /**
+     * This method is implemented in order to obtain all of the contacts from a
+     * user with a given username, it constructs all the player with the main
+     * attributes in order to send it to the client side.
+     *
+     * @param username It is the username of the user in which the method will base on in order to construct a list of contacts.
+     * @return The method returns a linked list with the assembled contacts.
+     * @throws SQLException The method returns the this exception when a
+     * database error occurs.
+     * @throws ClassNotFoundException The method returns the this exception when
+     * a the class is not found in the executeQuery method.
+     */
     public static LinkedList<Contact> getContactsFromUser(String username) throws SQLException, ClassNotFoundException {
 
         LinkedList<Contact> contacts = new LinkedList<>();
