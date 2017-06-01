@@ -36,7 +36,7 @@ public class ContactManager {
     public static boolean addContact(User user, User newContact) throws ClassNotFoundException, SQLException {
         Contact contact = new Contact(newContact.account);
 
-        if(!contact.add(user)) {
+        if (!contact.add(user)) {
             return false;
         }
 

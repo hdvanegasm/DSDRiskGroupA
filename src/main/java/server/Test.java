@@ -6,8 +6,10 @@
 package server;
 
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import server.accountmanager.controller.AccountManager;
 import server.accountmanager.controller.ContactManager;
 import server.accountmanager.model.Account;
 import server.accountmanager.model.AccountStatus;
@@ -32,6 +34,85 @@ import server.gamebuilder.model.SessionInvitationState;
  * @author Admin
  */
 public class Test {
+
+    public static boolean createAccountTest() {
+        String username = "hernan";
+        String password = "1234";
+        String confirmPass = "1234";
+        String email = "hdvanegasm@unal.edu.co";
+
+        if (confirmPass.equals(password)) {
+            System.out.println("Account created");
+            Account newAccount = Account.create(AccountStatus.OFFLINE, username, password, email);
+            User user = new User(newAccount);
+            try {
+                return AccountManager.createAccount(user);
+            } catch (ClassNotFoundException | SQLException ex) {
+                Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
+        } else {
+            return false;
+        }
+
+    }
+
+    public static boolean logInTest() {
+
+        String username = "hernan";
+        String password = "1234";
+
+        User user = new User(Account.create(AccountStatus.OFFLINE, username, password, null));
+
+        try {
+            return AccountManager.logIn(user);
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public static boolean logOutTest() {
+        String username = "hernan";
+
+        User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
+
+        try {
+            return AccountManager.logOut(user);
+        } catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public static boolean createSessionTest() {
+        String hostUsername = "hernan";
+
+        Account account = Account.create(AccountStatus.ONLINE, hostUsername, null, null);
+        User hostUser = new User(account);
+
+        try {
+            return SessionManager.createSession(hostUser);
+        } catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+    
+    public static boolean changePasswordTest() {
+        String username = "hernan";
+            String password = "1234";
+            String newPassword = "12345";
+
+            User user = new User(Account.create(AccountStatus.ONLINE, username, password, null));
+
+        try {
+            return AccountManager.changePassword(user, newPassword);
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
 
     public static boolean makeRequestTest() {
         try {
@@ -63,7 +144,7 @@ public class Test {
 
     public static Player joinSessionTest() {
         Map map = new Map("Prado Centro");
-        Session session = Session.create(4, SessionType.WORLD_DOMINATION_RISK, SessionState.CREATING, map);
+        Session session = Session.create(1, 4, SessionType.WORLD_DOMINATION_RISK, SessionState.CREATING, map);
 
         User userJoin = new User(Account.create(AccountStatus.ONLINE, "spinos", "1234", "s@unal"));
         Player newPlayer;
@@ -78,7 +159,7 @@ public class Test {
     }
 
     public static boolean inviteContactTest() {
-        Host host = new Host(Account.create(AccountStatus.ONLINE, "hernan", "1234", "hdvanegasm@unal.edu.co"));
+        Host host = new Host(Account.create(AccountStatus.ONLINE, "hernan", "1234", "hdvanegasm@unal.edu.co"), null);
         Contact contact = new Contact(Account.create(AccountStatus.ONLINE, "spinos", "1234", "s@unal"));
         try {
             return InvitationHandler.inviteContact(host, contact);
@@ -113,7 +194,6 @@ public class Test {
         }
     }
 
-    // TODO implement test
     public static boolean removeContactTest() {
         User user = new User(Account.create(AccountStatus.ONLINE, "hernan", "1234", "hdvanegasm@unal.edu.co"));
         Contact contact = new Contact(Account.create(AccountStatus.ONLINE, "spinos", "1234", "spinos@unal"));
@@ -124,8 +204,17 @@ public class Test {
             return false;
         }
     }
+    
+    public static LinkedList<Session> getAllCreatingSessionsTest() {
+        try {
+            return SessionManager.getAllCreatingSessions();
+        } catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
 
     public static void main(String[] args) {
-        removeContactTest();
+        System.out.println(getAllCreatingSessionsTest());
     }
 }

@@ -14,4 +14,11 @@ public class Map {
     public Map(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "Map{" + "name=" + name + '}';
+    }
+    
+    
 }

@@ -19,4 +19,10 @@ public class User implements Comparable<User>{
     public int compareTo(User otherUser) {
         return this.account.username.compareTo(otherUser.account.username);
     }
+
+    @Override
+    public String toString() {
+        return "User{" + "account=" + account + '}';
+    }
+    
 }

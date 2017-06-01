@@ -18,7 +18,7 @@ public class Account {
     public int numberOfSessionWon;
     public LinkedList<Contact> contactList;
     public LinkedList<SessionInvitation> sessionInvitations;
-    public float percentajeOfWins;
+    public float percentageOfWins;
 
     /**
      * This method is the constructor of Account class. This method is used by the static method create()
@@ -37,7 +37,7 @@ public class Account {
         this.email = email;
         this.numberOfSessionLost = numberOfSessionLost;
         this.numberOfSessionWon = numberOfSessionWon;
-        this.percentajeOfWins = percentajeOfWins;
+        this.percentageOfWins = percentajeOfWins;
         this.contactList = new LinkedList<>();
         this.sessionInvitations = new LinkedList<>();
     }
@@ -84,6 +84,6 @@ public class Account {
 
     @Override
     public String toString() {
-        return "Account{" + "status=" + status + ", username=" + username + ", password=" + password + ", email=" + email + ", numberOfSessionLost=" + numberOfSessionLost + ", numberOfSessionWon=" + numberOfSessionWon + ", contactList=" + contactList + ", sessionInvitations=" + sessionInvitations + ", percentajeOfWins=" + percentajeOfWins + '}';
+        return "Account{" + "status=" + status + ", username=" + username + ", password=" + password + ", email=" + email + ", numberOfSessionLost=" + numberOfSessionLost + ", numberOfSessionWon=" + numberOfSessionWon + ", contactList=" + contactList + ", sessionInvitations=" + sessionInvitations + ", percentajeOfWins=" + percentageOfWins + '}';
     }
 }
