@@ -3,7 +3,10 @@ package server.accountmanager.controller;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import server.DatabaseConnector;
+import server.accountmanager.model.Account;
+import server.accountmanager.model.AccountStatus;
 import server.accountmanager.model.Contact;
 import server.accountmanager.model.User;
 
@@ -144,6 +147,32 @@ public class ContactManager {
         }
 
         return true;
-
+    }
+            
+    public static LinkedList<Contact> getContactsFromUser(String username) throws SQLException, ClassNotFoundException {
+        
+        LinkedList<Contact> contacts = new LinkedList<>();
+        
+        String queryContact = "SELECT * FROM contactlist, account WHERE user_username=? AND account.username=contactlist.contact_username";
+        PreparedStatement preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(queryContact);
+        preparedStatement.setString(1, username);
+        ResultSet resultContacts = preparedStatement.executeQuery();
+        
+        while(resultContacts.next()) {
+            String usernameContact = resultContacts.getString("username");
+            String emailContact = resultContacts.getString("email");
+            int numberOfSessionWon = resultContacts.getInt("numberOfSessionswon");
+            int numberOfSessionLost = resultContacts.getInt("numberOfSessionLost");
+            float percentageOfWins = resultContacts.getFloat("percentageOfWins");
+            
+            Contact contact = new Contact(Account.create(AccountStatus.ONLINE, usernameContact, null, emailContact));
+            contact.account.numberOfSessionLost = numberOfSessionLost;
+            contact.account.numberOfSessionWon = numberOfSessionWon;
+            contact.account.percentageOfWins = percentageOfWins;
+            
+            contacts.add(contact);
+        }
+        
+        return contacts;
     }
 }
