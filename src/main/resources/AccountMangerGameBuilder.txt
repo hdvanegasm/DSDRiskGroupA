@@ -1,0 +1,49 @@
+
+		{
+		   "status" : true,
+		   "message" : "Account created"
+		}
+
+		{
+		   "status" : false,
+		   "message" : "Print stack trace here"
+		}
+
+
+		{
+		   "status" : true,
+		   "message" : "Account loged out successfully"
+		}
+
+		{
+		   "status" : false,
+		   "message" : "Account cannot be loged out"
+		}
+
+
+		{
+		    "status" : true
+		}
+	
+
+		{
+		    "state" : false,
+		    "message" : "Account cannot log in"
+		}
+	
+
+
+
+		{
+		    "status" : true,
+		}
+
+
+		{
+		    "status" : false,
+		    "message" : "The password cannot be changed"
+		}
+                
+                
+                
+          

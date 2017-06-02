@@ -5,6 +5,7 @@
  */
 package server;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.logging.Level;
@@ -29,6 +30,12 @@ import server.gamebuilder.controller.InvitationHandler;
 import server.gamebuilder.model.Color;
 import server.gamebuilder.model.SessionInvitation;
 import server.gamebuilder.model.SessionInvitationState;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+import org.json.simple.parser.ParseException;
 
 /**
  *
@@ -36,53 +43,20 @@ import server.gamebuilder.model.SessionInvitationState;
  */
 public class Test {
 
-    public static boolean createAccountTest() {
-        String username = "pedro";
-        String password = "1234";
-        String confirmPass = "1234";
-        String email = "pedro@unal.edu.co";
-
-        if (confirmPass.equals(password)) {
-            Account newAccount = Account.create(AccountStatus.OFFLINE, username, password, email);
-            User user = new User(newAccount);
-            try {
-                return AccountManager.createAccount(user);
-            } catch (ClassNotFoundException | SQLException ex) {
-                Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-                return false;
-            }
-        } else {
-            return false;
-        }
-
+    public static String createAccountTest(String json) throws ParseException {
+        return AccountManager.createAccount(json);
     }
 
-    public static boolean logInTest() {
-
-        String username = "pedro";
-        String password = "1234";
-
-        User user = new User(Account.create(AccountStatus.OFFLINE, username, password, null));
-
-        try {
-            return AccountManager.logIn(user);
-        } catch (SQLException | ClassNotFoundException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
+    public static String logInTest(String json) throws ParseException {
+        return AccountManager.logIn(json);
     }
 
-    public static boolean logOutTest() {
-        String username = "pedro";
+    public static String logOutTest(String json) throws ParseException {
+        return AccountManager.logOut(json);
+    }
 
-        User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
-
-        try {
-            return AccountManager.logOut(user);
-        } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
+    public static String changePasswordTest(String json) throws ParseException {
+        return AccountManager.changePassword(json);
     }
 
     public static boolean createSessionTest() {
@@ -94,21 +68,6 @@ public class Test {
         try {
             return SessionManager.createSession(hostUser);
         } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-    }
-
-    public static boolean changePasswordTest() {
-        String username = "hernan";
-        String password = "1234";
-        String newPassword = "12345";
-
-        User user = new User(Account.create(AccountStatus.ONLINE, username, password, null));
-
-        try {
-            return AccountManager.changePassword(user, newPassword);
-        } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
@@ -248,7 +207,40 @@ public class Test {
         }
     }
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        joinSessionTest();
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, FileNotFoundException, IOException, ParseException {
+        File fileJson = new File("jsonTest.json");
+        BufferedReader readJson = new BufferedReader(new FileReader("jsonTest.json"));
+        String line = null;
+        StringBuilder jsonTest = new StringBuilder();
+        while ((line = readJson.readLine()) != null) {
+            jsonTest.append(line);
+        }
+
+        StringBuilder menu = new StringBuilder();
+        menu.append("code: 1 - createAccount\n");
+        menu.append("code: 2 - logOut\n");
+        menu.append("code: 3 - logIn\n");
+        menu.append("code: 4 - changePassword\n");
+        menu.append("Insert test code: ");
+        System.out.print(menu);
+
+        Scanner entrada = new Scanner(System.in);
+        int method = entrada.nextInt();
+
+        System.out.println("========= JSON RESULT ==========");
+        switch (method) {
+            case 1:
+                System.out.println(createAccountTest(jsonTest.toString()));
+                break;
+            case 2:
+                System.out.println(logOutTest(jsonTest.toString()));
+                break;
+            case 3:
+                System.out.println(logInTest(jsonTest.toString()));
+                break;
+            case 4:
+                System.out.println(changePasswordTest(jsonTest.toString()));
+                break;
+        }
     }
 }
