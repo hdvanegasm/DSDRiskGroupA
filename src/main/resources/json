@@ -1,0 +1,28 @@
+=============== ACCOUNT MANAGER =======================
+
+* createAccount
+	> Case 1
+		{
+		   "response" : "success",
+		   "message" : "Account created"
+		}
+
+	> Case 2
+		{
+		   "response" : "failure",
+		   "message" : "Print stack trace here"
+		}
+
+* logOut
+	> Case 1
+		{
+		   "response" : "success",
+		   "message" : "Account loged out successfully"
+		}
+
+	> Case 2
+		{
+		   "response" : "failure"
+		   "message" : "Account cannot be loged out"
+		}
+
