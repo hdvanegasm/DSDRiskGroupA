@@ -154,6 +154,13 @@ public class Session {
         players.remove(player);
         return true;
     }
+    
+    /**
+     * This method allows to a host to start a session changing his status to "creating".
+     */
+    public void start() {
+        this.state = SessionState.PLAYING;
+    }
 
     @Override
     public String toString() {
