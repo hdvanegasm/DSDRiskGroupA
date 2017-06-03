@@ -95,29 +95,15 @@ public class Test {
         return ContactManager.getContactsFromUser(json);
     }
 
-    public static boolean takeOutPlayerFromSessionTest() {
-        Session session = Session.create(1, 4, null, SessionState.CREATING, new Map("Prado Centro"));
-        Player player = new Player(Account.create(AccountStatus.ONLINE, "spinos", null, "spinos@unal.edu.co"), Color.RED);
-        try {
-            return SessionManager.takeOutPlayerFromSession(session, player);
-        } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
+    public static String takeOutPlayerFromSessionTest(String json) throws ParseException {
+        return SessionManager.takeOutPlayerFromSession(json);
     }
 
-    public static boolean playerLeavesSessionTest() {
-        Session session = Session.create(1, 4, null, SessionState.CREATING, new Map("Prado Centro"));
-        Player player = new Player(Account.create(AccountStatus.ONLINE, "spinos", null, "spinos@unal.edu.co"), Color.RED);
-        try {
-            return SessionManager.leaveSession(session, player);
-        } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
+    public static String playerLeavesSessionTest(String json) throws ParseException {
+        return SessionManager.leaveSession(json);
     }
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException, FileNotFoundException, IOException, ParseException {
+    public static void main(String[] args) throws FileNotFoundException, IOException, ParseException {
         File fileJson = new File("jsonTest.json");
         BufferedReader readJson = new BufferedReader(new FileReader("jsonTest.json"));
         String line = null;
@@ -144,6 +130,8 @@ public class Test {
         menu.append("code: 13 - getAllCreatingSessions\n");
         menu.append("code: 14 - getPlayersFromSession\n");
         menu.append("code: 15 - getContactsFromUser\n");
+        menu.append("code: 16 - takeOutPlayerFromSession\n");
+        menu.append("code: 17 - playerLeavesSession\n");
         menu.append("Insert test code: ");
         System.out.print(menu);
 
@@ -196,6 +184,12 @@ public class Test {
                 break;
             case 15:
                 System.out.println(getContactsFromUser(jsonTest.toString()));
+                break;
+            case 16:
+                System.out.println(takeOutPlayerFromSessionTest(jsonTest.toString()));
+                break;
+            case 17:
+                System.out.println(playerLeavesSessionTest(jsonTest.toString()));
                 break;
         }
     }

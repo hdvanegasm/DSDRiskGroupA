@@ -200,53 +200,77 @@ public class SessionManager {
      * @throws ClassNotFoundException The method returns the this exception when
      * a the class is not found in the executeQuery method.
      */
-    public static boolean takeOutPlayerFromSession(Session session, Player player) throws ClassNotFoundException, SQLException {
-        player.takeOut(session);
-        session.availableColors.add(player.color);
+    public static String takeOutPlayerFromSession(String json) throws ParseException {
 
-        PreparedStatement preparedStatement = null;
+        try {
+            JSONParser parser = new JSONParser();
+            String jsonToString = "[" + json + "]";
+            Object obj = parser.parse(jsonToString);
+            JSONArray jsonArray = (JSONArray) obj;
 
-        // Remove player from BD
-        String removePlayerQuery = "DELETE FROM player WHERE user=?";
-        preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(removePlayerQuery);
-        preparedStatement.setString(1, player.account.username);
-        preparedStatement.executeUpdate();
+            JSONObject parsedObject = (JSONObject) jsonArray.get(0);
 
-        // Change the status to online
-        String updateStatusQuery = "UPDATE account SET status=? WHERE username=?";
-        preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(updateStatusQuery);
-        preparedStatement.setString(1, AccountStatus.ONLINE.toString());
-        preparedStatement.setString(2, player.account.username);
-        preparedStatement.executeUpdate();
+            String username = (String) parsedObject.get("username");
+            int sessionId = (int) parsedObject.get("sessionId");
 
-        // Change the type of the user. If it is contact, then we change the status to contact
-        String numberOccurrencesQuery = "SELECT COUNT(username) as counting FROM contact WHERE username=?";
-        preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(numberOccurrencesQuery);
-        preparedStatement.setString(1, player.account.username);
-        ResultSet result = preparedStatement.executeQuery();
-        result.next();
-        int occurrences = result.getInt("counting");
-        String type = "";
-        if (occurrences > 0) {
-            type = Contact.class.getSimpleName().toUpperCase();
-        } else {
-            type = "NULL";
-        }
+            Session session = Session.create(sessionId, 0, null, SessionState.CREATING, null);
+            Player player = new Player(Account.create(AccountStatus.ONLINE, username, null, null), null);
 
-        String changeTypeQuery = "";
-        if (type.equals("NULL")) {
-            changeTypeQuery = "UPDATE user SET typeOfUser=NULL WHERE username=?";
-            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(changeTypeQuery);
+            player.takeOut(session);
+            session.availableColors.add(player.color);
+
+            PreparedStatement preparedStatement = null;
+
+            // Remove player from BD
+            String removePlayerQuery = "DELETE FROM player WHERE user=?";
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(removePlayerQuery);
             preparedStatement.setString(1, player.account.username);
-        } else {
-            changeTypeQuery = "UPDATE user SET typeOfUser=? WHERE username=?";
-            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(changeTypeQuery);
-            preparedStatement.setString(1, type);
-            preparedStatement.setString(2, player.account.username);
-        }
-        preparedStatement.executeUpdate();
+            preparedStatement.executeUpdate();
 
-        return true;
+            // Change the status to online
+            String updateStatusQuery = "UPDATE account SET status=? WHERE username=?";
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(updateStatusQuery);
+            preparedStatement.setString(1, AccountStatus.ONLINE.toString());
+            preparedStatement.setString(2, player.account.username);
+            preparedStatement.executeUpdate();
+
+            // Change the type of the user. If it is contact, then we change the status to contact
+            String numberOccurrencesQuery = "SELECT COUNT(username) as counting FROM contact WHERE username=?";
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(numberOccurrencesQuery);
+            preparedStatement.setString(1, player.account.username);
+            ResultSet result = preparedStatement.executeQuery();
+            result.next();
+            int occurrences = result.getInt("counting");
+            String type = "";
+            if (occurrences > 0) {
+                type = Contact.class.getSimpleName().toUpperCase();
+            } else {
+                type = "NULL";
+            }
+
+            String changeTypeQuery = "";
+            if (type.equals("NULL")) {
+                changeTypeQuery = "UPDATE user SET typeOfUser=NULL WHERE username=?";
+                preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(changeTypeQuery);
+                preparedStatement.setString(1, player.account.username);
+            } else {
+                changeTypeQuery = "UPDATE user SET typeOfUser=? WHERE username=?";
+                preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(changeTypeQuery);
+                preparedStatement.setString(1, type);
+                preparedStatement.setString(2, player.account.username);
+            }
+            preparedStatement.executeUpdate();
+
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", true);
+            returnJson.put("message", "Contact removed successfully");
+            return returnJson.toJSONString();
+        } catch (SQLException | ClassNotFoundException ex) {
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", false);
+            returnJson.put("message", ex.getMessage());
+            return returnJson.toJSONString();
+        }
     }
 
     /**
@@ -266,53 +290,76 @@ public class SessionManager {
      * @throws ClassNotFoundException The method returns the this exception when
      * a the class is not found in the executeQuery method.
      */
-    public static boolean leaveSession(Session session, Player player) throws ClassNotFoundException, SQLException {
-        session.leave(player);
-        session.availableColors.add(player.color);
-
-        PreparedStatement preparedStatement = null;
-
-        // Remove player from BD
-        String removePlayerQuery = "DELETE FROM player WHERE user=?";
-        preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(removePlayerQuery);
-        preparedStatement.setString(1, player.account.username);
-        preparedStatement.executeUpdate();
-
-        // Change the status to online
-        String updateStatusQuery = "UPDATE account SET status=? WHERE username=?";
-        preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(updateStatusQuery);
-        preparedStatement.setString(1, AccountStatus.ONLINE.toString());
-        preparedStatement.setString(2, player.account.username);
-        preparedStatement.executeUpdate();
-
-        // Change the type of the user. If it is contact, then we change the status to contact
-        String numberOccurrencesQuery = "SELECT COUNT(username) as counting FROM contact WHERE username=?";
-        preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(numberOccurrencesQuery);
-        preparedStatement.setString(1, player.account.username);
-        ResultSet result = preparedStatement.executeQuery();
-        result.next();
-        int occurrences = result.getInt("counting");
-        String type = "";
-        if (occurrences > 0) {
-            type = Contact.class.getSimpleName().toUpperCase();
-        } else {
-            type = "NULL";
-        }
-
-        String changeTypeQuery = "";
-        if (type.equals("NULL")) {
-            changeTypeQuery = "UPDATE user SET typeOfUser=NULL WHERE username=?";
-            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(changeTypeQuery);
+    public static String leaveSession(String json) throws ParseException {
+        try {
+            JSONParser parser = new JSONParser();
+            String jsonToString = "[" + json + "]";
+            Object obj = parser.parse(jsonToString);
+            JSONArray jsonArray = (JSONArray) obj;
+            
+            JSONObject parsedObject = (JSONObject) jsonArray.get(0);
+            
+            String username = (String) parsedObject.get("username");
+            int sessionId = (int) parsedObject.get("sessionId");
+            
+            Session session = Session.create(sessionId, 0, null, SessionState.CREATING, null);
+            Player player = new Player(Account.create(AccountStatus.ONLINE, username, null, null), null);
+            
+            session.leave(player);
+            session.availableColors.add(player.color);
+            
+            PreparedStatement preparedStatement = null;
+            
+            // Remove player from BD
+            String removePlayerQuery = "DELETE FROM player WHERE user=?";
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(removePlayerQuery);
             preparedStatement.setString(1, player.account.username);
-        } else {
-            changeTypeQuery = "UPDATE user SET typeOfUser=? WHERE username=?";
-            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(changeTypeQuery);
-            preparedStatement.setString(1, type);
+            preparedStatement.executeUpdate();
+            
+            // Change the status to online
+            String updateStatusQuery = "UPDATE account SET status=? WHERE username=?";
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(updateStatusQuery);
+            preparedStatement.setString(1, AccountStatus.ONLINE.toString());
             preparedStatement.setString(2, player.account.username);
+            preparedStatement.executeUpdate();
+            
+            // Change the type of the user. If it is contact, then we change the status to contact
+            String numberOccurrencesQuery = "SELECT COUNT(username) as counting FROM contact WHERE username=?";
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(numberOccurrencesQuery);
+            preparedStatement.setString(1, player.account.username);
+            ResultSet result = preparedStatement.executeQuery();
+            result.next();
+            int occurrences = result.getInt("counting");
+            String type = "";
+            if (occurrences > 0) {
+                type = Contact.class.getSimpleName().toUpperCase();
+            } else {
+                type = "NULL";
+            }
+            
+            String changeTypeQuery = "";
+            if (type.equals("NULL")) {
+                changeTypeQuery = "UPDATE user SET typeOfUser=NULL WHERE username=?";
+                preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(changeTypeQuery);
+                preparedStatement.setString(1, player.account.username);
+            } else {
+                changeTypeQuery = "UPDATE user SET typeOfUser=? WHERE username=?";
+                preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(changeTypeQuery);
+                preparedStatement.setString(1, type);
+                preparedStatement.setString(2, player.account.username);
+            }
+            preparedStatement.executeUpdate();
+            
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", true);
+            returnJson.put("message", "You have leave the session successfully");
+            return returnJson.toJSONString();
+        } catch (SQLException | ClassNotFoundException ex) {
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", false);
+            returnJson.put("message", ex.getMessage());
+            return returnJson.toJSONString();
         }
-        preparedStatement.executeUpdate();
-
-        return true;
     }
 
     /**
