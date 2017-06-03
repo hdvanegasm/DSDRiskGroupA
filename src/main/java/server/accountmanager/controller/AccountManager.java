@@ -44,7 +44,7 @@ public class AccountManager {
 
             if (!password.equals(confirmPass)) {
                 JSONObject returnJson = new JSONObject();
-                returnJson.put("result", false);
+                returnJson.put("status", false);
                 returnJson.put("message", "Password and confirm password does not match");
                 return returnJson.toJSONString();
             }
@@ -64,14 +64,14 @@ public class AccountManager {
 
         } catch (ClassNotFoundException | SQLException ex) {
             JSONObject returnJson = new JSONObject();
-            returnJson.put("result", false);
+            returnJson.put("status", false);
             returnJson.put("message", ex.getMessage());
             return returnJson.toJSONString();
         }
 
         // Build the response JSON
         JSONObject returnJson = new JSONObject();
-        returnJson.put("result", true);
+        returnJson.put("status", true);
         returnJson.put("message", "Account created");
         return returnJson.toJSONString();
     }
@@ -104,13 +104,13 @@ public class AccountManager {
             DatabaseConnector.getInstance().getStatement().executeUpdate(query);
 
             JSONObject returnJson = new JSONObject();
-            returnJson.put("result", true);
+            returnJson.put("status", true);
             returnJson.put("message", "Account logged out successfully");
             return returnJson.toJSONString();
 
         } catch (ClassNotFoundException | SQLException ex) {
             JSONObject returnJson = new JSONObject();
-            returnJson.put("result", false);
+            returnJson.put("status", false);
             returnJson.put("message", ex.getMessage());
             return returnJson.toJSONString();
         }
@@ -155,26 +155,26 @@ public class AccountManager {
 
                     DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdate);
                     JSONObject returnJson = new JSONObject();
-                    returnJson.put("result", true);
+                    returnJson.put("status", true);
                     returnJson.put("message", "Login successfull");
                     return returnJson.toJSONString();
 
                 } else {
                     JSONObject returnJson = new JSONObject();
-                    returnJson.put("result", false);
+                    returnJson.put("status", false);
                     returnJson.put("message", "Username or password incorrect");
                     return returnJson.toJSONString();
                 }
             }
 
             JSONObject returnJson = new JSONObject();
-            returnJson.put("result", false);
+            returnJson.put("status", false);
             returnJson.put("message", "Username or password incorrect");
             return returnJson.toJSONString();
 
         } catch (ClassNotFoundException | SQLException ex) {
             JSONObject returnJson = new JSONObject();
-            returnJson.put("result", false);
+            returnJson.put("status", false);
             returnJson.put("message", ex.getMessage());
             return returnJson.toJSONString();
         }
@@ -219,7 +219,7 @@ public class AccountManager {
                 result.next();
             } else {
                 JSONObject returnJson = new JSONObject();
-                returnJson.put("result", false);
+                returnJson.put("status", false);
                 returnJson.put("message", "The username does not exists");
                 return returnJson.toJSONString();
             }
@@ -228,7 +228,7 @@ public class AccountManager {
 
             if (!oldPassword.equals(user.account.password)) {
                 JSONObject returnJson = new JSONObject();
-                returnJson.put("result", false);
+                returnJson.put("status", false);
                 returnJson.put("message", "The previous password does not match");
                 return returnJson.toJSONString();
             }
@@ -238,13 +238,13 @@ public class AccountManager {
             DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdate);
 
             JSONObject returnJson = new JSONObject();
-            returnJson.put("result", true);
+            returnJson.put("status", true);
             returnJson.put("message", "Password changed successfully");
             return returnJson.toJSONString();
             
         } catch (ClassNotFoundException | SQLException ex) {
             JSONObject returnJson = new JSONObject();
-            returnJson.put("result", false);
+            returnJson.put("status", false);
             returnJson.put("message", ex.getMessage());
             return returnJson.toJSONString();
         }

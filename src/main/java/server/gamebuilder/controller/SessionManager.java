@@ -4,7 +4,14 @@ import server.gamebuilder.model.Color;
 import server.gamebuilder.model.Host;
 import server.gamebuilder.model.Session;
 import java.sql.*;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import server.DatabaseConnector;
 import server.accountmanager.model.Account;
 import server.accountmanager.model.User;
@@ -38,46 +45,67 @@ public class SessionManager {
      * @throws ClassNotFoundException The method returns the this exception when
      * a the class is not found in the executeQuery method.
      */
-    public static boolean createSession(User user) throws ClassNotFoundException, SQLException {
-        Host host = new Host(user.account, null);
+    public static String createSession(String json) throws ParseException {
 
-        // Get actual session id and update in the class
-        String querySelectId = "SELECT MAX(id) as id FROM session";
-        int sessionId = 1;
-        ResultSet resultset = DatabaseConnector.getInstance().getStatement().executeQuery(querySelectId);
-        boolean first = true;
-        while (resultset.next()) {
-            sessionId = resultset.getInt("id") + 1;
-            first = false;
+        try {
+            JSONParser parser = new JSONParser();
+            String jsonToString = "[" + json + "]";
+            Object obj = parser.parse(jsonToString);
+            JSONArray jsonArray = (JSONArray) obj;
+
+            JSONObject parsedObject = (JSONObject) jsonArray.get(0);
+
+            String hostUsername = (String) parsedObject.get("username");
+
+            Account account = Account.create(AccountStatus.ONLINE, hostUsername, null, null);
+            Host host = new Host(account, null);
+
+            // Get actual session id and update in the class
+            String querySelectId = "SELECT MAX(id) as id FROM session";
+            int sessionId = 1;
+            ResultSet resultset = DatabaseConnector.getInstance().getStatement().executeQuery(querySelectId);
+            boolean first = true;
+            while (resultset.next()) {
+                sessionId = resultset.getInt("id") + 1;
+                first = false;
+            }
+
+            if (first) {
+                sessionId = 1;
+            }
+
+            Session session = Session.create(sessionId);
+            session.join(host);
+
+            //create session in database
+            String queryInsertSession = "INSERT INTO session VALUES (NULL, " + session.id + ", \"" + SessionState.CREATING + "\", NULL, 1);";
+
+            //update host table
+            String queryInsertHost = "INSERT INTO host VALUES (\"" + host.account.username + "\",  " + session.id + " );";
+            //update player table with host, remember delete player rows when game fihish and make colors dinamic
+            String queryInsertHostToPlayer = "INSERT INTO player VALUES(\"" + host.account.username
+                    + "\", '" + Color.YELLOW + "' , 'non-captured', 0, 0, 0, 0,'" + Host.class.getSimpleName().toUpperCase() + "'," + session.id + ")";
+            String queryUpdateHostStatus = "UPDATE user SET typeOfUser = '" + Player.class.getSimpleName().toUpperCase() + "' WHERE username = \"" + host.account.username + "\";";
+            String queryUpdateUserStatus = "UPDATE account SET status = \"" + AccountStatus.PLAYING + "\" WHERE username = \"" + host.account.username + "\";";
+            //simulate another 3 players, this is for the first increment later the request handle this
+
+            // update tables: session, player,host, this the original update
+            DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdateHostStatus);
+            DatabaseConnector.getInstance().getStatement().executeUpdate(queryInsertSession);
+            DatabaseConnector.getInstance().getStatement().executeUpdate(queryInsertHostToPlayer);
+            DatabaseConnector.getInstance().getStatement().executeUpdate(queryInsertHost);
+            DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdateUserStatus);
+
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", true);
+            returnJson.put("message", "");
+            return returnJson.toJSONString();
+        } catch (SQLException | ClassNotFoundException ex) {
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", false);
+            returnJson.put("message", ex.getMessage());
+            return returnJson.toJSONString();
         }
-
-        if (first) {
-            sessionId = 1;
-        }
-
-        Session session = Session.create(sessionId);
-        session.join(host);
-
-        //create session in database
-        String queryInsertSession = "INSERT INTO session VALUES (NULL, " + session.id + ", \"" + SessionState.CREATING + "\", NULL, 1);";
-
-        //update host table
-        String queryInsertHost = "INSERT INTO host VALUES (\"" + host.account.username + "\",  " + session.id + " );";
-        //update player table with host, remember delete player rows when game fihish and make colors dinamic
-        String queryInsertHostToPlayer = "INSERT INTO player VALUES(\"" + host.account.username
-                + "\", '" + Color.YELLOW + "' , 'non-captured', 0, 0, 0, 0,'" + Host.class.getSimpleName().toUpperCase() + "'," + session.id + ")";
-        String queryUpdateHostStatus = "UPDATE user SET typeOfUser = '" + Player.class.getSimpleName().toUpperCase() + "' WHERE username = \"" + user.account.username + "\";";
-        String queryUpdateUserStatus = "UPDATE account SET status = \"" + AccountStatus.PLAYING + "\" WHERE username = \"" + host.account.username + "\";";
-        //simulate another 3 players, this is for the first increment later the request handle this
-
-        // update tables: session, player,host, this the original update
-        DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdateHostStatus);
-        DatabaseConnector.getInstance().getStatement().executeUpdate(queryInsertSession);
-        DatabaseConnector.getInstance().getStatement().executeUpdate(queryInsertHostToPlayer);
-        DatabaseConnector.getInstance().getStatement().executeUpdate(queryInsertHost);
-        DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdateUserStatus);
-
-        return true;
     }
 
     /**
@@ -100,28 +128,72 @@ public class SessionManager {
      * @throws ClassNotFoundException The method returns the this exception when
      * a the class is not found in the executeQuery method.
      */
-    public static Player joinToSession(User user, Session session) throws SQLException, ClassNotFoundException {
+    public static String joinToSession(String json) throws ParseException {
 
-        // If the limit of players was reached, then the contact cannot be added
-        if (session.players.size() == session.numberOfPlayers) {
-            return null;
+        try {
+            JSONParser parser = new JSONParser();
+            String jsonToString = "[" + json + "]";
+            Object obj = parser.parse(jsonToString);
+            JSONArray jsonArray = (JSONArray) obj;
+
+            JSONObject parsedObject = (JSONObject) jsonArray.get(0);
+
+            String username = (String) parsedObject.get("username");
+            int sessionId = (int) parsedObject.get("sessionId");
+
+            // Construction of session
+            String querySession = "SELECT numberOfPlayers FROM session WHERE session.id = ?";
+            PreparedStatement preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(querySession);
+            preparedStatement.setInt(1, sessionId);
+            ResultSet result = preparedStatement.executeQuery();
+            result.next();
+
+            Session session = Session.create(sessionId);
+            session.numberOfPlayers = result.getInt("numberOfPlayers");
+
+            LinkedList<Player> playerList = getPlayersFromSession(sessionId);
+            Iterator<Player> playerIterator = playerList.listIterator();
+            while (playerIterator.hasNext()) {
+                Player actualPlayer = playerIterator.next();
+                session.players.add(actualPlayer);
+                session.availableColors.remove(actualPlayer.color);
+            }
+
+            // Construction of user
+            User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
+
+            // If the limit of players was reached, then the contact cannot be added
+            if (session.players.size() == session.numberOfPlayers) {
+                JSONObject returnJson = new JSONObject();
+                returnJson.put("status", false);
+                returnJson.put("message", "Limir of players reached");
+                return returnJson.toJSONString();
+            }
+
+            Player newPlayer = session.join(user);
+
+            // Insert player to the database associated with the session
+            String insertPlayerQuery = "INSERT INTO player VALUES('" + newPlayer.account.username + "', '" + newPlayer.color + "',\"non-captured\",0,0,0,FALSE,NULL," + session.id + ")";
+            DatabaseConnector.getInstance().getStatement().executeUpdate(insertPlayerQuery);
+
+            // Update user status
+            String queryUpdateUserStatus = "UPDATE account SET status = \"" + newPlayer.account.status + "\" WHERE username = \"" + newPlayer.account.username + "\";";
+            DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdateUserStatus);
+
+            // Update player type
+            String queryUpdatePlayerType = "UPDATE user SET typeOfUser = '" + Player.class.getSimpleName().toUpperCase() + "' WHERE username = \"" + newPlayer.account.username + "\";";
+            DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdatePlayerType);
+
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", true);
+            returnJson.put("message", "Session created successfully");
+            return returnJson.toJSONString();
+        } catch (SQLException | ClassNotFoundException ex) {
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", false);
+            returnJson.put("message", ex.getMessage());
+            return returnJson.toJSONString();
         }
-
-        Player newPlayer = session.join(user);
-
-        // Insert player to the database associated with the session
-        String insertPlayerQuery = "INSERT INTO player VALUES('" + newPlayer.account.username + "', '" + newPlayer.color + "',\"non-captured\",0,0,0,FALSE,NULL," + session.id + ")";
-        DatabaseConnector.getInstance().getStatement().executeUpdate(insertPlayerQuery);
-
-        // Update user status
-        String queryUpdateUserStatus = "UPDATE account SET status = \"" + newPlayer.account.status + "\" WHERE username = \"" + newPlayer.account.username + "\";";
-        DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdateUserStatus);
-
-        // Update player type
-        String queryUpdatePlayerType = "UPDATE user SET typeOfUser = '" + Player.class.getSimpleName().toUpperCase() + "' WHERE username = \"" + newPlayer.account.username + "\";";
-        DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdatePlayerType);
-
-        return newPlayer;
     }
 
     /**
@@ -434,13 +506,14 @@ public class SessionManager {
      *
      * @param sessionId It represents the ID of the session that has all of the
      * players.
-     * @return The method returns a linked list with all of the players of this session.
+     * @return The method returns a linked list with all of the players of this
+     * session.
      * @throws SQLException The method returns the this exception when a
      * database error occurs.
      * @throws ClassNotFoundException The method returns the this exception when
      * a the class is not found in the executeQuery method.
      */
-    public static LinkedList<Player> getPlayersFromSession(int sessionId) throws SQLException, ClassNotFoundException {
+    private static LinkedList<Player> getPlayersFromSession(int sessionId) throws SQLException, ClassNotFoundException {
         LinkedList<Player> players = new LinkedList<>();
 
         String queryPlayers = "SELECT * FROM player, account WHERE sessionID=? AND player.user=account.username AND type IS NULL";

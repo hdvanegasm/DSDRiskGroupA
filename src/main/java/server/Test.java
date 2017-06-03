@@ -59,18 +59,8 @@ public class Test {
         return AccountManager.changePassword(json);
     }
 
-    public static boolean createSessionTest() {
-        String hostUsername = "pedro";
-
-        Account account = Account.create(AccountStatus.ONLINE, hostUsername, null, null);
-        User hostUser = new User(account);
-
-        try {
-            return SessionManager.createSession(hostUser);
-        } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
+    public static String createSessionTest(String json) throws ParseException {
+        return SessionManager.createSession(json);
     }
 
     public static boolean makeRequestTest() {
@@ -100,20 +90,8 @@ public class Test {
         return response;
     }
 
-    public static Player joinSessionTest() {
-        Map map = new Map("Prado Centro");
-        Session session = Session.create(2, 2, SessionType.WORLD_DOMINATION_RISK, SessionState.CREATING, map);
-
-        User userJoin = new User(Account.create(AccountStatus.ONLINE, "edalpin", "1234", "edalpin@unal.edu.co"));
-        Player newPlayer;
-        try {
-            newPlayer = SessionManager.joinToSession(userJoin, session);
-        } catch (SQLException | ClassNotFoundException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-
-        return newPlayer;
+    public static String joinSessionTest(String json) throws ParseException {
+       return SessionManager.joinToSession(json);
     }
 
     public static boolean inviteContactTest() {
@@ -167,7 +145,7 @@ public class Test {
         }
     }
 
-    public static LinkedList<Player> getPlayersFromSession() {
+/*    public static LinkedList<Player> getPlayersFromSession() {
         try {
             return SessionManager.getPlayersFromSession(1);
         } catch (SQLException | ClassNotFoundException ex) {
@@ -175,7 +153,7 @@ public class Test {
             return null;
         }
     }
-
+*/
     public static LinkedList<Contact> getContactsFromUser() {
         try {
             return ContactManager.getContactsFromUser("edalpin");
