@@ -3,7 +3,14 @@ package server.accountmanager.controller;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import server.DatabaseConnector;
 import server.accountmanager.model.Account;
 import server.accountmanager.model.AccountStatus;
@@ -25,63 +32,84 @@ public class ContactManager {
      * sure to add the contact to contact table if and only if the contact does
      * not exist.
      *
-     * @param user This is the user that will add the contact to his contact
-     * list
-     * @param newContact This attribute represents the new contact that will be
-     * added to the user's contact list.
+     * @param json
      * @return The method returns a boolean value; it returns "true" if the
      * contact has been added successfully, otherwise it returns "false"
-     * @throws SQLException The method returns the this exception when a
-     * database error occurs.
-     * @throws ClassNotFoundException The method returns the this exception when
-     * a the class is not found in the prepared statement reference.
+     * @throws org.json.simple.parser.ParseException
      */
-    public static boolean addContact(User user, User newContact) throws ClassNotFoundException, SQLException {
-        Contact contact = new Contact(newContact.account);
+    public static String addContact(String json) throws ParseException {
+        try {
+            JSONParser parser = new JSONParser();
+            String jsonToString = "[" + json + "]";
+            Object obj = parser.parse(jsonToString);
+            JSONArray jsonArray = (JSONArray) obj;
 
-        if (!contact.add(user)) {
-            return false;
-        }
+            JSONObject parsedObject = (JSONObject) jsonArray.get(0);
 
-        PreparedStatement preparedStatement = null;
-        ResultSet result = null;
-        // Check if the contact is in the database
-        String checkContact = "SELECT COUNT(username) AS occurrences FROM contact WHERE username=?";
+            String username = (String) parsedObject.get("username");
+            String contactUsername = (String) parsedObject.get("contactUsername");
 
-        preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(checkContact);
-        preparedStatement.setString(1, newContact.account.username);
-        result = preparedStatement.executeQuery();
-        result.next();
+            User newContact = new User(Account.create(AccountStatus.ONLINE, contactUsername, null, null));
+            User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
 
-        if (result.getInt("occurrences") == 0) {
+            Contact contact = new Contact(newContact.account);
 
-            // Insert the contact in the DB
-            String insertContactQuery = "INSERT INTO contact VALUES(?)";
+            if (!contact.add(user)) {
+                JSONObject returnJson = new JSONObject();
+                returnJson.put("status", false);
+                returnJson.put("message", "Contact cannot be added");
+                return returnJson.toJSONString();
+            }
 
-            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(insertContactQuery);
-            // Get the last contact of the list, i.e. the new contact
-            preparedStatement.setString(1, user.account.contactList.getLast().account.username);
-            preparedStatement.executeUpdate();
+            PreparedStatement preparedStatement = null;
+            ResultSet result = null;
+            // Check if the contact is in the database
+            String checkContact = "SELECT COUNT(username) AS occurrences FROM contact WHERE username=?";
 
-            // Update class state in user table
-            String updateUserType = "UPDATE user SET typeOfUser=? WHERE username=?";
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(checkContact);
+            preparedStatement.setString(1, newContact.account.username);
+            result = preparedStatement.executeQuery();
+            result.next();
 
-            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(updateUserType);
-            preparedStatement.setString(1, Contact.class.getSimpleName().toUpperCase());
+            if (result.getInt("occurrences") == 0) {
+
+                // Insert the contact in the DB
+                String insertContactQuery = "INSERT INTO contact VALUES(?)";
+
+                preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(insertContactQuery);
+                // Get the last contact of the list, i.e. the new contact
+                preparedStatement.setString(1, user.account.contactList.getLast().account.username);
+                preparedStatement.executeUpdate();
+
+                // Update class state in user table
+                String updateUserType = "UPDATE user SET typeOfUser=? WHERE username=?";
+
+                preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(updateUserType);
+                preparedStatement.setString(1, Contact.class.getSimpleName().toUpperCase());
+                preparedStatement.setString(2, user.account.contactList.getLast().account.username);
+                preparedStatement.executeUpdate();
+
+            }
+
+            // Add both user and contact to contact list
+            String insertContactListQuery = "INSERT INTO contactlist VALUES(?, ?)";
+
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(insertContactListQuery);
+            preparedStatement.setString(1, user.account.username);
             preparedStatement.setString(2, user.account.contactList.getLast().account.username);
             preparedStatement.executeUpdate();
 
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", true);
+            returnJson.put("message", "Contact added successfully");
+            return returnJson.toJSONString();
+
+        } catch (SQLException | ClassNotFoundException ex) {
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", false);
+            returnJson.put("message", ex.getMessage());
+            return returnJson.toJSONString();
         }
-
-        // Add both user and contact to contact list
-        String insertContactListQuery = "INSERT INTO contactlist VALUES(?, ?)";
-
-        preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(insertContactListQuery);
-        preparedStatement.setString(1, user.account.username);
-        preparedStatement.setString(2, user.account.contactList.getLast().account.username);
-        preparedStatement.executeUpdate();
-
-        return true;
     }
 
     /**
@@ -102,65 +130,87 @@ public class ContactManager {
      * @throws ClassNotFoundException The method returns the this exception when
      * a the class is not found in the prepared statement reference.
      */
-    public static boolean removeContact(User user, Contact contact) throws SQLException, ClassNotFoundException {
-        //SELECT COUNT(contact_username) AS number FROM contactlist WHERE contact_username='spinos';
+    public static String removeContact(String json) throws ParseException {
+        try {
+            //SELECT COUNT(contact_username) AS number FROM contactlist WHERE contact_username='spinos';
 
-        contact.remove(user);
+            JSONParser parser = new JSONParser();
+            String jsonToString = "[" + json + "]";
+            Object obj = parser.parse(jsonToString);
+            JSONArray jsonArray = (JSONArray) obj;
 
-        PreparedStatement preparedStatement = null;
+            JSONObject parsedObject = (JSONObject) jsonArray.get(0);
 
-        // Remove the pair (user, contact) from database
-        String deleteFromContactListQuery = "DELETE FROM contactlist WHERE user_username=? AND contact_username=?";
+            String username = (String) parsedObject.get("username");
+            String contactUsername = (String) parsedObject.get("contactUsername");
 
-        preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(deleteFromContactListQuery);
-        preparedStatement.setString(1, user.account.username);
-        preparedStatement.setString(2, contact.account.username);
-        preparedStatement.executeUpdate();
+            User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
+            Contact contact = new Contact(Account.create(AccountStatus.ONLINE, contactUsername, null, null));
 
-        // Now we check if the user contact of someone else
-        ResultSet result = null;
-        String queryCheck = "SELECT COUNT(contact_username) AS number FROM contactlist WHERE contact_username=?";
+            contact.remove(user);
 
-        preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(queryCheck);
-        preparedStatement.setString(1, contact.account.username);
-        result = preparedStatement.executeQuery();
+            PreparedStatement preparedStatement = null;
 
-        int numberOfOccurrences = 0;
+            // Remove the pair (user, contact) from database
+            String deleteFromContactListQuery = "DELETE FROM contactlist WHERE user_username=? AND contact_username=?";
 
-        result.next();
-        numberOfOccurrences = result.getInt("number");
-
-        // If the number of occurrences is cero then we must change the state of the user
-        if (numberOfOccurrences == 0) {
-            String deleteFromContactQuery = "DELETE FROM contact WHERE username=?";
-
-            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(deleteFromContactQuery);
-            preparedStatement.setString(1, contact.account.username);
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(deleteFromContactListQuery);
+            preparedStatement.setString(1, user.account.username);
+            preparedStatement.setString(2, contact.account.username);
             preparedStatement.executeUpdate();
 
-            // If the contact was player
-            String checkPlayer = "SELECT COUNT(user) AS number FROM player WHERE user=?";
-            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(checkPlayer);
+            // Now we check if the user contact of someone else
+            ResultSet result = null;
+            String queryCheck = "SELECT COUNT(contact_username) AS number FROM contactlist WHERE contact_username=?";
+
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(queryCheck);
             preparedStatement.setString(1, contact.account.username);
             result = preparedStatement.executeQuery();
+
+            int numberOfOccurrences = 0;
+
             result.next();
             numberOfOccurrences = result.getInt("number");
 
-            String updateUserType = "";
-
+            // If the number of occurrences is cero then we must change the state of the user
             if (numberOfOccurrences == 0) {
-                updateUserType = "UPDATE user SET typeOfUser=NULL WHERE username=?";
-            } else {
-                updateUserType = "UPDATE user SET typeOfUser='PLAYER' WHERE username=?";
+                String deleteFromContactQuery = "DELETE FROM contact WHERE username=?";
+
+                preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(deleteFromContactQuery);
+                preparedStatement.setString(1, contact.account.username);
+                preparedStatement.executeUpdate();
+
+                // If the contact was player
+                String checkPlayer = "SELECT COUNT(user) AS number FROM player WHERE user=?";
+                preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(checkPlayer);
+                preparedStatement.setString(1, contact.account.username);
+                result = preparedStatement.executeQuery();
+                result.next();
+                numberOfOccurrences = result.getInt("number");
+
+                String updateUserType = "";
+
+                if (numberOfOccurrences == 0) {
+                    updateUserType = "UPDATE user SET typeOfUser=NULL WHERE username=?";
+                } else {
+                    updateUserType = "UPDATE user SET typeOfUser='PLAYER' WHERE username=?";
+                }
+
+                preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(updateUserType);
+                preparedStatement.setString(1, contact.account.username);
+                preparedStatement.executeUpdate();
+
             }
-
-            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(updateUserType);
-            preparedStatement.setString(1, contact.account.username);
-            preparedStatement.executeUpdate();
-
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", true);
+            returnJson.put("message", "Contact removed successfully");
+            return returnJson.toJSONString();
+        } catch (SQLException | ClassNotFoundException ex) {
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", false);
+            returnJson.put("message", ex.getMessage());
+            return returnJson.toJSONString();
         }
-
-        return true;
     }
 
     /**
@@ -168,14 +218,15 @@ public class ContactManager {
      * user with a given username, it constructs all the player with the main
      * attributes in order to send it to the client side.
      *
-     * @param username It is the username of the user in which the method will base on in order to construct a list of contacts.
+     * @param username It is the username of the user in which the method will
+     * base on in order to construct a list of contacts.
      * @return The method returns a linked list with the assembled contacts.
      * @throws SQLException The method returns the this exception when a
      * database error occurs.
      * @throws ClassNotFoundException The method returns the this exception when
      * a the class is not found in the executeQuery method.
      */
-    public static LinkedList<Contact> getContactsFromUser(String username) throws SQLException, ClassNotFoundException {
+    private static LinkedList<Contact> getContactListFromUser(String username) throws SQLException, ClassNotFoundException {
 
         LinkedList<Contact> contacts = new LinkedList<>();
 
@@ -200,5 +251,47 @@ public class ContactManager {
         }
 
         return contacts;
+    }
+
+    public static String getContactsFromUser(String json) throws ParseException {
+        try {
+            JSONParser parser = new JSONParser();
+            String jsonToString = "[" + json + "]";
+            Object obj = parser.parse(jsonToString);
+            JSONArray jsonArray = (JSONArray) obj;
+            
+            JSONObject parsedObject = (JSONObject) jsonArray.get(0);
+            
+            String username = (String) parsedObject.get("username");
+            
+            LinkedList<Contact> contacts = getContactListFromUser(username);
+            
+            Iterator<Contact> contactIterator = contacts.listIterator();
+            
+            JSONObject result = new JSONObject();
+            JSONArray contactArray = new JSONArray();
+            
+            while(contactIterator.hasNext()) {
+                Contact actualContact = contactIterator.next();
+                JSONObject contact = new JSONObject();
+                contact.put("username", actualContact.account.username);
+                contact.put("email", actualContact.account.username);
+                contact.put("numberOfSessionsWon", actualContact.account.username);
+                contact.put("numberOfSessionLost", actualContact.account.username);
+                contact.put("percentageOfWins", actualContact.account.username);
+                contact.put("status", actualContact.account.status.toString());
+                
+                contactArray.add(contact);
+            }
+            result.put("players", contactArray);
+            result.put("status", true);
+            
+            return result.toJSONString();
+        } catch (SQLException | ClassNotFoundException ex) {
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", false);
+            returnJson.put("message", ex.getMessage());
+            return returnJson.toJSONString();
+        }
     }
 }
