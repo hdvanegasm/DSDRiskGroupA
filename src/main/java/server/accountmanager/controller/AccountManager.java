@@ -20,11 +20,19 @@ import server.accountmanager.model.AccountStatus;
 public class AccountManager {
 
     /**
-     * This method allows to create a new user's account
+     * This method allows to create a new user's account based on a JSON as
+     * input.
      *
-     * @param json
-     * @return a boolean that indicates the success of the query
-     * @throws org.json.simple.parser.ParseException
+     * @param json This parameter represents a JSON that contains the username,
+     * the password, the password confirmation and the email of the user that
+     * wants to create a new account.
+     * @return The method returns a JSON that contains two fields: the first
+     * field is a boolean value that contains the status of the transaction, it
+     * takes the value of "true" if the transaction is successful, otherwise it
+     * takes the value of false; the second attribute is the message according
+     * to the state of the transaction.
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
      */
     public static String createAccount(String json) throws ParseException {
 
@@ -77,12 +85,17 @@ public class AccountManager {
     }
 
     /**
-     * This method update the status of the user in the database after logout
+     * This method update the user's status in the database after logout
      *
-     * @param user this object has the attributes of the user's account
-     * @return a boolean that indicates the success of the query
-     * @throws java.lang.ClassNotFoundException
-     * @throws java.sql.SQLException
+     * @param json This attribute represents a JSON that contains the username
+     * of the user that wants to logout.
+     * @return The method returns a JSON that contains two fields: the first
+     * field is a boolean value that contains the status of the transaction, it
+     * takes the value of "true" if the logout action was successful, otherwise
+     * it takes the value of false; the second attribute is the message
+     * according to the state of the transaction.
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
      */
     public static String logOut(String json) throws ParseException {
         try {
@@ -117,13 +130,17 @@ public class AccountManager {
     }
 
     /**
-     * This method compare the user´s log-in information with the database, if
-     * it´s correct updates the status of the user in the database
+     * This method compare the user's login information with the database, if
+     * it's correct , the method updates the status of the user in the database.
      *
-     * @param user this object has the attributes of the user's account
-     * @return a boolean that indicates the success of the query
-     * @throws java.sql.SQLException
-     * @throws java.lang.ClassNotFoundException
+     * @param json This parameter represents a JSON that contains the username
+     * and the password of the user that wants to login in the system.
+     * @return The method returns a JSON that contains two fields: the first
+     * field is a status of the login, it takes a boolean value of true if the
+     * login was successful, otherwise it takes a false value; the second
+     * attribute is a message that contains information about the transaction.
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
      */
     public static String logIn(String json) throws ParseException {
 
@@ -183,14 +200,15 @@ public class AccountManager {
     /**
      * Method used in order to change the password of the account
      *
-     * @param user It represents the information of the user that will change
-     * the password
-     * @param newPassword This attribute represents the new password of the
-     * account
-     * @return The method returns true if the password was changed successfully,
-     * otherwise it returns false.
-     * @throws SQLException
-     * @throws java.lang.ClassNotFoundException
+     * @param json This attribute represents a JSON that contains three
+     * attributes: the username of the user that wants to change the password,
+     * the actual password of the account and the new password.
+     * @return The method returns a JSON that contains two fields: the first
+     * field is a status of the password changing, it takes a boolean value of true if the
+     * change was successful, otherwise it takes a false value; the second
+     * attribute is a message that contains information about the transaction.
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
      */
     public static String changePassword(String json) throws ParseException {
 
@@ -241,7 +259,7 @@ public class AccountManager {
             returnJson.put("status", true);
             returnJson.put("message", "Password changed successfully");
             return returnJson.toJSONString();
-            
+
         } catch (ClassNotFoundException | SQLException ex) {
             JSONObject returnJson = new JSONObject();
             returnJson.put("status", false);
