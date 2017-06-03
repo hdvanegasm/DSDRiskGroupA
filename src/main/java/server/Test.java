@@ -7,25 +7,20 @@ package server;
 
 import java.io.File;
 import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import server.accountmanager.controller.AccountManager;
 import server.accountmanager.controller.ContactManager;
 import server.accountmanager.model.Account;
 import server.accountmanager.model.AccountStatus;
-import server.accountmanager.model.User;
 import server.gamebuilder.controller.RequestHandler;
 import server.gamebuilder.controller.SessionManager;
 import server.gamebuilder.model.Map;
 import server.gamebuilder.model.Player;
 import server.gamebuilder.model.Session;
 import server.gamebuilder.model.SessionState;
-import server.accountmanager.model.Contact;
 import server.gamebuilder.controller.InvitationHandler;
 import server.gamebuilder.model.Color;
-import server.gamebuilder.model.SessionInvitation;
-import server.gamebuilder.model.SessionInvitationState;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.BufferedReader;
@@ -80,80 +75,35 @@ public class Test {
     }
 
     // TODO implement test
-    public static boolean addContactTest() {
-        try {
-
-            User newContact = new User(Account.create(AccountStatus.ONLINE, "spinos", "1234", "spinos@unal"));
-
-            User user = new User(Account.create(AccountStatus.ONLINE, "edalpin", "1234", "edalpin@unal.edu.co"));
-            return ContactManager.addContact(user, newContact);
-        } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
+    public static String addContactTest(String json) throws ParseException {
+        return ContactManager.addContact(json);
     }
 
-    public static boolean removeContactTest() {
-        User user = new User(Account.create(AccountStatus.ONLINE, "edalpin", "1234", "edalpin@unal.edu.co"));
-        Contact contact = new Contact(Account.create(AccountStatus.ONLINE, "spinos", "1234", "spinos@unal"));
-        try {
-            return ContactManager.removeContact(user, contact);
-        } catch (SQLException | ClassNotFoundException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
+    public static String removeContactTest(String json) throws ParseException {
+        return ContactManager.removeContact(json);
     }
 
-    /* 
-     public static LinkedList<Session> getAllCreatingSessionsTest() {
-     try {
-     return SessionManager.getAllCreatingSessions();
-     } catch (ClassNotFoundException | SQLException ex) {
-     Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-     return null;
-     }
-     }
-     public static LinkedList<Player> getPlayersFromSession() {
-     try {
-     return SessionManager.getPlayersFromSession(1);
-     } catch (SQLException | ClassNotFoundException ex) {
-     Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-     return null;
-     }
-     }
-     */
-    public static LinkedList<Contact> getContactsFromUser() {
-        try {
-            return ContactManager.getContactsFromUser("edalpin");
-        } catch (SQLException | ClassNotFoundException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
+    public static String getAllCreatingSessionsTest() {
+        return SessionManager.getAllCreatingSession();
     }
 
-    public static boolean takeOutPlayerFromSessionTest() {
-        Session session = Session.create(1, 4, null, SessionState.CREATING, new Map("Prado Centro"));
-        Player player = new Player(Account.create(AccountStatus.ONLINE, "spinos", null, "spinos@unal.edu.co"), Color.RED);
-        try {
-            return SessionManager.takeOutPlayerFromSession(session, player);
-        } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
+    public static String getPlayersFromSessionTest(String json) throws ParseException {
+        return SessionManager.getPlayersFromSession(json);
     }
 
-    public static boolean playerLeavesSessionTest() {
-        Session session = Session.create(1, 4, null, SessionState.CREATING, new Map("Prado Centro"));
-        Player player = new Player(Account.create(AccountStatus.ONLINE, "spinos", null, "spinos@unal.edu.co"), Color.RED);
-        try {
-            return SessionManager.leaveSession(session, player);
-        } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
+    public static String getContactsFromUser(String json) throws ParseException {
+        return ContactManager.getContactsFromUser(json);
     }
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException, FileNotFoundException, IOException, ParseException {
+    public static String takeOutPlayerFromSessionTest(String json) throws ParseException {
+        return SessionManager.takeOutPlayerFromSession(json);
+    }
+
+    public static String playerLeavesSessionTest(String json) throws ParseException {
+        return SessionManager.leaveSession(json);
+    }
+
+    public static void main(String[] args) throws FileNotFoundException, IOException, ParseException {
         File fileJson = new File("jsonTest.json");
         BufferedReader readJson = new BufferedReader(new FileReader("jsonTest.json"));
         String line = null;
@@ -175,6 +125,13 @@ public class Test {
         menu.append("code: 8 - joinSession\n");
         menu.append("code: 9 - inviteContact\n");
         menu.append("code: 10 - answerInvitation\n");
+        menu.append("code: 11 - addContact\n");
+        menu.append("code: 12 - removeContact\n");
+        menu.append("code: 13 - getAllCreatingSessions\n");
+        menu.append("code: 14 - getPlayersFromSession\n");
+        menu.append("code: 15 - getContactsFromUser\n");
+        menu.append("code: 16 - takeOutPlayerFromSession\n");
+        menu.append("code: 17 - playerLeavesSession\n");
         menu.append("Insert test code: ");
         System.out.print(menu);
 
@@ -212,6 +169,27 @@ public class Test {
                 break;
             case 10:
                 System.out.println(answerInvitationTest(jsonTest.toString()));
+                break;
+            case 11:
+                System.out.println(addContactTest(jsonTest.toString()));
+                break;
+            case 12:
+                System.out.println(removeContactTest(jsonTest.toString()));
+                break;
+            case 13:
+                System.out.println(getAllCreatingSessionsTest());
+                break;
+            case 14:
+                System.out.println(getPlayersFromSessionTest(jsonTest.toString()));
+                break;
+            case 15:
+                System.out.println(getContactsFromUser(jsonTest.toString()));
+                break;
+            case 16:
+                System.out.println(takeOutPlayerFromSessionTest(jsonTest.toString()));
+                break;
+            case 17:
+                System.out.println(playerLeavesSessionTest(jsonTest.toString()));
                 break;
         }
     }
