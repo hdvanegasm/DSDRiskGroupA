@@ -138,7 +138,7 @@ public class Test {
         Scanner entrada = new Scanner(System.in);
         int method = entrada.nextInt();
 
-        System.out.println("========= JSON RESULT ==========");
+        System.out.println("============================================= JSON RESULT ==============================================");
         switch (method) {
             case 1:
                 System.out.println(createAccountTest(jsonTest.toString()));
