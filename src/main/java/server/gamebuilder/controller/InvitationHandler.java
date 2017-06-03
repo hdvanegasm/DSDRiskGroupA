@@ -5,7 +5,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import server.DatabaseConnector;
+import server.accountmanager.model.Account;
 import server.accountmanager.model.AccountStatus;
 import server.accountmanager.model.Contact;
 import server.gamebuilder.model.Host;
@@ -35,39 +40,69 @@ public class InvitationHandler {
      * @throws ClassNotFoundException The method returns the this exception when
      * a the class is not found in the statement reference.
      */
-    public static boolean inviteContact(Host host, Contact contact) throws SQLException, ClassNotFoundException {
-        String onlineContactQuery = "SELECT status FROM account WHERE username='" + contact.account.username + "';";
-        ResultSet result;
+    public static String inviteContact(String json) throws ParseException {
 
-        result = DatabaseConnector.getInstance().getStatement().executeQuery(onlineContactQuery);
+        try {
+            JSONParser parser = new JSONParser();
+            String jsonToString = "[" + json + "]";
+            Object obj = parser.parse(jsonToString);
+            JSONArray jsonArray = (JSONArray) obj;
 
-        if (result.next()) {
-            String status = result.getString("status");
-            if (!status.equals(AccountStatus.ONLINE.toString())) {
-                return false;
+            JSONObject parsedObject = (JSONObject) jsonArray.get(0);
+
+            String hostUsername = (String) parsedObject.get("username");
+            String contactUsername = (String) parsedObject.get("contact");
+
+            Host host = new Host(Account.create(AccountStatus.ONLINE, hostUsername, null, null), null);
+            Contact contact = new Contact(Account.create(AccountStatus.ONLINE, contactUsername, null, null));
+
+            String onlineContactQuery = "SELECT status FROM account WHERE username='" + contact.account.username + "';";
+            ResultSet result;
+
+            result = DatabaseConnector.getInstance().getStatement().executeQuery(onlineContactQuery);
+
+            if (result.next()) {
+                String status = result.getString("status");
+                if (!status.equals(AccountStatus.ONLINE.toString())) {
+                    JSONObject returnJson = new JSONObject();
+                    returnJson.put("status", false);
+                    returnJson.put("message", "The contact is not online");
+                    return returnJson.toJSONString();
+                }
+            } else {
+                JSONObject returnJson = new JSONObject();
+                returnJson.put("status", false);
+                returnJson.put("message", "The contact does not exists");
+                return returnJson.toJSONString();
             }
-        } else {
-            return false;
+
+            // Get new ID
+            String querySelectId = "SELECT MAX(id) AS id FROM invitation;";
+
+            result = DatabaseConnector.getInstance().getStatement().executeQuery(querySelectId);
+
+            int newId = 1;
+
+            if (result.next()) {
+                newId = result.getInt("id") + 1;
+            }
+
+            // Create session invitation objetct
+            SessionInvitation invitation = contact.invite(newId);
+            String insertInvitationQuery = "INSERT INTO invitation(id, host, contact_username, state) VALUES(" + invitation.id + ", '" + host.account.username + "', '" + contact.account.username + "', '" + invitation.state + "');";
+
+            DatabaseConnector.getInstance().getStatement().executeUpdate(insertInvitationQuery);
+
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", true);
+            returnJson.put("message", "Invitation was sent");
+            return returnJson.toJSONString();
+        } catch (SQLException | ClassNotFoundException ex) {
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", false);
+            returnJson.put("message", ex.getMessage());
+            return returnJson.toJSONString();
         }
-
-        // Get new ID
-        String querySelectId = "SELECT MAX(id) AS id FROM invitation;";
-
-        result = DatabaseConnector.getInstance().getStatement().executeQuery(querySelectId);
-
-        int newId = 1;
-
-        if (result.next()) {
-            newId = result.getInt("id") + 1;
-        }
-
-        // Create session invitation objetct
-        SessionInvitation invitation = contact.invite(newId);
-        String insertInvitationQuery = "INSERT INTO invitation(id, host, contact_username, state) VALUES(" + invitation.id + ", '" + host.account.username + "', '" + contact.account.username + "', '" + invitation.state + "');";
-
-        DatabaseConnector.getInstance().getStatement().executeUpdate(insertInvitationQuery);
-
-        return true;
     }
 
     /**
@@ -86,16 +121,54 @@ public class InvitationHandler {
      * @throws ClassNotFoundException The method returns the this exception when
      * a the class is not found in the statement reference.
      */
-    public static boolean answerInvitation(SessionInvitation invitation, SessionInvitationState response) throws ClassNotFoundException, SQLException {
-        boolean result = invitation.answer(response);
+    public static String answerInvitation(String json) throws ParseException {
 
-        String updateInvitationStateQuery = "UPDATE invitation SET state=? WHERE id=?";
+        try {
+            JSONParser parser = new JSONParser();
+            String jsonToString = "[" + json + "]";
+            Object obj = parser.parse(jsonToString);
+            JSONArray jsonArray = (JSONArray) obj;
 
-        PreparedStatement update = DatabaseConnector.getInstance().getConnection().prepareStatement(updateInvitationStateQuery);
-        update.setString(1, invitation.state.toString());
-        update.setInt(2, invitation.id);
-        update.executeUpdate();
+            JSONObject parsedObject = (JSONObject) jsonArray.get(0);
 
-        return result;
+            int invitationId = (int) parsedObject.get("sessionId");
+            boolean responseJson = (boolean) parsedObject.get("response");
+
+            SessionInvitationState response = null;
+
+            if (responseJson) {
+                response = SessionInvitationState.ACCEPTED;
+            } else {
+                response = SessionInvitationState.NOT_ACCEPTED;
+            }
+
+            SessionInvitation invitation = new SessionInvitation(invitationId, SessionInvitationState.UNANSWERED);
+
+            boolean result = invitation.answer(response);
+
+            String updateInvitationStateQuery = "UPDATE invitation SET state=? WHERE id=?";
+
+            PreparedStatement update = DatabaseConnector.getInstance().getConnection().prepareStatement(updateInvitationStateQuery);
+            update.setString(1, invitation.state.toString());
+            update.setInt(2, invitation.id);
+            update.executeUpdate();
+
+            if (result) {
+                JSONObject returnJson = new JSONObject();
+                returnJson.put("status", result);
+                returnJson.put("message", "Invitation accepted");
+                return returnJson.toJSONString();
+            } else {
+                JSONObject returnJson = new JSONObject();
+                returnJson.put("status", result);
+                returnJson.put("message", "Invitation rejected");
+                return returnJson.toJSONString();
+            }
+        } catch (ClassNotFoundException | SQLException ex) {
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", false);
+            returnJson.put("message", ex.getMessage());
+            return returnJson.toJSONString();
+        }
     }
 }

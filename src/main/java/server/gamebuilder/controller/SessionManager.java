@@ -6,8 +6,6 @@ import server.gamebuilder.model.Session;
 import java.sql.*;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -37,13 +35,10 @@ public class SessionManager {
      * parameters selected by that user. The method changes the user's type to
      * host and update all the attributes of the session to creating
      *
-     * @param user It is the user that makes the request to create the session.
+     * @param json
      * @return The method returns "true" if the session was successfully
      * created, otherwise it returns "false"
-     * @throws SQLException The method returns the this exception when a
-     * database error occurs.
-     * @throws ClassNotFoundException The method returns the this exception when
-     * a the class is not found in the executeQuery method.
+     * @throws org.json.simple.parser.ParseException
      */
     public static String createSession(String json) throws ParseException {
 
@@ -115,18 +110,10 @@ public class SessionManager {
      * system assigns a random color to the user and finally add it to the
      * player list of the session.
      *
-     * @param user This reference represents the user that will be joined to the
-     * session. It is important to notice that due the hierarchy relation
-     * between Contact and User, this method can be invoked for objects of both
-     * types.
-     * @param session This reference represents the session in which the user
-     * will be joined.
+     * @param json
      * @return The method returns a reference to the player that was joined to
      * the session.
-     * @throws SQLException The method returns the this exception when a
-     * database error occurs.
-     * @throws ClassNotFoundException The method returns the this exception when
-     * a the class is not found in the executeQuery method.
+     * @throws org.json.simple.parser.ParseException
      */
     public static String joinToSession(String json) throws ParseException {
 
@@ -194,48 +181,6 @@ public class SessionManager {
             returnJson.put("message", ex.getMessage());
             return returnJson.toJSONString();
         }
-    }
-
-    /**
-     * This method is used when a contact will be joined to a session after he
-     * accepts an invitation from the host. This method updates the attributes
-     * of the contact to "player" and put his state to "playing". Also the the
-     * system assigns a random color to the user and finally add it to the
-     * player list of the session.
-     *
-     * @param contact This reference represents the contact that will be joined
-     * to the session. This contact is in the contact list of the host.
-     * @param session This reference represents the session in which the contact
-     * will be joined.
-     * @return The method returns a reference to the player that was joined to
-     * the session.
-     * @throws SQLException The method returns the this exception when a
-     * database error occurs.
-     * @throws ClassNotFoundException The method returns the this exception when
-     * a the class is not found in the executeQuery method.
-     */
-    public static Player joinToSession(Contact contact, Session session) throws SQLException, ClassNotFoundException {
-
-        // If the limit of players was reached, then the contact cannot be added
-        if (session.players.size() == session.numberOfPlayers) {
-            return null;
-        }
-
-        Player newPlayer = session.join(contact);
-
-        // Insert player to the database associated with the session
-        String insertPlayerQuery = "INSERT INTO player VALUES('" + newPlayer.account.username + "', '" + newPlayer.color + "',\"non-captured\",0,0,0,FALSE,NULL," + session.id + ")";
-        DatabaseConnector.getInstance().getStatement().executeUpdate(insertPlayerQuery);
-
-        // Update user status
-        String queryUpdateUserStatus = "UPDATE account SET status = \"" + newPlayer.account.status + "\" WHERE username = \"" + newPlayer.account.username + "\";";
-        DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdateUserStatus);
-
-        // Update player type
-        String queryUpdatePlayerType = "UPDATE user SET typeOfUser = '" + Player.class.getSimpleName().toUpperCase() + "' WHERE username = \"" + newPlayer.account.username + "\";";
-        DatabaseConnector.getInstance().getStatement().executeUpdate(queryUpdatePlayerType);
-
-        return newPlayer;
     }
 
     /**
@@ -379,7 +324,7 @@ public class SessionManager {
      * @throws ClassNotFoundException The method returns the this exception when
      * a the class is not found in the executeQuery method.
      */
-    public static LinkedList<Session> getAllCreatingSessions() throws ClassNotFoundException, SQLException {
+    private static LinkedList<Session> getAllCreatingSessions() throws ClassNotFoundException, SQLException {
         LinkedList<Session> creatingSessions = new LinkedList<>();
 
         PreparedStatement preparedStatement = null;

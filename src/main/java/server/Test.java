@@ -17,14 +17,10 @@ import server.accountmanager.model.AccountStatus;
 import server.accountmanager.model.User;
 import server.gamebuilder.controller.RequestHandler;
 import server.gamebuilder.controller.SessionManager;
-import server.gamebuilder.model.Host;
 import server.gamebuilder.model.Map;
 import server.gamebuilder.model.Player;
-import server.gamebuilder.model.Request;
-import server.gamebuilder.model.RequestState;
 import server.gamebuilder.model.Session;
 import server.gamebuilder.model.SessionState;
-import server.gamebuilder.model.SessionType;
 import server.accountmanager.model.Contact;
 import server.gamebuilder.controller.InvitationHandler;
 import server.gamebuilder.model.Color;
@@ -63,52 +59,24 @@ public class Test {
         return SessionManager.createSession(json);
     }
 
-    public static boolean makeRequestTest() {
-        try {
-            String username = "edalpin";
-            int idSession = 2;
-
-            Session session = Session.create(idSession);
-            User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
-
-            return RequestHandler.makeRequest(session, user);
-        } catch (SQLException | ClassNotFoundException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
+    public static String makeRequestTest(String json) throws ParseException {
+        return RequestHandler.makeRequest(json);
     }
 
-    public static boolean answerRequestTest() {
-        Request request = new Request(1, RequestState.UNANSWERED);
-        boolean response;
-        try {
-            response = RequestHandler.answerRequest(request, RequestState.ACCEPTED);
-        } catch (ClassNotFoundException | SQLException ex) {
-            response = false;
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return response;
+    public static String answerRequestTest(String json) throws ParseException {
+        return RequestHandler.answerRequest(json);
     }
 
     public static String joinSessionTest(String json) throws ParseException {
-       return SessionManager.joinToSession(json);
+        return SessionManager.joinToSession(json);
     }
 
-    public static boolean inviteContactTest() {
-        Host host = new Host(Account.create(AccountStatus.ONLINE, "hernan", "1234", "hdvanegasm@unal.edu.co"), null);
-        Contact contact = new Contact(Account.create(AccountStatus.ONLINE, "spinos", "1234", "s@unal"));
-        try {
-            return InvitationHandler.inviteContact(host, contact);
-        } catch (SQLException | ClassNotFoundException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
+    public static String inviteContactTest(String json) throws ParseException {
+        return InvitationHandler.inviteContact(json);
     }
 
-    public static boolean answerInvitationTest() throws ClassNotFoundException, SQLException {
-        SessionInvitation invitation = new SessionInvitation(1, SessionInvitationState.UNANSWERED);
-        SessionInvitationState response = SessionInvitationState.ACCEPTED;
-        return InvitationHandler.answerInvitation(invitation, response);
+    public static String answerInvitationTest(String json) throws ParseException {
+        return InvitationHandler.answerInvitation(json);
     }
 
     // TODO implement test
@@ -136,24 +104,24 @@ public class Test {
         }
     }
 
-    public static LinkedList<Session> getAllCreatingSessionsTest() {
-        try {
-            return SessionManager.getAllCreatingSessions();
-        } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-    }
-
-/*    public static LinkedList<Player> getPlayersFromSession() {
-        try {
-            return SessionManager.getPlayersFromSession(1);
-        } catch (SQLException | ClassNotFoundException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-    }
-*/
+    /* 
+     public static LinkedList<Session> getAllCreatingSessionsTest() {
+     try {
+     return SessionManager.getAllCreatingSessions();
+     } catch (ClassNotFoundException | SQLException ex) {
+     Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+     return null;
+     }
+     }
+     public static LinkedList<Player> getPlayersFromSession() {
+     try {
+     return SessionManager.getPlayersFromSession(1);
+     } catch (SQLException | ClassNotFoundException ex) {
+     Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+     return null;
+     }
+     }
+     */
     public static LinkedList<Contact> getContactsFromUser() {
         try {
             return ContactManager.getContactsFromUser("edalpin");
@@ -193,12 +161,20 @@ public class Test {
         while ((line = readJson.readLine()) != null) {
             jsonTest.append(line);
         }
-
+        System.out.println("#####################################################");
+        System.out.println("# ACCOUNT MANAGER AND GAME BUILDER INTEGRATION TEST #");
+        System.out.println("#####################################################");
         StringBuilder menu = new StringBuilder();
         menu.append("code: 1 - createAccount\n");
         menu.append("code: 2 - logOut\n");
         menu.append("code: 3 - logIn\n");
         menu.append("code: 4 - changePassword\n");
+        menu.append("code: 5 - createSession\n");
+        menu.append("code: 6 - makeRequest\n");
+        menu.append("code: 7 - answerRequest\n");
+        menu.append("code: 8 - joinSession\n");
+        menu.append("code: 9 - inviteContact\n");
+        menu.append("code: 10 - answerInvitation\n");
         menu.append("Insert test code: ");
         System.out.print(menu);
 
@@ -218,6 +194,24 @@ public class Test {
                 break;
             case 4:
                 System.out.println(changePasswordTest(jsonTest.toString()));
+                break;
+            case 5:
+                System.out.println(createSessionTest(jsonTest.toString()));
+                break;
+            case 6:
+                System.out.println(makeRequestTest(jsonTest.toString()));
+                break;
+            case 7:
+                System.out.println(answerRequestTest(jsonTest.toString()));
+                break;
+            case 8:
+                System.out.println(joinSessionTest(jsonTest.toString()));
+                break;
+            case 9:
+                System.out.println(inviteContactTest(jsonTest.toString()));
+                break;
+            case 10:
+                System.out.println(answerInvitationTest(jsonTest.toString()));
                 break;
         }
     }
