@@ -3,8 +3,6 @@ package server.gamebuilder.controller;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -136,7 +134,7 @@ public class InvitationHandler {
 
             JSONObject parsedObject = (JSONObject) jsonArray.get(0);
 
-            int invitationId = (int) parsedObject.get("invitationId");
+            int invitationId = Integer.parseInt(String.valueOf(parsedObject.get("invitationId")));
             boolean responseJson = (boolean) parsedObject.get("response");
 
             SessionInvitationState response = null;

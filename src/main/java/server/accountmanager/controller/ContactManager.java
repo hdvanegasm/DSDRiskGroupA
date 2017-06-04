@@ -297,17 +297,17 @@ public class ContactManager {
                 Contact actualContact = contactIterator.next();
                 JSONObject contact = new JSONObject();
                 contact.put("username", actualContact.account.username);
-                contact.put("email", actualContact.account.username);
-                contact.put("numberOfSessionsWon", actualContact.account.username);
-                contact.put("numberOfSessionLost", actualContact.account.username);
-                contact.put("percentageOfWins", actualContact.account.username);
+                contact.put("email", actualContact.account.email);
+                contact.put("numberOfSessionsWon", actualContact.account.numberOfSessionWon);
+                contact.put("numberOfSessionLost", actualContact.account.numberOfSessionLost);
+                contact.put("percentageOfWins", actualContact.account.percentageOfWins);
                 contact.put("status", actualContact.account.status.toString());
 
                 contactArray.add(contact);
             }
-            result.put("players", contactArray);
+            result.put("contacts", contactArray);
             result.put("status", true);
-
+            
             return result.toJSONString();
         } catch (SQLException | ClassNotFoundException ex) {
             JSONObject returnJson = new JSONObject();

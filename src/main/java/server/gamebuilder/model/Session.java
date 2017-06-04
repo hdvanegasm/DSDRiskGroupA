@@ -15,7 +15,6 @@ import server.accountmanager.model.AccountStatus;
 public class Session {
 
     public int id;
-    public int numberOfPlayers;
     public SessionType type;
     public Map map;
     public LinkedList<Request> requests;
@@ -40,7 +39,7 @@ public class Session {
      * and "finished".
      */
 
-    private Session(int sessionId, int numberOfPlayers, SessionType type, SessionState state, Map map) {
+    private Session(int sessionId, SessionType type, SessionState state, Map map) {
 
         // Load available colors
         this.id = sessionId;
@@ -49,7 +48,6 @@ public class Session {
             availableColors.add(Color.values()[i]);
         }
 
-        this.numberOfPlayers = numberOfPlayers;
         this.type = type;
         this.state = state;
         this.requests = new LinkedList<>();
@@ -121,8 +119,6 @@ public class Session {
      * only way to create a session.
      *
      * @param sessionId Represents the id of the session that will be created.
-     * @param numberOfPlayers This number represents the number of players that
-     * will participate in the game.
      * @param type This parameter determines the type of session that will be
      * played. The value of this attribute will determine the rules of the game
      * and the number of players that will be playing.
@@ -132,8 +128,8 @@ public class Session {
      * @param map Represents the map in which the game will be played.
      * @return The method returns a reference to the new object created.
      */
-    public static Session create(int sessionId, int numberOfPlayers, SessionType type, SessionState state, Map map) {
-        return new Session(sessionId, numberOfPlayers, type, state, map);
+    public static Session create(int sessionId, SessionType type, SessionState state, Map map) {
+        return new Session(sessionId, type, state, map);
     }
 
     // TODO add documentation
@@ -164,7 +160,8 @@ public class Session {
 
     @Override
     public String toString() {
-        return "Session{" + "id=" + id + ", numberOfPlayers=" + numberOfPlayers + ", type=" + type + ", map=" + map + ", requests=" + requests + ", players=" + players + ", state=" + state + ", availableColors=" + availableColors + '}';
+        return "Session{" + "id=" + id + ", type=" + type + ", map=" + map + ", requests=" + requests + ", players=" + players + ", state=" + state + ", availableColors=" + availableColors + '}';
     }
+    
     
 }

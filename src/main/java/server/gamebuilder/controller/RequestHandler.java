@@ -51,7 +51,7 @@ public class RequestHandler {
             JSONObject parsedObject = (JSONObject) jsonArray.get(0);
 
             String username = (String) parsedObject.get("username");
-            int idSession = (int) parsedObject.get("sessionId");
+            int idSession =  Integer.parseInt(String.valueOf(parsedObject.get("sessionId")));
 
             Session session = Session.create(idSession);
             User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
@@ -133,7 +133,7 @@ public class RequestHandler {
 
         JSONObject parsedObject = (JSONObject) jsonArray.get(0);
 
-        int requestId = (int) parsedObject.get("requestId");
+        int requestId = Integer.parseInt(String.valueOf(parsedObject.get("requestId")));
         boolean response = (boolean) parsedObject.get("response");
 
         Request request = new Request(requestId, RequestState.UNANSWERED);

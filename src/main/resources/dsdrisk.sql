@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 01, 2017 at 11:41 AM
+-- Generation Time: Jun 04, 2017 at 07:46 AM
 -- Server version: 10.1.19-MariaDB
 -- PHP Version: 5.6.28
 
@@ -41,10 +41,13 @@ CREATE TABLE `account` (
 --
 
 INSERT INTO `account` (`username`, `password`, `email`, `numberOfSessionLost`, `numberOfSessionswon`, `percentageOfWins`, `status`) VALUES
-('carlos', '2341', 'carlos@hola.com', 0, 0, 0, 'OFFLINE'),
+('carlos', '2341', 'carlos@hola.com', 0, 0, 0, 'ONLINE'),
 ('edalpin', '1234', 'edalpin@unal.edu.co', 0, 0, 0, 'PLAYING'),
-('hernan', '1234', 'hdvanegasm@unal.edu.co', 0, 0, 0, 'ONLINE'),
+('felipe', '1234', 'felipe@unal.edu.co', 0, 0, 0, 'PLAYING'),
+('hernan', '1234', 'hdvanegasm@unal.edu.co', 0, 0, 0, 'PLAYING'),
+('pablo', '12345', 'pablo@unal.edu.co', 0, 0, 0, 'OFFLINE'),
 ('pedro', '1234', 'pedro@unal.edu.co', 0, 0, 0, 'PLAYING'),
+('pepe', '1234', 'pepe@unal.edu.co', 0, 0, 0, 'PLAYING'),
 ('spinos', '1234', 's@unal', 0, 0, 0, 'PLAYING');
 
 -- --------------------------------------------------------
@@ -62,6 +65,7 @@ CREATE TABLE `contact` (
 --
 
 INSERT INTO `contact` (`username`) VALUES
+('carlos'),
 ('hernan'),
 ('spinos');
 
@@ -81,6 +85,7 @@ CREATE TABLE `contactlist` (
 --
 
 INSERT INTO `contactlist` (`user_username`, `contact_username`) VALUES
+('edalpin', 'carlos'),
 ('edalpin', 'hernan'),
 ('edalpin', 'spinos');
 
@@ -101,7 +106,9 @@ CREATE TABLE `host` (
 
 INSERT INTO `host` (`player`, `session`) VALUES
 ('hernan', 1),
-('pedro', 2);
+('pedro', 2),
+('pepe', 3),
+('edalpin', 4);
 
 -- --------------------------------------------------------
 
@@ -156,9 +163,11 @@ CREATE TABLE `player` (
 --
 
 INSERT INTO `player` (`user`, `color`, `captureState`, `territoryAmount`, `continentAmount`, `cardAmount`, `turn`, `type`, `sessionID`) VALUES
-('edalpin', 'ORANGE', 'non-captured', 0, 0, 0, 0, NULL, 2),
+('edalpin', 'YELLOW', 'non-captured', 0, 0, 0, 0, 'HOST', 4),
+('felipe', 'BLUE', 'non-captured', 0, 0, 0, 0, NULL, 4),
 ('hernan', 'YELLOW', 'non-captured', 0, 0, 0, 0, 'HOST', 1),
 ('pedro', 'YELLOW', 'non-captured', 0, 0, 0, 0, 'HOST', 2),
+('pepe', 'YELLOW', 'non-captured', 0, 0, 0, 0, 'HOST', 3),
 ('spinos', 'ORANGE', 'non-captured', 0, 0, 0, 0, NULL, 1);
 
 -- --------------------------------------------------------
@@ -179,7 +188,8 @@ CREATE TABLE `request` (
 --
 
 INSERT INTO `request` (`id`, `session`, `state`, `username`) VALUES
-(1, 2, 'ACCEPTED', 'edalpin');
+(1, 2, 'ACCEPTED', 'edalpin'),
+(2, 3, 'ACCEPTED', 'carlos');
 
 -- --------------------------------------------------------
 
@@ -191,17 +201,18 @@ CREATE TABLE `session` (
   `map` varchar(80) DEFAULT NULL,
   `id` int(11) NOT NULL,
   `state` varchar(80) NOT NULL,
-  `type` varchar(80) DEFAULT NULL,
-  `numberOfPlayers` int(11) NOT NULL
+  `type` varchar(80) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `session`
 --
 
-INSERT INTO `session` (`map`, `id`, `state`, `type`, `numberOfPlayers`) VALUES
-(NULL, 1, 'CREATING', NULL, 4),
-(NULL, 2, 'CREATING', NULL, 2);
+INSERT INTO `session` (`map`, `id`, `state`, `type`) VALUES
+(NULL, 1, 'CREATING', NULL),
+(NULL, 2, 'CREATING', NULL),
+(NULL, 3, 'CREATING', NULL),
+(NULL, 4, 'CREATING', NULL);
 
 -- --------------------------------------------------------
 
@@ -219,10 +230,13 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`typeOfUser`, `username`) VALUES
-(NULL, 'carlos'),
+('CONTACT', 'carlos'),
 ('PLAYER', 'edalpin'),
+('PLAYER', 'felipe'),
 ('PLAYER', 'hernan'),
+(NULL, 'pablo'),
 ('PLAYER', 'pedro'),
+('PLAYER', 'pepe'),
 ('PLAYER', 'spinos');
 
 --
@@ -333,7 +347,7 @@ ALTER TABLE `host`
 --
 ALTER TABLE `invitation`
   ADD CONSTRAINT `invitation_ibfk_1` FOREIGN KEY (`host`) REFERENCES `host` (`player`),
-  ADD CONSTRAINT `invitation_ibfk_2` FOREIGN KEY (`contact_username`) REFERENCES `contact` (`username`);
+  ADD CONSTRAINT `invitation_ibfk_2` FOREIGN KEY (`contact_username`) REFERENCES `contact` (`username`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `player`

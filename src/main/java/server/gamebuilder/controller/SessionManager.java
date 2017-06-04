@@ -79,7 +79,7 @@ public class SessionManager {
             session.join(host);
 
             //create session in database
-            String queryInsertSession = "INSERT INTO session VALUES (NULL, " + session.id + ", \"" + SessionState.CREATING + "\", NULL, 1);";
+            String queryInsertSession = "INSERT INTO session VALUES (NULL, " + session.id + ", \"" + SessionState.CREATING + "\", NULL);";
 
             //update host table
             String queryInsertHost = "INSERT INTO host VALUES (\"" + host.account.username + "\",  " + session.id + " );";
@@ -99,6 +99,7 @@ public class SessionManager {
 
             JSONObject returnJson = new JSONObject();
             returnJson.put("status", true);
+            returnJson.put("sessionId", session.id);
             returnJson.put("message", "Session created");
             return returnJson.toJSONString();
         } catch (SQLException | ClassNotFoundException ex) {
@@ -135,17 +136,9 @@ public class SessionManager {
             JSONObject parsedObject = (JSONObject) jsonArray.get(0);
 
             String username = (String) parsedObject.get("username");
-            int sessionId = (int) parsedObject.get("sessionId");
-
-            // Construction of session
-            String querySession = "SELECT numberOfPlayers FROM session WHERE session.id = ?";
-            PreparedStatement preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(querySession);
-            preparedStatement.setInt(1, sessionId);
-            ResultSet result = preparedStatement.executeQuery();
-            result.next();
+            int sessionId = Integer.parseInt(String.valueOf(parsedObject.get("sessionId")));
 
             Session session = Session.create(sessionId);
-            session.numberOfPlayers = result.getInt("numberOfPlayers");
 
             LinkedList<Player> playerList = getPlayerListFromSession(sessionId);
             Iterator<Player> playerIterator = playerList.listIterator();
@@ -159,7 +152,7 @@ public class SessionManager {
             User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
 
             // If the limit of players was reached, then the contact cannot be added
-            if (session.players.size() == session.numberOfPlayers) {
+            if (session.players.size() == 6) {
                 JSONObject returnJson = new JSONObject();
                 returnJson.put("status", false);
                 returnJson.put("message", "Limir of players reached");
@@ -182,7 +175,7 @@ public class SessionManager {
 
             JSONObject returnJson = new JSONObject();
             returnJson.put("status", true);
-            returnJson.put("message", "Session created successfully");
+            returnJson.put("message", "User joined to session successfully");
             return returnJson.toJSONString();
         } catch (SQLException | ClassNotFoundException ex) {
             JSONObject returnJson = new JSONObject();
@@ -219,9 +212,9 @@ public class SessionManager {
             JSONObject parsedObject = (JSONObject) jsonArray.get(0);
 
             String username = (String) parsedObject.get("username");
-            int sessionId = (int) parsedObject.get("sessionId");
+            int sessionId = Integer.parseInt(String.valueOf(parsedObject.get("sessionId")));
 
-            Session session = Session.create(sessionId, 0, null, SessionState.CREATING, null);
+            Session session = Session.create(sessionId, null, SessionState.CREATING, null);
             Player player = new Player(Account.create(AccountStatus.ONLINE, username, null, null), null);
 
             player.takeOut(session);
@@ -307,9 +300,9 @@ public class SessionManager {
             JSONObject parsedObject = (JSONObject) jsonArray.get(0);
 
             String username = (String) parsedObject.get("username");
-            int sessionId = (int) parsedObject.get("sessionId");
+            int sessionId = Integer.parseInt(String.valueOf(parsedObject.get("sessionId")));
 
-            Session session = Session.create(sessionId, 0, null, SessionState.CREATING, null);
+            Session session = Session.create(sessionId, null, SessionState.CREATING, null);
             Player player = new Player(Account.create(AccountStatus.ONLINE, username, null, null), null);
 
             session.leave(player);
@@ -394,7 +387,6 @@ public class SessionManager {
             int sessionId = results.getInt("id");
             Map map = new Map(results.getString("map"));
             String typeString = results.getString("type");
-            int numberOfPlayers = results.getInt("numberOfPlayers");
 
             SessionType sessionType = null;
             if (typeString != null) {
@@ -414,7 +406,7 @@ public class SessionManager {
                 }
             }
 
-            Session session = Session.create(sessionId, numberOfPlayers, sessionType, SessionState.CREATING, map);
+            Session session = Session.create(sessionId, sessionType, SessionState.CREATING, map);
 
             String queryPlayers = "SELECT * FROM player, account WHERE sessionID=? AND player.user=account.username AND type IS NULL";
             preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(queryPlayers);
@@ -523,9 +515,8 @@ public class SessionManager {
 
                 JSONObject session = new JSONObject();
                 session.put("id", actualSession.id);
-                session.put("map", actualSession.id);
-                session.put("type", actualSession.id);
-                session.put("numberOfPlayers", actualSession.id);
+                session.put("map", actualSession.map.name);
+                session.put("type", actualSession.type);
 
                 JSONArray playersJson = new JSONArray();
 
@@ -535,7 +526,7 @@ public class SessionManager {
 
                     JSONObject player = new JSONObject();
                     player.put("username", actualPlayer.account.username);
-                    player.put("color", actualPlayer.color);
+                    player.put("color", actualPlayer.color.toString());
                     player.put("email", actualPlayer.account.email);
                     player.put("percentajeOfWins", actualPlayer.account.percentageOfWins);
                     player.put("numberOfSessionsWon", actualPlayer.account.numberOfSessionWon);
@@ -548,7 +539,7 @@ public class SessionManager {
 
                 arraySessionJson.add(session);
             }
-            jsonResult.put("sessions", jsonResult);
+            jsonResult.put("sessions", arraySessionJson);
             jsonResult.put("status", true);
             return jsonResult.toJSONString();
         } catch (ClassNotFoundException | SQLException ex) {
