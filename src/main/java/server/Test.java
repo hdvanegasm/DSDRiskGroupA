@@ -93,6 +93,10 @@ public class Test {
         return SessionManager.leaveSession(json);
     }
 
+    public static String sessionStartTest(String json) throws ParseException {
+        return SessionManager.startSession(json);
+    }
+
     public static void main(String[] args) throws FileNotFoundException, IOException, ParseException {
         File fileJson = new File("jsonTest.json");
         BufferedReader readJson = new BufferedReader(new FileReader("jsonTest.json"));
@@ -122,6 +126,7 @@ public class Test {
         menu.append("code: 15 - getContactsFromUser\n");
         menu.append("code: 16 - takeOutPlayerFromSession\n");
         menu.append("code: 17 - playerLeavesSession\n");
+        menu.append("code: 18 - startSession\n");
         menu.append("Insert test code: ");
         System.out.print(menu);
 
@@ -180,6 +185,9 @@ public class Test {
                 break;
             case 17:
                 System.out.println(playerLeavesSessionTest(jsonTest.toString()));
+                break;
+            case 18:
+                System.out.println(sessionStartTest(jsonTest.toString()));
                 break;
         }
     }

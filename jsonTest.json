@@ -1,3 +1,5 @@
-{	"username": "dacanoc",
- 	"sessionId": 3
+{
+    "sessionId": 3,
+    "mapName": "Classic",
+    "type": "SECRET_MISSION_RISK"
 }

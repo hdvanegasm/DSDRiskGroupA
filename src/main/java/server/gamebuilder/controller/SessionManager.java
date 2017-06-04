@@ -598,7 +598,7 @@ public class SessionManager {
                 color = Color.ORANGE;
             }
 
-            Player player = new Player(Account.create(AccountStatus.ONLINE, playerUsername, null, playerEmail), color);
+            Player player = new Player(Account.create(AccountStatus.PLAYING, playerUsername, null, playerEmail), color);
 
             float percentageOfWins = resultPlayers.getFloat("percentageOfWins");
             int numberOfSessionWon = resultPlayers.getInt("numberOfSessionswon");
@@ -668,6 +668,20 @@ public class SessionManager {
         }
     }
 
+    /**
+     * This method is implemented in order to start a session updating all of
+     * the attributes of a session when the host finishes the session setup and
+     * he wants to start the game.
+     *
+     * @param json The method receives a JSON that contains the id of the
+     * session, the new type and the map name established in the setup of the
+     * game.
+     * @return The method returns a JSON string that contains all of the
+     * information of this session and the list of the players including the
+     * host.
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
+     */
     public static String startSession(String json) throws ParseException {
         try {
             JSONParser parser = new JSONParser();
@@ -679,7 +693,7 @@ public class SessionManager {
 
             int sessionId = Integer.parseInt(String.valueOf(parsedObject.get("sessionId")));
             String type = String.valueOf(parsedObject.get("type"));
-            String mapName = String.valueOf("mapName");
+            String mapName = String.valueOf(parsedObject.get("mapName"));
 
             SessionType sessionType = null;
 
@@ -784,7 +798,7 @@ public class SessionManager {
             }
 
             resultJson.put("players", playersJson);
-            
+
             return resultJson.toJSONString();
 
         } catch (SQLException | ClassNotFoundException ex) {
