@@ -30,17 +30,16 @@ public class RequestHandler {
      * ask for authorization to enter to the session construction. The method
      * creates a new request and adds it to the database.
      *
-     * @param session It represents the session which will receive the request
-     * for access
-     * @param user This is a reference to the user that is sending the
-     * invitation, this user must be online and the session must have a
-     * "creating" status in order to make a successful request
-     * @return The method returns "true" if the method make a request
-     * successfully, otherwise the method returns false.
-     * @throws SQLException The method returns the this exception when a
-     * database error occurs.
-     * @throws ClassNotFoundException The method returns the this exception when
-     * a the class is not found in the executeQuery method.
+     * @param json This attribute represents a JSON string that contains the
+     * username of the user that wants to join to the session and the ID of the
+     * session in which the user wants to join.
+     * @return The method retuns a JSON that contains two fields: the first
+     * field is a status about the request sending, if the status is "true",
+     * then the request was registered successfully, otherwise the status is
+     * established to "false"; the second field is a message related to the
+     * state of the request sending.
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
      */
     public static String makeRequest(String json) throws ParseException {
         try {
@@ -112,17 +111,18 @@ public class RequestHandler {
      * session. The method modify the request status in the database and returns
      * a boolean according to the answer.
      *
-     * @param request It is the object of the request that will be answered. It
-     * has all of the information needed to answer the request and update the
-     * information in the database.
-     * @param response It is an instance of the enumeration class that
-     * represents the answer of the host of the session.
-     * @return The method returns "true" if the the host "accepts" the request,
-     * otherwise it returns "false".
-     * @throws SQLException The method returns the this exception when a
-     * database error occurs.
-     * @throws ClassNotFoundException The method returns the this exception when
-     * a the class is not found in the executeQuery method.
+     * @param json This attribute represents a JSON string that contains the ID
+     * of a request and the response provided by the host of the session.
+     * @return The method returns three fields in a JSON string: the first field
+     * is the status of the transaction in the database, if the transaction has
+     * some problem like a database exception, then the status value is changed
+     * to "false", otherwise it is true; the second attribute is the response
+     * provided by the host in the session that is a boolean value, this boolean
+     * takes the value of "true" if the request was accepted, otherwise it
+     * returns "false"; the third field is a message that describes the status
+     * of the process.
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
      */
     public static String answerRequest(String json) throws ParseException {
 
@@ -133,10 +133,10 @@ public class RequestHandler {
 
         JSONObject parsedObject = (JSONObject) jsonArray.get(0);
 
-        int idSession = (int) parsedObject.get("sessionId");
+        int requestId = (int) parsedObject.get("requestId");
         boolean response = (boolean) parsedObject.get("response");
 
-        Request request = new Request(idSession, RequestState.UNANSWERED);
+        Request request = new Request(requestId, RequestState.UNANSWERED);
 
         RequestState responseState = null;
 
@@ -163,12 +163,14 @@ public class RequestHandler {
         }
         if (answer) {
             JSONObject returnJson = new JSONObject();
-            returnJson.put("status", answer);
+            returnJson.put("status", true);
+            returnJson.put("response", answer);
             returnJson.put("message", "Request accepted");
             return returnJson.toJSONString();
         } else {
             JSONObject returnJson = new JSONObject();
-            returnJson.put("status", answer);
+            returnJson.put("status", true);
+            returnJson.put("response", answer);
             returnJson.put("message", "Request rejected");
             return returnJson.toJSONString();
         }

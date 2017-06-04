@@ -620,7 +620,7 @@ public class SessionManager {
      * This method uses getPlayerListFromSession() method in order to obtain a
      * linked list and parse it into a JSON string.
      *
-     * @param json This parameter represents a json that contains the session ID
+     * @param json This parameter represents a JSON that contains the session ID
      * wich will be used to extract all of the player of this session.
      * @return The method retursn a JSON that contains the players of the session.
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
