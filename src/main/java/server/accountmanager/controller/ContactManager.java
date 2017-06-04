@@ -5,8 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -32,10 +30,16 @@ public class ContactManager {
      * sure to add the contact to contact table if and only if the contact does
      * not exist.
      *
-     * @param json
-     * @return The method returns a boolean value; it returns "true" if the
-     * contact has been added successfully, otherwise it returns "false"
-     * @throws org.json.simple.parser.ParseException
+     * @param json The method takes a JSON string as parameter which contains
+     * the user's username and the contact's username, i.e. the username of the
+     * user that wants to add the new contact and the new contact's username.
+     * @return The method returns a JSON that contains two fields: the first
+     * field is a status of the process for add a contact, it takes a boolean
+     * value of true if the addition was successful, otherwise it takes a false
+     * value; the second attribute is a message that contains information about
+     * the transaction.
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
      */
     public static String addContact(String json) throws ParseException {
         try {
@@ -119,16 +123,16 @@ public class ContactManager {
      * from the contact table. Also, the method updates all of the attributes in
      * the user table and account table in the database.
      *
-     * @param user This is the user that wants to remove the contact from his
-     * contact list.
-     * @param contact This reference represents the contact that will be deleted
-     * from the contact list of the user in the parameters.
-     * @return The method returns "true" if the contact was removed
-     * successfully, otherwise it returns "false".
-     * @throws SQLException The method returns the this exception when a
-     * database error occurs.
-     * @throws ClassNotFoundException The method returns the this exception when
-     * a the class is not found in the prepared statement reference.
+     * @param json The method takes a JSON string as parameter which contains
+     * the user's username and the contact's username, that is, the user that
+     * wants to remove the contact and the contact username.
+     * @return The method returns a JSON that contains two fields: the first
+     * field is a status of the process for removing a contact, it takes a
+     * boolean value of true if the removing was successful, otherwise it takes
+     * a false value; the second attribute is a message that contains
+     * information about the transaction.
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
      */
     public static String removeContact(String json) throws ParseException {
         try {
@@ -253,25 +257,43 @@ public class ContactManager {
         return contacts;
     }
 
+    /**
+     * This method retrieves all of the contacts of a user from the database and
+     * returns it as a JSON string with the main attributes of each player. This
+     * method uses the getContactListFromUser() method in order to retrieve the
+     * information as a linked list and parses it as a JSON string.
+     *
+     * @param json This method receives a JSON that contains the username of the
+     * user wich will be used to extract his contact.
+     * @return The method returns a JSON string that contains the main
+     * attributes of each contact associated with the username in the parameter.
+     * Also the JSON may contain a status of the transaction that takes a
+     * boolean value, if the value is "true", then the list will be returned
+     * normally, but if the value is "false" then the method will add a message
+     * field to the JSON that contains information about the error in the
+     * process.
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
+     */
     public static String getContactsFromUser(String json) throws ParseException {
         try {
             JSONParser parser = new JSONParser();
             String jsonToString = "[" + json + "]";
             Object obj = parser.parse(jsonToString);
             JSONArray jsonArray = (JSONArray) obj;
-            
+
             JSONObject parsedObject = (JSONObject) jsonArray.get(0);
-            
+
             String username = (String) parsedObject.get("username");
-            
+
             LinkedList<Contact> contacts = getContactListFromUser(username);
-            
+
             Iterator<Contact> contactIterator = contacts.listIterator();
-            
+
             JSONObject result = new JSONObject();
             JSONArray contactArray = new JSONArray();
-            
-            while(contactIterator.hasNext()) {
+
+            while (contactIterator.hasNext()) {
                 Contact actualContact = contactIterator.next();
                 JSONObject contact = new JSONObject();
                 contact.put("username", actualContact.account.username);
@@ -280,12 +302,12 @@ public class ContactManager {
                 contact.put("numberOfSessionLost", actualContact.account.username);
                 contact.put("percentageOfWins", actualContact.account.username);
                 contact.put("status", actualContact.account.status.toString());
-                
+
                 contactArray.add(contact);
             }
             result.put("players", contactArray);
             result.put("status", true);
-            
+
             return result.toJSONString();
         } catch (SQLException | ClassNotFoundException ex) {
             JSONObject returnJson = new JSONObject();

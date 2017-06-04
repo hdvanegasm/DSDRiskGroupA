@@ -6,21 +6,11 @@
 package server;
 
 import java.io.File;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import server.accountmanager.controller.AccountManager;
 import server.accountmanager.controller.ContactManager;
-import server.accountmanager.model.Account;
-import server.accountmanager.model.AccountStatus;
 import server.gamebuilder.controller.RequestHandler;
 import server.gamebuilder.controller.SessionManager;
-import server.gamebuilder.model.Map;
-import server.gamebuilder.model.Player;
-import server.gamebuilder.model.Session;
-import server.gamebuilder.model.SessionState;
 import server.gamebuilder.controller.InvitationHandler;
-import server.gamebuilder.model.Color;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.BufferedReader;

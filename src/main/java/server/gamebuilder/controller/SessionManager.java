@@ -37,10 +37,14 @@ public class SessionManager {
      * parameters selected by that user. The method changes the user's type to
      * host and update all the attributes of the session to creating
      *
-     * @param json
-     * @return The method returns "true" if the session was successfully
-     * created, otherwise it returns "false"
-     * @throws org.json.simple.parser.ParseException
+     * @param json The method receives a JSON that contains the username of the
+     * user that wants to create the session.
+     * @return The method returns a JSON with a status field, this field takes a
+     * value "true" if the session was successfully created, otherwise it
+     * returns "false". Also the method returns a message with the success of
+     * the operation or the exception in case of error.
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
      */
     public static String createSession(String json) throws ParseException {
 
@@ -112,10 +116,13 @@ public class SessionManager {
      * system assigns a random color to the user and finally add it to the
      * player list of the session.
      *
-     * @param json
+     * @param json The method receives a JSON that contains the username of the
+     * user that will be joined to the session and the session ID of the
+     * respective session.
      * @return The method returns a reference to the player that was joined to
      * the session.
-     * @throws org.json.simple.parser.ParseException
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
      */
     public static String joinToSession(String json) throws ParseException {
 
@@ -190,15 +197,16 @@ public class SessionManager {
      * more specifically, this method allows to the host to remove a contact
      * from the session that is creating.
      *
-     * @param session Represents the session in which the player will be removed
-     * @param player This parameter represents the player that will be removed
-     * from the session
-     * @return The method return a boolean which takes a value of "true" if the
-     * player was removed successfully, otherwise it returns "false".
-     * @throws SQLException The method returns the this exception when a
-     * database error occurs.
-     * @throws ClassNotFoundException The method returns the this exception when
-     * a the class is not found in the executeQuery method.
+     * @param json The method receives a JSON that contains the username of the
+     * user that will be taken out from the session and the respective session
+     * id.
+     * @return The method return a JSON with two fields, the first field is a
+     * status flag which takes a value of "true" if the player was removed
+     * successfully, otherwise it returns "false", and a message field that
+     * contains a confirmation message of the transaction or a message that
+     * contains the exception thrown if an error occurs.
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
      */
     public static String takeOutPlayerFromSession(String json) throws ParseException {
 
@@ -279,16 +287,15 @@ public class SessionManager {
      * the corresponding session. Also the method updates the state of the
      * player to "online".
      *
-     * @param session This reference represents the session in which the player
-     * will be removed.
-     * @param player This is a reference to the player that will be removed from
-     * the session.
-     * @return The method returns a boolean that takes the value of "true" if
-     * the player leaves the session successfully, otherwise returns false.
-     * @throws SQLException The method returns the this exception when a
-     * database error occurs.
-     * @throws ClassNotFoundException The method returns the this exception when
-     * a the class is not found in the executeQuery method.
+     * @param json The method receives a JSON that contains the username of the
+     * user that wants to leave the session and the respective session ID.
+     * @return The method return a JSON with two fields, the first field is a
+     * status flag which takes a value of "true" if the player leaves the
+     * session successfully, otherwise it returns "false", and a message field
+     * that contains a confirmation message of the transaction or a message that
+     * contains the exception thrown if an error occurs.
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
      */
     public static String leaveSession(String json) throws ParseException {
         try {
@@ -296,33 +303,33 @@ public class SessionManager {
             String jsonToString = "[" + json + "]";
             Object obj = parser.parse(jsonToString);
             JSONArray jsonArray = (JSONArray) obj;
-            
+
             JSONObject parsedObject = (JSONObject) jsonArray.get(0);
-            
+
             String username = (String) parsedObject.get("username");
             int sessionId = (int) parsedObject.get("sessionId");
-            
+
             Session session = Session.create(sessionId, 0, null, SessionState.CREATING, null);
             Player player = new Player(Account.create(AccountStatus.ONLINE, username, null, null), null);
-            
+
             session.leave(player);
             session.availableColors.add(player.color);
-            
+
             PreparedStatement preparedStatement = null;
-            
+
             // Remove player from BD
             String removePlayerQuery = "DELETE FROM player WHERE user=?";
             preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(removePlayerQuery);
             preparedStatement.setString(1, player.account.username);
             preparedStatement.executeUpdate();
-            
+
             // Change the status to online
             String updateStatusQuery = "UPDATE account SET status=? WHERE username=?";
             preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(updateStatusQuery);
             preparedStatement.setString(1, AccountStatus.ONLINE.toString());
             preparedStatement.setString(2, player.account.username);
             preparedStatement.executeUpdate();
-            
+
             // Change the type of the user. If it is contact, then we change the status to contact
             String numberOccurrencesQuery = "SELECT COUNT(username) as counting FROM contact WHERE username=?";
             preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(numberOccurrencesQuery);
@@ -336,7 +343,7 @@ public class SessionManager {
             } else {
                 type = "NULL";
             }
-            
+
             String changeTypeQuery = "";
             if (type.equals("NULL")) {
                 changeTypeQuery = "UPDATE user SET typeOfUser=NULL WHERE username=?";
@@ -349,7 +356,7 @@ public class SessionManager {
                 preparedStatement.setString(2, player.account.username);
             }
             preparedStatement.executeUpdate();
-            
+
             JSONObject returnJson = new JSONObject();
             returnJson.put("status", true);
             returnJson.put("message", "You have leave the session successfully");
@@ -492,6 +499,15 @@ public class SessionManager {
         return creatingSessions;
     }
 
+    /**
+     * The method parses is used in order to return all the creating sessions in
+     * a JSON. It uses the getAllCreatingSessionList() method in order to
+     * retrieve all the session in a linked list, and finally it parses this
+     * list into a JSON string.
+     *
+     * @return The method returns a JSON with all of the session with "creating"
+     * status.
+     */
     public static String getAllCreatingSession() {
         try {
             LinkedList<Session> allSessions = getAllCreatingSessionList();
@@ -599,6 +615,17 @@ public class SessionManager {
         return players;
     }
 
+    /**
+     * This method builds a JSON string with all of the players in a session.
+     * This method uses getPlayerListFromSession() method in order to obtain a
+     * linked list and parse it into a JSON string.
+     *
+     * @param json This parameter represents a JSON that contains the session ID
+     * wich will be used to extract all of the player of this session.
+     * @return The method retursn a JSON that contains the players of the session.
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
+     */
     public static String getPlayersFromSession(String json) throws ParseException {
         try {
             JSONParser parser = new JSONParser();
