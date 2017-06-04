@@ -885,10 +885,10 @@ public class SessionManager {
                 preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(changeTypeQuery);
                 preparedStatement.setInt(1, sessionId);
             } else {
-                changeTypeQuery = "UPDATE user SET typeOfUser=? WHERE username=username=(SELECT player FROM host WHERE session=?)";
+                changeTypeQuery = "UPDATE user SET typeOfUser=? WHERE username=(SELECT player FROM host WHERE session=?)";
                 preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(changeTypeQuery);
                 preparedStatement.setString(1, type);
-                preparedStatement.setInt(1, sessionId);
+                preparedStatement.setInt(2, sessionId);
             }
             preparedStatement.executeUpdate();
             
@@ -904,7 +904,7 @@ public class SessionManager {
             preparedStatement.setInt(1, sessionId);
             preparedStatement.executeUpdate();
 
-            String deleteSessionQuery = "DELETE FROM session where id=?";
+            String deleteSessionQuery = "DELETE FROM session WHERE id=?";
             preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(deleteHostPlayerQuery);
             preparedStatement.setInt(1, sessionId);
             preparedStatement.executeUpdate();
@@ -914,6 +914,7 @@ public class SessionManager {
             returnJson.put("message", "Session removed successfully");
             return returnJson.toJSONString();
         } catch (SQLException | ClassNotFoundException ex) {
+            ex.printStackTrace();
             JSONObject returnJson = new JSONObject();
             returnJson.put("status", false);
             returnJson.put("message", ex.getMessage());

@@ -307,7 +307,7 @@ public class ContactManager {
             }
             result.put("contacts", contactArray);
             result.put("status", true);
-            
+
             return result.toJSONString();
         } catch (SQLException | ClassNotFoundException ex) {
             JSONObject returnJson = new JSONObject();

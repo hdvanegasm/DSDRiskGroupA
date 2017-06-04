@@ -103,8 +103,10 @@ public class Test {
     public static String getAllUnansweredRequestsTest(String json) throws ParseException {
         return RequestHandler.getAllUnansweredRequests(json);
     }
-    
-    
+
+    public static String getAllUnansweredInvitationsTest(String json) throws ParseException {
+        return InvitationHandler.getAllUnansweredInvitations(json);
+    }
 
     public static void main(String[] args) throws FileNotFoundException, IOException, ParseException {
         File fileJson = new File("jsonTest.json");
@@ -138,6 +140,7 @@ public class Test {
         menu.append("code: 18 - startSession\n");
         menu.append("code: 19 - deleteSession\n");
         menu.append("code: 20 - getAllUnansweredRequests\n");
+        menu.append("code: 21 - getAllUnansweredInvitations\n");
         menu.append("Insert test code: ");
         System.out.print(menu);
 
@@ -205,6 +208,9 @@ public class Test {
                 break;
             case 20:
                 System.out.println(getAllUnansweredRequestsTest(jsonTest.toString()));
+                break;
+            case 21:
+                System.out.println(getAllUnansweredInvitationsTest(jsonTest.toString()));
                 break;
         }
     }

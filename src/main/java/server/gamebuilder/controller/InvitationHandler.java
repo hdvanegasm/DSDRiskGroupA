@@ -3,6 +3,8 @@ package server.gamebuilder.controller;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -12,6 +14,7 @@ import server.accountmanager.model.Account;
 import server.accountmanager.model.AccountStatus;
 import server.accountmanager.model.Contact;
 import server.gamebuilder.model.Host;
+import server.gamebuilder.model.RequestState;
 import server.gamebuilder.model.SessionInvitation;
 import server.gamebuilder.model.SessionInvitationState;
 
@@ -169,6 +172,53 @@ public class InvitationHandler {
                 returnJson.put("message", "Invitation rejected");
                 return returnJson.toJSONString();
             }
+        } catch (ClassNotFoundException | SQLException ex) {
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", false);
+            returnJson.put("message", ex.getMessage());
+            return returnJson.toJSONString();
+        }
+    }
+
+    // TODO add documentation
+    public static String getAllUnansweredInvitations(String json) throws ParseException {
+        try {
+            JSONParser parser = new JSONParser();
+            String jsonToString = "[" + json + "]";
+            Object obj = parser.parse(jsonToString);
+            JSONArray jsonArray = (JSONArray) obj;
+            
+            JSONObject parsedObject = (JSONObject) jsonArray.get(0);
+            
+            String username = (String) parsedObject.get("username");
+            
+            PreparedStatement preparedStatement = null;
+            String unansweredRequestsQuery = "SELECT * FROM invitation WHERE contact_username=? AND state=?";
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(unansweredRequestsQuery);
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, SessionInvitationState.UNANSWERED.toString());
+            
+            ResultSet result = preparedStatement.executeQuery();
+            
+            JSONObject resultJson = new JSONObject();
+            JSONArray invitationArray = new JSONArray();
+            
+            while(result.next()) {
+                int id = result.getInt("id");
+                String invitationHost = result.getString("host");
+                String contactUsername = result.getString("contact_username");
+                
+                JSONObject invitation = new JSONObject();
+                invitation.put("id", id);
+                invitation.put("host", invitationHost);
+                invitation.put("contactUsername", contactUsername);
+                invitation.put("state", SessionInvitationState.UNANSWERED.toString());
+                
+                invitationArray.add(invitation);
+            }
+            resultJson.put("invitations", invitationArray);
+            resultJson.put("status", true);
+            return resultJson.toJSONString();
         } catch (ClassNotFoundException | SQLException ex) {
             JSONObject returnJson = new JSONObject();
             returnJson.put("status", false);
