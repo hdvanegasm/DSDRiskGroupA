@@ -2,8 +2,6 @@ package server.accountmanager.controller;
 
 import server.accountmanager.model.User;
 import java.sql.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -47,16 +45,8 @@ public class AccountManager {
 
             String username = (String) parsedObject.get("username");
             String password = (String) parsedObject.get("password");
-            String confirmPass = (String) parsedObject.get("confirmPass");
             String email = (String) parsedObject.get("e-mail");
-
-            if (!password.equals(confirmPass)) {
-                JSONObject returnJson = new JSONObject();
-                returnJson.put("status", false);
-                returnJson.put("message", "Password and confirm password does not match");
-                return returnJson.toJSONString();
-            }
-
+            
             Account newAccount = Account.create(AccountStatus.OFFLINE, username, password, email);
             User user = new User(newAccount);
 

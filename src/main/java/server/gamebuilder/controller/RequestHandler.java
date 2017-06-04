@@ -1,5 +1,6 @@
 package server.gamebuilder.controller;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -95,7 +96,7 @@ public class RequestHandler {
 
             JSONObject returnJson = new JSONObject();
             returnJson.put("status", true);
-            returnJson.put("message", "You are joined to the session");
+            returnJson.put("message", "Your request was sent successfully");
             return returnJson.toJSONString();
         } catch (SQLException | ClassNotFoundException ex) {
             JSONObject returnJson = new JSONObject();
@@ -174,6 +175,53 @@ public class RequestHandler {
             returnJson.put("message", "Request rejected");
             return returnJson.toJSONString();
         }
-
+    }
+    
+    // TODO Add documentation
+    public static String getAllUnansweredRequests(String json) throws ParseException {
+        try {
+            JSONParser parser = new JSONParser();
+            String jsonToString = "[" + json + "]";
+            Object obj = parser.parse(jsonToString);
+            JSONArray jsonArray = (JSONArray) obj;
+            
+            JSONObject parsedObject = (JSONObject) jsonArray.get(0);
+            
+            int sessionId = Integer.parseInt(String.valueOf(parsedObject.get("sessionId")));
+            
+            PreparedStatement preparedStatement = null;
+            
+            String getRequestsQuery = "SELECT * FROM request WHERE session=? AND state=?";
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(getRequestsQuery);
+            preparedStatement.setInt(1, sessionId);
+            preparedStatement.setString(2, RequestState.UNANSWERED.toString());
+            ResultSet resultQuery = preparedStatement.executeQuery();
+            
+            JSONObject jsonResult = new JSONObject();
+            JSONArray requests = new JSONArray();
+            
+            while(resultQuery.next()) {
+                int requestId = resultQuery.getInt("id");
+                int requestSessionId = resultQuery.getInt("session");
+                String username = resultQuery.getString("username");
+                
+                JSONObject request = new JSONObject();
+                request.put("id", requestId);
+                request.put("session", requestSessionId);
+                request.put("username", username);
+                request.put("state", RequestState.UNANSWERED.toString());
+                
+                requests.add(request);
+            }
+            
+            jsonResult.put("requests", requests);
+            jsonResult.put("status", true);
+            return jsonResult.toJSONString();
+        } catch (ClassNotFoundException | SQLException ex) {
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", false);
+            returnJson.put("message", ex.getMessage());
+            return returnJson.toJSONString();
+        }
     }
 }

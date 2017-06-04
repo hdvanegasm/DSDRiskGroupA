@@ -16,16 +16,16 @@ public class DatabaseConnector {
 
     // Server port and database information 
     private int port = 3306;
-    private String serverPath;
-    private String dataBaseName;
-    private String dataBaseUser;
-    private String dataBasePassword;
+    private final String serverPath;
+    private final String dataBaseName;
+    private final String dataBaseUser;
+    private final String dataBasePassword;
 
     // Connection instances with JDBC
-    private String driver;
-    private String dataBase;
-    private Connection connection;
-    private Statement statement;
+    private final String driver;
+    private final String dataBase;
+    private final Connection connection;
+    private final Statement statement;
 
     // Singleton instance
     private static DatabaseConnector instance;

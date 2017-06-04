@@ -6,8 +6,6 @@ import server.gamebuilder.model.Session;
 import java.sql.*;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -809,6 +807,13 @@ public class SessionManager {
         }
     }
 
+    // TODO add documentation
+    /**
+     * 
+     * @param json
+     * @return
+     * @throws ParseException 
+     */
     public static String deleteSession(String json) throws ParseException {
         try {
             JSONParser parser = new JSONParser();
@@ -849,9 +854,9 @@ public class SessionManager {
                     return returnJson.toJSONString();
                 }
             }
-            
+
             PreparedStatement preparedStatement = null;
-            
+
             // Reset all of the attributes of the host
             // Change the status to online
             String updateStatusQuery = "UPDATE account SET status=? WHERE username=(SELECT player FROM host WHERE session=?)";
@@ -887,18 +892,22 @@ public class SessionManager {
             }
             preparedStatement.executeUpdate();
             
-            // Delete from player table
-            String deleteHostPlayerQuery = "DELETE FROM player WHERE type='HOST' AND sessionID=?";
-            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(deleteHostPlayerQuery);
-            preparedStatement.setInt(1, sessionId);
-            preparedStatement.executeUpdate();
-            
             // Delete from host table
             String deleteHostQuery = "DELETE FROM host WHERE session=?";
             preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(deleteHostQuery);
             preparedStatement.setInt(1, sessionId);
             preparedStatement.executeUpdate();
-            
+
+            // Delete from player table
+            String deleteHostPlayerQuery = "DELETE FROM player WHERE type='HOST' AND sessionID=?";
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(deleteHostPlayerQuery);
+            preparedStatement.setInt(1, sessionId);
+            preparedStatement.executeUpdate();
+
+            String deleteSessionQuery = "DELETE FROM session where id=?";
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(deleteHostPlayerQuery);
+            preparedStatement.setInt(1, sessionId);
+            preparedStatement.executeUpdate();
             
             JSONObject returnJson = new JSONObject();
             returnJson.put("status", true);
@@ -909,6 +918,6 @@ public class SessionManager {
             returnJson.put("status", false);
             returnJson.put("message", ex.getMessage());
             return returnJson.toJSONString();
-        }      
+        }
     }
 }
