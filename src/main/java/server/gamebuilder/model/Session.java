@@ -38,7 +38,6 @@ public class Session {
      * (this status is selected when the host pushes the "Start game" button),
      * and "finished".
      */
-
     private Session(int sessionId, SessionType type, SessionState state, Map map) {
 
         // Load available colors
@@ -56,7 +55,10 @@ public class Session {
 
     }
 
-    // TODO Add documentation
+    /**
+     * This constructor builds a session with a given ID for the new session
+     * @param id This attribute represents the ID of the new session.
+     */
     private Session(int id) {
         availableColors = new LinkedList<>();
         for (int i = 0; i < Color.values().length; i++) {
@@ -83,9 +85,9 @@ public class Session {
         int randomIndex = (int) (random.nextFloat() * availableColors.size());
 
         // Creates a player based on the user parameter
-        Player player = new Player(user.account, availableColors.remove(randomIndex)); 
+        Player player = new Player(user.account, availableColors.remove(randomIndex));
         players.add(player);
-        
+
         player.account.status = AccountStatus.PLAYING;
 
         return player;
@@ -108,9 +110,9 @@ public class Session {
         // Creates a player based on the contact parameter
         Player player = new Player(contact.account, availableColors.remove(randomIndex));
         players.add(player);
-        
+
         player.account.status = AccountStatus.PLAYING;
-        
+
         return player;
     }
 
@@ -132,7 +134,13 @@ public class Session {
         return new Session(sessionId, type, state, map);
     }
 
-    // TODO add documentation
+    /**
+     * This method allows to create a session with a given ID. It establishes
+     * all of the attributes by default
+     *
+     * @param id This attribute represents a the id of the new session
+     * @return This method returns a reference to the new session
+     */
     public static Session create(int id) {
         return new Session(id);
     }
@@ -150,9 +158,10 @@ public class Session {
         players.remove(player);
         return true;
     }
-    
+
     /**
-     * This method allows to a host to start a session changing his status to "creating".
+     * This method allows to a host to start a session changing his status to
+     * "creating".
      */
     public void start() {
         this.state = SessionState.PLAYING;
@@ -162,6 +171,4 @@ public class Session {
     public String toString() {
         return "Session{" + "id=" + id + ", type=" + type + ", map=" + map + ", requests=" + requests + ", players=" + players + ", state=" + state + ", availableColors=" + availableColors + '}';
     }
-    
-    
 }

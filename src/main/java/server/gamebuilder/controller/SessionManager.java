@@ -808,4 +808,107 @@ public class SessionManager {
             return returnJson.toJSONString();
         }
     }
+
+    public static String deleteSession(String json) throws ParseException {
+        try {
+            JSONParser parser = new JSONParser();
+            String jsonToString = "[" + json + "]";
+            Object obj = parser.parse(jsonToString);
+            JSONArray jsonArray = (JSONArray) obj;
+
+            JSONObject parsedObject = (JSONObject) jsonArray.get(0);
+
+            int sessionId = Integer.parseInt(String.valueOf(parsedObject.get("sessionId")));
+
+            // Deletes all players but host
+            LinkedList<Player> sessionPlayers = getPlayerListFromSession(sessionId);
+
+            Iterator<Player> playerIterator = sessionPlayers.listIterator();
+
+            while (playerIterator.hasNext()) {
+                Player actualPlayer = playerIterator.next();
+
+                JSONObject jsonDelete = new JSONObject();
+                jsonDelete.put("sessionId", sessionId);
+                jsonDelete.put("username", actualPlayer.account.username);
+
+                String resultJson = takeOutPlayerFromSession(jsonDelete.toJSONString());
+
+                JSONParser parserResult = new JSONParser();
+                String jsonToStringResult = "[" + resultJson + "]";
+                Object objResult = parserResult.parse(jsonToStringResult);
+                JSONArray jsonArrayResult = (JSONArray) objResult;
+
+                JSONObject parsedObjectResult = (JSONObject) jsonArrayResult.get(0);
+
+                boolean status = (boolean) parsedObjectResult.get("status");
+                if (!status) {
+                    JSONObject returnJson = new JSONObject();
+                    returnJson.put("status", false);
+                    returnJson.put("message", String.valueOf(parsedObjectResult.get("message")));
+                    return returnJson.toJSONString();
+                }
+            }
+            
+            PreparedStatement preparedStatement = null;
+            
+            // Reset all of the attributes of the host
+            // Change the status to online
+            String updateStatusQuery = "UPDATE account SET status=? WHERE username=(SELECT player FROM host WHERE session=?)";
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(updateStatusQuery);
+            preparedStatement.setString(1, AccountStatus.ONLINE.toString());
+            preparedStatement.setInt(2, sessionId);
+            preparedStatement.executeUpdate();
+
+            // Change the type of the user. If it is contact, then we change the status to contact
+            String numberOccurrencesQuery = "SELECT COUNT(username) as counting FROM contact WHERE username=(SELECT player FROM host WHERE session=?)";
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(numberOccurrencesQuery);
+            preparedStatement.setInt(1, sessionId);
+            ResultSet result = preparedStatement.executeQuery();
+            result.next();
+            int occurrences = result.getInt("counting");
+            String type = "";
+            if (occurrences > 0) {
+                type = Contact.class.getSimpleName().toUpperCase();
+            } else {
+                type = "NULL";
+            }
+
+            String changeTypeQuery = "";
+            if (type.equals("NULL")) {
+                changeTypeQuery = "UPDATE user SET typeOfUser=NULL WHERE username=(SELECT player FROM host WHERE session=?)";
+                preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(changeTypeQuery);
+                preparedStatement.setInt(1, sessionId);
+            } else {
+                changeTypeQuery = "UPDATE user SET typeOfUser=? WHERE username=username=(SELECT player FROM host WHERE session=?)";
+                preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(changeTypeQuery);
+                preparedStatement.setString(1, type);
+                preparedStatement.setInt(1, sessionId);
+            }
+            preparedStatement.executeUpdate();
+            
+            // Delete from player table
+            String deleteHostPlayerQuery = "DELETE FROM player WHERE type='HOST' AND sessionID=?";
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(deleteHostPlayerQuery);
+            preparedStatement.setInt(1, sessionId);
+            preparedStatement.executeUpdate();
+            
+            // Delete from host table
+            String deleteHostQuery = "DELETE FROM host WHERE session=?";
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(deleteHostQuery);
+            preparedStatement.setInt(1, sessionId);
+            preparedStatement.executeUpdate();
+            
+            
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", true);
+            returnJson.put("message", "Session removed successfully");
+            return returnJson.toJSONString();
+        } catch (SQLException | ClassNotFoundException ex) {
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", false);
+            returnJson.put("message", ex.getMessage());
+            return returnJson.toJSONString();
+        }      
+    }
 }
