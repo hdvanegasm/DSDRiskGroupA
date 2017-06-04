@@ -30,15 +30,17 @@ public class InvitationHandler {
      * This method allows to invite a contact to a session by a host, it creates
      * a new session invitation and insert it into the database
      *
-     * @param host It represents the host that creates the invitation
-     * @param contact It represents the contact of the host which will receive
-     * the invitation
-     * @return The method returns true if the session invitation was sent
-     * successfully, otherwise it returns false.
-     * @throws SQLException The method returns the this exception when a
-     * database error occurs.
-     * @throws ClassNotFoundException The method returns the this exception when
-     * a the class is not found in the statement reference.
+     * @param json This parameter represents a JSON that contains the username
+     * of the host of the session that wants to send the invitation, and the
+     * username of the contact that will receive the invitation.
+     * @return The method returns a JSON that contains two fields: the first
+     * field is the status of the process, it takes a boolean value of "true" if
+     * the invitation was sent successfully, otherwise it takes a "false" value
+     * if there are problems with the sending of the invitation; the second
+     * field is a message that give information to the client side about the
+     * process.
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
      */
     public static String inviteContact(String json) throws ParseException {
 
@@ -110,16 +112,19 @@ public class InvitationHandler {
      * invitation. It only changes the answer of the invitation to the database
      * and changes his status according to his response.
      *
-     * @param invitation This object represents the invitation that will be
-     * answered
-     * @param response This is an enumeration value that represents the response
-     * of the contact that answers the session invitation
-     * @return The method returns true if the invitation was accepted, otherwise
-     * it returns false.
-     * @throws SQLException The method returns the this exception when a
-     * database error occurs.
-     * @throws ClassNotFoundException The method returns the this exception when
-     * a the class is not found in the statement reference.
+     * @param json This attribute represents a JSON string that contains the id
+     * of the invitation that sends the host of the session and the response
+     * provided by the user.
+     * @return The method returns a JSON that contains three fields: the first
+     * field is the status of the process, it takes a boolean value of "true" if
+     * the invitation was answer successfully, otherwise it takes a "false"
+     * value if there are problems with the answering of the invitation; the
+     * second field is a message that give information to the client side about
+     * the process, and the third field is the value of the response provided by
+     * the user, i.e. it takes a value of "true" if the invitation was accepted,
+     * otherwise it returns "false".
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
      */
     public static String answerInvitation(String json) throws ParseException {
 
@@ -131,7 +136,7 @@ public class InvitationHandler {
 
             JSONObject parsedObject = (JSONObject) jsonArray.get(0);
 
-            int invitationId = (int) parsedObject.get("sessionId");
+            int invitationId = (int) parsedObject.get("invitationId");
             boolean responseJson = (boolean) parsedObject.get("response");
 
             SessionInvitationState response = null;
@@ -155,12 +160,14 @@ public class InvitationHandler {
 
             if (result) {
                 JSONObject returnJson = new JSONObject();
-                returnJson.put("status", result);
+                returnJson.put("status", true);
+                returnJson.put("response", result);
                 returnJson.put("message", "Invitation accepted");
                 return returnJson.toJSONString();
             } else {
                 JSONObject returnJson = new JSONObject();
-                returnJson.put("status", result);
+                returnJson.put("status", true);
+                returnJson.put("response", result);
                 returnJson.put("message", "Invitation rejected");
                 return returnJson.toJSONString();
             }
