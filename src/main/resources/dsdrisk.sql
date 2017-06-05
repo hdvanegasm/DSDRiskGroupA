@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 04, 2017 at 07:46 AM
+-- Generation Time: Jun 05, 2017 at 05:02 AM
 -- Server version: 10.1.19-MariaDB
 -- PHP Version: 5.6.28
 
@@ -41,14 +41,13 @@ CREATE TABLE `account` (
 --
 
 INSERT INTO `account` (`username`, `password`, `email`, `numberOfSessionLost`, `numberOfSessionswon`, `percentageOfWins`, `status`) VALUES
-('carlos', '2341', 'carlos@hola.com', 0, 0, 0, 'ONLINE'),
-('edalpin', '1234', 'edalpin@unal.edu.co', 0, 0, 0, 'PLAYING'),
-('felipe', '1234', 'felipe@unal.edu.co', 0, 0, 0, 'PLAYING'),
-('hernan', '1234', 'hdvanegasm@unal.edu.co', 0, 0, 0, 'PLAYING'),
-('pablo', '12345', 'pablo@unal.edu.co', 0, 0, 0, 'OFFLINE'),
-('pedro', '1234', 'pedro@unal.edu.co', 0, 0, 0, 'PLAYING'),
-('pepe', '1234', 'pepe@unal.edu.co', 0, 0, 0, 'PLAYING'),
-('spinos', '1234', 's@unal', 0, 0, 0, 'PLAYING');
+('berta', '1234', 'berta@unal.edu.co', 0, 0, 0, 'ONLINE'),
+('carlos', '1234', 'carlos@unal.edu.co', 0, 0, 0, 'OFFLINE'),
+('casimiro', '1234', 'casimiro@unal.edu.co', 0, 0, 0, 'ONLINE'),
+('dacanoc', 'profecolaborame', 'dacanoc@unal.edu.co', 0, 0, 0, 'ONLINE'),
+('hernan', '1234', 'hernan@unal.edu.co', 0, 0, 0, 'PLAYING'),
+('jimy', '5678', 'jimy@unal.edu.co', 0, 0, 0, 'OFFLINE'),
+('pepe', '1234', 'pepe@unal.edu.co', 0, 0, 0, 'OFFLINE');
 
 -- --------------------------------------------------------
 
@@ -65,9 +64,8 @@ CREATE TABLE `contact` (
 --
 
 INSERT INTO `contact` (`username`) VALUES
-('carlos'),
-('hernan'),
-('spinos');
+('berta'),
+('dacanoc');
 
 -- --------------------------------------------------------
 
@@ -85,9 +83,8 @@ CREATE TABLE `contactlist` (
 --
 
 INSERT INTO `contactlist` (`user_username`, `contact_username`) VALUES
-('edalpin', 'carlos'),
-('edalpin', 'hernan'),
-('edalpin', 'spinos');
+('hernan', 'berta'),
+('hernan', 'dacanoc');
 
 -- --------------------------------------------------------
 
@@ -105,10 +102,7 @@ CREATE TABLE `host` (
 --
 
 INSERT INTO `host` (`player`, `session`) VALUES
-('hernan', 1),
-('pedro', 2),
-('pepe', 3),
-('edalpin', 4);
+('hernan', 3);
 
 -- --------------------------------------------------------
 
@@ -122,6 +116,13 @@ CREATE TABLE `invitation` (
   `contact_username` varchar(80) NOT NULL,
   `state` varchar(80) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `invitation`
+--
+
+INSERT INTO `invitation` (`id`, `host`, `contact_username`, `state`) VALUES
+(1, 'hernan', 'dacanoc', 'UNANSWERED');
 
 -- --------------------------------------------------------
 
@@ -138,6 +139,7 @@ CREATE TABLE `map` (
 --
 
 INSERT INTO `map` (`name`) VALUES
+('Classic'),
 ('Prado Centro');
 
 -- --------------------------------------------------------
@@ -163,12 +165,7 @@ CREATE TABLE `player` (
 --
 
 INSERT INTO `player` (`user`, `color`, `captureState`, `territoryAmount`, `continentAmount`, `cardAmount`, `turn`, `type`, `sessionID`) VALUES
-('edalpin', 'YELLOW', 'non-captured', 0, 0, 0, 0, 'HOST', 4),
-('felipe', 'BLUE', 'non-captured', 0, 0, 0, 0, NULL, 4),
-('hernan', 'YELLOW', 'non-captured', 0, 0, 0, 0, 'HOST', 1),
-('pedro', 'YELLOW', 'non-captured', 0, 0, 0, 0, 'HOST', 2),
-('pepe', 'YELLOW', 'non-captured', 0, 0, 0, 0, 'HOST', 3),
-('spinos', 'ORANGE', 'non-captured', 0, 0, 0, 0, NULL, 1);
+('hernan', 'YELLOW', 'non-captured', 0, 0, 0, 0, 'HOST', 3);
 
 -- --------------------------------------------------------
 
@@ -182,14 +179,6 @@ CREATE TABLE `request` (
   `state` varchar(80) NOT NULL,
   `username` varchar(80) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `request`
---
-
-INSERT INTO `request` (`id`, `session`, `state`, `username`) VALUES
-(1, 2, 'ACCEPTED', 'edalpin'),
-(2, 3, 'ACCEPTED', 'carlos');
 
 -- --------------------------------------------------------
 
@@ -209,10 +198,7 @@ CREATE TABLE `session` (
 --
 
 INSERT INTO `session` (`map`, `id`, `state`, `type`) VALUES
-(NULL, 1, 'CREATING', NULL),
-(NULL, 2, 'CREATING', NULL),
-(NULL, 3, 'CREATING', NULL),
-(NULL, 4, 'CREATING', NULL);
+(NULL, 3, 'CREATING', NULL);
 
 -- --------------------------------------------------------
 
@@ -230,14 +216,13 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`typeOfUser`, `username`) VALUES
-('CONTACT', 'carlos'),
-('PLAYER', 'edalpin'),
-('PLAYER', 'felipe'),
+('CONTACT', 'berta'),
+(NULL, 'carlos'),
+(NULL, 'casimiro'),
+('CONTACT', 'dacanoc'),
 ('PLAYER', 'hernan'),
-(NULL, 'pablo'),
-('PLAYER', 'pedro'),
-('PLAYER', 'pepe'),
-('PLAYER', 'spinos');
+(NULL, 'jimy'),
+(NULL, 'pepe');
 
 --
 -- Indexes for dumped tables
@@ -346,7 +331,7 @@ ALTER TABLE `host`
 -- Constraints for table `invitation`
 --
 ALTER TABLE `invitation`
-  ADD CONSTRAINT `invitation_ibfk_1` FOREIGN KEY (`host`) REFERENCES `host` (`player`),
+  ADD CONSTRAINT `invitation_ibfk_1` FOREIGN KEY (`host`) REFERENCES `host` (`player`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `invitation_ibfk_2` FOREIGN KEY (`contact_username`) REFERENCES `contact` (`username`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
