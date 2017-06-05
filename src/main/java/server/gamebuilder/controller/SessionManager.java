@@ -472,7 +472,6 @@ public class SessionManager {
 
                 Host host = new Host(Account.create(AccountStatus.ONLINE, hostUsername, null, hostEmail), color);
 
-                // TODO Take statistics of player
                 float percentageOfWins = hostResult.getFloat("percentageOfWins");
                 int numberOfSessionWon = hostResult.getInt("numberOfSessionswon");
                 int numberOfSessionLost = hostResult.getInt("numberOfSessionLost");
@@ -754,7 +753,6 @@ public class SessionManager {
 
                 Host host = new Host(Account.create(AccountStatus.ONLINE, hostUsername, null, hostEmail), color);
 
-                // TODO Take statistics of player
                 float percentageOfWins = hostResult.getFloat("percentageOfWins");
                 int numberOfSessionWon = hostResult.getInt("numberOfSessionswon");
                 int numberOfSessionLost = hostResult.getInt("numberOfSessionLost");
@@ -807,12 +805,20 @@ public class SessionManager {
         }
     }
 
-    // TODO add documentation
     /**
-     * 
-     * @param json
-     * @return
-     * @throws ParseException 
+     * This method is implemented in order to delete a session that is in the
+     * "creating" phase. This method takes out each player of the session an
+     * establishes his type attributes to the according values depending on the
+     * previous state.
+     *
+     * @param json The method receives a JSON that contains the id of the
+     * session which will be deleted.
+     * @return The method returns a JSON that contains information about the
+     * process, it has two keys: the first key represents the state of the
+     * transaction and the second field is a message that related to the status
+     * of the transaction.
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
      */
     public static String deleteSession(String json) throws ParseException {
         try {
@@ -891,7 +897,7 @@ public class SessionManager {
                 preparedStatement.setInt(2, sessionId);
             }
             preparedStatement.executeUpdate();
-            
+
             // Delete from host table
             String deleteHostQuery = "DELETE FROM host WHERE session=?";
             preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(deleteHostQuery);
@@ -908,7 +914,7 @@ public class SessionManager {
             preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(deleteHostPlayerQuery);
             preparedStatement.setInt(1, sessionId);
             preparedStatement.executeUpdate();
-            
+
             JSONObject returnJson = new JSONObject();
             returnJson.put("status", true);
             returnJson.put("message", "Session removed successfully");

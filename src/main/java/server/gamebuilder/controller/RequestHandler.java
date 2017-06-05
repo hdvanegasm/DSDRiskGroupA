@@ -3,8 +3,6 @@ package server.gamebuilder.controller;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -52,7 +50,7 @@ public class RequestHandler {
             JSONObject parsedObject = (JSONObject) jsonArray.get(0);
 
             String username = (String) parsedObject.get("username");
-            int idSession =  Integer.parseInt(String.valueOf(parsedObject.get("sessionId")));
+            int idSession = Integer.parseInt(String.valueOf(parsedObject.get("sessionId")));
 
             Session session = Session.create(idSession);
             User user = new User(Account.create(AccountStatus.ONLINE, username, null, null));
@@ -176,44 +174,56 @@ public class RequestHandler {
             return returnJson.toJSONString();
         }
     }
-    
-    // TODO Add documentation
+
+    /**
+     * This method provides a JSON that contains all of the request sent to a
+     * session, it is important to notice that all of these request have a
+     * "unanswered" status. This method makes a query in the database in order
+     * to accomplish this task.
+     *
+     * @param json This parameter represents a JSON string that contains the ID
+     * of the session which will be used to retrieve all of the requests.
+     * @return The method returns a JSON string that contains all of the request
+     * in the database which have an "unanswered" status.
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
+     */
     public static String getAllUnansweredRequests(String json) throws ParseException {
         try {
             JSONParser parser = new JSONParser();
             String jsonToString = "[" + json + "]";
             Object obj = parser.parse(jsonToString);
             JSONArray jsonArray = (JSONArray) obj;
-            
+
             JSONObject parsedObject = (JSONObject) jsonArray.get(0);
-            
+
             int sessionId = Integer.parseInt(String.valueOf(parsedObject.get("sessionId")));
-            
+
             PreparedStatement preparedStatement = null;
-            
+
             String getRequestsQuery = "SELECT * FROM request WHERE session=? AND state=?";
             preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(getRequestsQuery);
             preparedStatement.setInt(1, sessionId);
             preparedStatement.setString(2, RequestState.UNANSWERED.toString());
             ResultSet resultQuery = preparedStatement.executeQuery();
-            
+
             JSONObject jsonResult = new JSONObject();
             JSONArray requests = new JSONArray();
-            
-            while(resultQuery.next()) {
+
+            while (resultQuery.next()) {
                 int requestId = resultQuery.getInt("id");
                 int requestSessionId = resultQuery.getInt("session");
                 String username = resultQuery.getString("username");
-                
+
                 JSONObject request = new JSONObject();
                 request.put("id", requestId);
                 request.put("session", requestSessionId);
                 request.put("username", username);
                 request.put("state", RequestState.UNANSWERED.toString());
-                
+
                 requests.add(request);
             }
-            
+
             jsonResult.put("requests", requests);
             jsonResult.put("status", true);
             return jsonResult.toJSONString();
