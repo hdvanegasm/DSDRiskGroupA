@@ -44,7 +44,7 @@ public class SessionManager {
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
      * the JSON in the parameter has a syntax error.
      */
-    public static String createSession(String json) throws ParseException {
+    public synchronized static String createSession(String json) throws ParseException {
 
         try {
             JSONParser parser = new JSONParser();
@@ -123,7 +123,7 @@ public class SessionManager {
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
      * the JSON in the parameter has a syntax error.
      */
-    public static String joinToSession(String json) throws ParseException {
+    public synchronized static String joinToSession(String json) throws ParseException {
 
         try {
             JSONParser parser = new JSONParser();
@@ -199,7 +199,7 @@ public class SessionManager {
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
      * the JSON in the parameter has a syntax error.
      */
-    public static String takeOutPlayerFromSession(String json) throws ParseException {
+    public synchronized static String takeOutPlayerFromSession(String json) throws ParseException {
 
         try {
             JSONParser parser = new JSONParser();
@@ -288,7 +288,7 @@ public class SessionManager {
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
      * the JSON in the parameter has a syntax error.
      */
-    public static String leaveSession(String json) throws ParseException {
+    public synchronized static String leaveSession(String json) throws ParseException {
         try {
             JSONParser parser = new JSONParser();
             String jsonToString = "[" + json + "]";
@@ -371,7 +371,7 @@ public class SessionManager {
      * @throws ClassNotFoundException The method returns the this exception when
      * a the class is not found in the executeQuery method.
      */
-    private static LinkedList<Session> getAllCreatingSessionList() throws ClassNotFoundException, SQLException {
+    private synchronized static LinkedList<Session> getAllCreatingSessionList() throws ClassNotFoundException, SQLException {
         LinkedList<Session> creatingSessions = new LinkedList<>();
 
         PreparedStatement preparedStatement = null;
@@ -497,7 +497,7 @@ public class SessionManager {
      * @return The method returns a JSON with all of the session with "creating"
      * status.
      */
-    public static String getAllCreatingSession() {
+    public synchronized static String getAllCreatingSession() {
         try {
             LinkedList<Session> allSessions = getAllCreatingSessionList();
 
@@ -569,7 +569,7 @@ public class SessionManager {
      * @throws ClassNotFoundException The method returns the this exception when
      * a the class is not found in the executeQuery method.
      */
-    private static LinkedList<Player> getPlayerListFromSession(int sessionId) throws SQLException, ClassNotFoundException {
+    private synchronized static LinkedList<Player> getPlayerListFromSession(int sessionId) throws SQLException, ClassNotFoundException {
         LinkedList<Player> players = new LinkedList<>();
 
         String queryPlayers = "SELECT * FROM player, account WHERE sessionID=? AND player.user=account.username AND type IS NULL";
@@ -622,7 +622,7 @@ public class SessionManager {
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
      * the JSON in the parameter has a syntax error.
      */
-    public static String getPlayersFromSession(String json) throws ParseException {
+    public synchronized static String getPlayersFromSession(String json) throws ParseException {
         try {
             JSONParser parser = new JSONParser();
             String jsonToString = "[" + json + "]";
@@ -679,7 +679,7 @@ public class SessionManager {
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
      * the JSON in the parameter has a syntax error.
      */
-    public static String startSession(String json) throws ParseException {
+    public synchronized static String startSession(String json) throws ParseException {
         try {
             JSONParser parser = new JSONParser();
             String jsonToString = "[" + json + "]";
@@ -820,7 +820,7 @@ public class SessionManager {
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
      * the JSON in the parameter has a syntax error.
      */
-    public static String deleteSession(String json) throws ParseException {
+    public synchronized static String deleteSession(String json) throws ParseException {
         try {
             JSONParser parser = new JSONParser();
             String jsonToString = "[" + json + "]";

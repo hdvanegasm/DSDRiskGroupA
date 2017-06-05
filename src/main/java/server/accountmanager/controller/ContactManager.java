@@ -41,7 +41,7 @@ public class ContactManager {
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
      * the JSON in the parameter has a syntax error.
      */
-    public static String addContact(String json) throws ParseException {
+    public synchronized static String addContact(String json) throws ParseException {
         try {
             JSONParser parser = new JSONParser();
             String jsonToString = "[" + json + "]";
@@ -134,7 +134,7 @@ public class ContactManager {
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
      * the JSON in the parameter has a syntax error.
      */
-    public static String removeContact(String json) throws ParseException {
+    public synchronized static String removeContact(String json) throws ParseException {
         try {
             //SELECT COUNT(contact_username) AS number FROM contactlist WHERE contact_username='spinos';
 
@@ -230,7 +230,7 @@ public class ContactManager {
      * @throws ClassNotFoundException The method returns the this exception when
      * a the class is not found in the executeQuery method.
      */
-    private static LinkedList<Contact> getContactListFromUser(String username) throws SQLException, ClassNotFoundException {
+    private synchronized static LinkedList<Contact> getContactListFromUser(String username) throws SQLException, ClassNotFoundException {
 
         LinkedList<Contact> contacts = new LinkedList<>();
 
@@ -275,7 +275,7 @@ public class ContactManager {
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
      * the JSON in the parameter has a syntax error.
      */
-    public static String getContactsFromUser(String json) throws ParseException {
+    public synchronized static String getContactsFromUser(String json) throws ParseException {
         try {
             JSONParser parser = new JSONParser();
             String jsonToString = "[" + json + "]";

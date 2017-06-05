@@ -41,7 +41,7 @@ public class InvitationHandler {
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
      * the JSON in the parameter has a syntax error.
      */
-    public static String inviteContact(String json) throws ParseException {
+    public synchronized static String inviteContact(String json) throws ParseException {
 
         try {
             JSONParser parser = new JSONParser();
@@ -125,7 +125,7 @@ public class InvitationHandler {
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
      * the JSON in the parameter has a syntax error.
      */
-    public static String answerInvitation(String json) throws ParseException {
+    public synchronized static String answerInvitation(String json) throws ParseException {
 
         try {
             JSONParser parser = new JSONParser();
@@ -193,7 +193,7 @@ public class InvitationHandler {
      * attribute is a message related to the status of the transaction.
      * @throws ParseException
      */
-    public static String getAllUnansweredInvitations(String json) throws ParseException {
+    public synchronized static String getAllUnansweredInvitations(String json) throws ParseException {
         try {
             JSONParser parser = new JSONParser();
             String jsonToString = "[" + json + "]";

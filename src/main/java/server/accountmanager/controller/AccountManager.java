@@ -32,7 +32,7 @@ public class AccountManager {
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
      * the JSON in the parameter has a syntax error.
      */
-    public static String createAccount(String json) throws ParseException {
+    public synchronized static String createAccount(String json) throws ParseException {
 
         try {
             // Parse JSON to Object
@@ -87,7 +87,7 @@ public class AccountManager {
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
      * the JSON in the parameter has a syntax error.
      */
-    public static String logOut(String json) throws ParseException {
+    public synchronized static String logOut(String json) throws ParseException {
         try {
             // Parse JSON to Object
             JSONParser parser = new JSONParser();
@@ -132,7 +132,7 @@ public class AccountManager {
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
      * the JSON in the parameter has a syntax error.
      */
-    public static String logIn(String json) throws ParseException {
+    public synchronized static String logIn(String json) throws ParseException {
 
         try {
             // Parse JSON to object
@@ -200,7 +200,7 @@ public class AccountManager {
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
      * the JSON in the parameter has a syntax error.
      */
-    public static String changePassword(String json) throws ParseException {
+    public synchronized static String changePassword(String json) throws ParseException {
 
         try {
             // Parse JSON to object

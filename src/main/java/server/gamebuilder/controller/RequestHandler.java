@@ -40,7 +40,7 @@ public class RequestHandler {
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
      * the JSON in the parameter has a syntax error.
      */
-    public static String makeRequest(String json) throws ParseException {
+    public synchronized static String makeRequest(String json) throws ParseException {
         try {
             JSONParser parser = new JSONParser();
             String jsonToString = "[" + json + "]";
@@ -123,7 +123,7 @@ public class RequestHandler {
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
      * the JSON in the parameter has a syntax error.
      */
-    public static String answerRequest(String json) throws ParseException {
+    public synchronized static String answerRequest(String json) throws ParseException {
 
         JSONParser parser = new JSONParser();
         String jsonToString = "[" + json + "]";
@@ -188,7 +188,7 @@ public class RequestHandler {
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
      * the JSON in the parameter has a syntax error.
      */
-    public static String getAllUnansweredRequests(String json) throws ParseException {
+    public synchronized static String getAllUnansweredRequests(String json) throws ParseException {
         try {
             JSONParser parser = new JSONParser();
             String jsonToString = "[" + json + "]";
