@@ -27,6 +27,5 @@ public class Host extends Player {
     public String toString() {
         return "Host{" + super.toString() + '}';
     }
-    
-    
+
 }

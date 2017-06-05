@@ -12,7 +12,6 @@ import server.accountmanager.model.Account;
 import server.accountmanager.model.AccountStatus;
 import server.accountmanager.model.Contact;
 import server.gamebuilder.model.Host;
-import server.gamebuilder.model.RequestState;
 import server.gamebuilder.model.SessionInvitation;
 import server.gamebuilder.model.SessionInvitationState;
 

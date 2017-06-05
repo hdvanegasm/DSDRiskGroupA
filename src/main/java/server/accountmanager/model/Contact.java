@@ -76,8 +76,7 @@ public class Contact extends User {
 
     @Override
     public String toString() {
-        return "Contact{ "+ super.toString() + " }";
+        return "Contact{ " + super.toString() + " }";
     }
-    
-    
+
 }

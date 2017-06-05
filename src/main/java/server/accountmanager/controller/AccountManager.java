@@ -46,7 +46,7 @@ public class AccountManager {
             String username = (String) parsedObject.get("username");
             String password = (String) parsedObject.get("password");
             String email = (String) parsedObject.get("e-mail");
-            
+
             Account newAccount = Account.create(AccountStatus.OFFLINE, username, password, email);
             User user = new User(newAccount);
 
@@ -194,9 +194,10 @@ public class AccountManager {
      * attributes: the username of the user that wants to change the password,
      * the actual password of the account and the new password.
      * @return The method returns a JSON that contains two fields: the first
-     * field is a status of the password changing, it takes a boolean value of true if the
-     * change was successful, otherwise it takes a false value; the second
-     * attribute is a message that contains information about the transaction.
+     * field is a status of the password changing, it takes a boolean value of
+     * true if the change was successful, otherwise it takes a false value; the
+     * second attribute is a message that contains information about the
+     * transaction.
      * @throws org.json.simple.parser.ParseException This exeption is thrown if
      * the JSON in the parameter has a syntax error.
      */

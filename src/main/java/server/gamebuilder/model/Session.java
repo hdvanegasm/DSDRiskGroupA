@@ -57,6 +57,7 @@ public class Session {
 
     /**
      * This constructor builds a session with a given ID for the new session
+     *
      * @param id This attribute represents the ID of the new session.
      */
     private Session(int id) {
