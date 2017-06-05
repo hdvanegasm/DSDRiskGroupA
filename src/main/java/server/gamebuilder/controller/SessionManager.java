@@ -631,7 +631,7 @@ public class SessionManager {
 
             JSONObject parsedObject = (JSONObject) jsonArray.get(0);
 
-            int sessionId = (int) parsedObject.get("sessionId");
+            int sessionId = Integer.parseInt(String.valueOf(parsedObject.get("sessionId")));
 
             LinkedList<Player> players = getPlayerListFromSession(sessionId);
 
@@ -645,7 +645,7 @@ public class SessionManager {
 
                 JSONObject player = new JSONObject();
                 player.put("username", actualPlayer.account.username);
-                player.put("color", actualPlayer.color);
+                player.put("color", actualPlayer.color.toString());
                 player.put("email", actualPlayer.account.email);
                 player.put("percentajeOfWins", actualPlayer.account.percentageOfWins);
                 player.put("numberOfSessionsWon", actualPlayer.account.numberOfSessionWon);
