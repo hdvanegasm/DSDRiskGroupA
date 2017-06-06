@@ -109,7 +109,7 @@ public class Test {
     }
 
     public static String getSessionByIdTest(String json) throws ParseException {
-        return SessionManager.getSessionById(json);
+        return SessionManager.getSessionFromId(json);
     }
 
     public static void main(String[] args) throws FileNotFoundException, IOException, ParseException {

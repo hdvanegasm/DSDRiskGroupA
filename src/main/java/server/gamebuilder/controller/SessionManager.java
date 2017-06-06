@@ -929,7 +929,18 @@ public class SessionManager {
         }
     }
 
-    public synchronized static String getSessionById(String json) throws ParseException {
+    /**
+     * This method obtains all of the attributes of a session from a given ID.
+     *
+     * @param json This parameter represents a JSON that contains the ID of the
+     * session wich will be extracted its information in the database.
+     * @return The method returns a JSON that contains all of the attributes of
+     * a session, including the type, the ID, the map, and the players in the
+     * session in that moment.
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
+     */
+    public synchronized static String getSessionFromId(String json) throws ParseException {
 
         try {
             JSONParser parser = new JSONParser();
@@ -1052,7 +1063,6 @@ public class SessionManager {
 
             }
 
-            
             Session actualSession = session;
 
             JSONObject sessionJson = new JSONObject();
@@ -1086,7 +1096,7 @@ public class SessionManager {
 
             sessionJson.put("players", playersJson);
             sessionJson.put("status", true);
-           
+
             return sessionJson.toJSONString();
         } catch (SQLException | ClassNotFoundException ex) {
             JSONObject returnJson = new JSONObject();
