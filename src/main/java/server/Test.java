@@ -108,7 +108,7 @@ public class Test {
         return InvitationHandler.getAllUnansweredInvitations(json);
     }
 
-    public static String getSessionByIdTest(String json) throws ParseException {
+    public static String getSessionFromIdTest(String json) throws ParseException {
         return SessionManager.getSessionFromId(json);
     }
 
@@ -145,7 +145,7 @@ public class Test {
         menu.append("code: 19 - deleteSession\n");
         menu.append("code: 20 - getAllUnansweredRequests\n");
         menu.append("code: 21 - getAllUnansweredInvitations\n");
-        menu.append("code: 22 - getSessionById\n");
+        menu.append("code: 22 - getSessionFromId\n");
         menu.append("Insert test code: ");
         System.out.print(menu);
 
@@ -218,7 +218,7 @@ public class Test {
                 System.out.println(getAllUnansweredInvitationsTest(jsonTest.toString()));
                 break;
             case 22:
-                System.out.println(getSessionByIdTest(jsonTest.toString()));
+                System.out.println(getSessionFromIdTest(jsonTest.toString()));
                 break;
         }
     }
