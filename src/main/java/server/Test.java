@@ -19,7 +19,7 @@ import java.util.Scanner;
 import org.json.simple.parser.ParseException;
 
 /**
- * 
+ *
  * @author Admin
  */
 public class Test {
@@ -108,6 +108,10 @@ public class Test {
         return InvitationHandler.getAllUnansweredInvitations(json);
     }
 
+    public static String getSessionByIdTest(String json) throws ParseException {
+        return SessionManager.getSessionById(json);
+    }
+
     public static void main(String[] args) throws FileNotFoundException, IOException, ParseException {
         File fileJson = new File("jsonTest.json");
         BufferedReader readJson = new BufferedReader(new FileReader("jsonTest.json"));
@@ -141,6 +145,7 @@ public class Test {
         menu.append("code: 19 - deleteSession\n");
         menu.append("code: 20 - getAllUnansweredRequests\n");
         menu.append("code: 21 - getAllUnansweredInvitations\n");
+        menu.append("code: 22 - getSessionById\n");
         menu.append("Insert test code: ");
         System.out.print(menu);
 
@@ -211,6 +216,9 @@ public class Test {
                 break;
             case 21:
                 System.out.println(getAllUnansweredInvitationsTest(jsonTest.toString()));
+                break;
+            case 22:
+                System.out.println(getSessionByIdTest(jsonTest.toString()));
                 break;
         }
     }

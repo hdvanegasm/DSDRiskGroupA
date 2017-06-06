@@ -6,6 +6,8 @@ import server.gamebuilder.model.Session;
 import java.sql.*;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -676,7 +678,7 @@ public class SessionManager {
      * @return The method returns a JSON string that contains all of the
      * information of this session and the list of the players including the
      * host.
-     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * @throws org.json.simple.parser.ParseException This exception is thrown if
      * the JSON in the parameter has a syntax error.
      */
     public synchronized static String startSession(String json) throws ParseException {
@@ -920,11 +922,179 @@ public class SessionManager {
             returnJson.put("message", "Session removed successfully");
             return returnJson.toJSONString();
         } catch (SQLException | ClassNotFoundException ex) {
-            ex.printStackTrace();
             JSONObject returnJson = new JSONObject();
             returnJson.put("status", false);
             returnJson.put("message", ex.getMessage());
             return returnJson.toJSONString();
         }
+    }
+
+    public synchronized static String getSessionById(String json) throws ParseException {
+
+        try {
+            JSONParser parser = new JSONParser();
+            String jsonToString = "[" + json + "]";
+            Object obj = parser.parse(jsonToString);
+            JSONArray jsonArray = (JSONArray) obj;
+
+            JSONObject parsedObject = (JSONObject) jsonArray.get(0);
+
+            int sessionIdJson = Integer.parseInt(String.valueOf(parsedObject.get("sessionId")));
+
+            PreparedStatement preparedStatement = null;
+
+            String sessionsQuery = "SELECT * FROM session WHERE id=?";
+            preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(sessionsQuery);
+            preparedStatement.setInt(1, sessionIdJson);
+            Session session = null;
+            ResultSet results = preparedStatement.executeQuery();
+            while (results.next()) {
+                int sessionId = results.getInt("id");
+                Map map = new Map(results.getString("map"));
+                String typeString = results.getString("type");
+
+                SessionType sessionType = null;
+                if (typeString != null) {
+                    switch (typeString) {
+                        case "WORLD_DOMINATION_RISK":
+                            sessionType = SessionType.WORLD_DOMINATION_RISK;
+                            break;
+                        case "RISK_FOR_TWO_PLAYERS":
+                            sessionType = SessionType.RISK_FOR_TWO_PLAYERS;
+                            break;
+                        case "SECRET_MISSION_RISK":
+                            sessionType = SessionType.SECRET_MISSION_RISK;
+                            break;
+                        case "CAPITAL_RISK":
+                            sessionType = SessionType.CAPITAL_RISK;
+                            break;
+                    }
+                }
+
+                session = Session.create(sessionId, sessionType, SessionState.CREATING, map);
+
+                String queryPlayers = "SELECT * FROM player, account WHERE sessionID=? AND player.user=account.username AND type IS NULL";
+                preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(queryPlayers);
+                preparedStatement.setInt(1, sessionId);
+                ResultSet resultPlayers = preparedStatement.executeQuery();
+                while (resultPlayers.next()) {
+                    String playerUsername = resultPlayers.getString("user");
+                    String playerColor = resultPlayers.getString("color");
+                    String playerEmail = resultPlayers.getString("email");
+                    Color color = null;
+                    if (playerColor.equals(Color.YELLOW.toString())) {
+                        color = Color.YELLOW;
+                    } else if (playerColor.equals(Color.RED.toString())) {
+                        color = Color.RED;
+                    } else if (playerColor.equals(Color.BLUE.toString())) {
+                        color = Color.BLUE;
+                    } else if (playerColor.equals(Color.GREEN.toString())) {
+                        color = Color.GREEN;
+                    } else if (playerColor.equals(Color.PURPLE.toString())) {
+                        color = Color.PURPLE;
+                    } else if (playerColor.equals(Color.ORANGE.toString())) {
+                        color = Color.ORANGE;
+                    }
+
+                    session.availableColors.remove(color);
+
+                    Player player = new Player(Account.create(AccountStatus.ONLINE, playerUsername, null, playerEmail), color);
+
+                    float percentageOfWins = resultPlayers.getFloat("percentageOfWins");
+                    int numberOfSessionWon = resultPlayers.getInt("numberOfSessionswon");
+                    int numberOfSessionLost = resultPlayers.getInt("numberOfSessionLost");
+                    player.account.numberOfSessionLost = numberOfSessionLost;
+                    player.account.numberOfSessionWon = numberOfSessionWon;
+                    player.account.percentageOfWins = percentageOfWins;
+
+                    session.players.add(player);
+
+                }
+
+                String queryHost = "SELECT * FROM player, host, account WHERE host.session=? AND host.player=account.username AND host.player=player.user;";
+                preparedStatement = DatabaseConnector.getInstance().getConnection().prepareStatement(queryHost);
+                preparedStatement.setInt(1, sessionId);
+                ResultSet hostResult = preparedStatement.executeQuery();
+
+                while (hostResult.next()) {
+                    String hostUsername = hostResult.getString("username");
+                    String hostColor = hostResult.getString("color");
+                    String hostEmail = hostResult.getString("email");
+                    Color color = null;
+                    if (hostColor.equals(Color.YELLOW.toString())) {
+                        color = Color.YELLOW;
+                    } else if (hostColor.equals(Color.RED.toString())) {
+                        color = Color.RED;
+                    } else if (hostColor.equals(Color.BLUE.toString())) {
+                        color = Color.BLUE;
+                    } else if (hostColor.equals(Color.GREEN.toString())) {
+                        color = Color.GREEN;
+                    } else if (hostColor.equals(Color.PURPLE.toString())) {
+                        color = Color.PURPLE;
+                    } else if (hostColor.equals(Color.ORANGE.toString())) {
+                        color = Color.ORANGE;
+                    }
+
+                    session.availableColors.remove(color);
+
+                    Host host = new Host(Account.create(AccountStatus.ONLINE, hostUsername, null, hostEmail), color);
+
+                    float percentageOfWins = hostResult.getFloat("percentageOfWins");
+                    int numberOfSessionWon = hostResult.getInt("numberOfSessionswon");
+                    int numberOfSessionLost = hostResult.getInt("numberOfSessionLost");
+                    host.account.numberOfSessionLost = numberOfSessionLost;
+                    host.account.numberOfSessionWon = numberOfSessionWon;
+                    host.account.percentageOfWins = percentageOfWins;
+
+                    session.players.add(host);
+
+                }
+
+            }
+
+            
+            Session actualSession = session;
+
+            JSONObject sessionJson = new JSONObject();
+            sessionJson.put("id", actualSession.id);
+            sessionJson.put("map", actualSession.map.name);
+            sessionJson.put("type", actualSession.type);
+
+            JSONArray playersJson = new JSONArray();
+
+            Iterator<Player> playerIterator = actualSession.players.listIterator();
+            while (playerIterator.hasNext()) {
+                Player actualPlayer = playerIterator.next();
+
+                JSONObject player = new JSONObject();
+                player.put("username", actualPlayer.account.username);
+                player.put("color", actualPlayer.color.toString());
+                player.put("email", actualPlayer.account.email);
+                player.put("percentajeOfWins", actualPlayer.account.percentageOfWins);
+                player.put("numberOfSessionsWon", actualPlayer.account.numberOfSessionWon);
+                player.put("numberOfSessionLost", actualPlayer.account.numberOfSessionLost);
+                player.put("status", actualPlayer.account.status.toString());
+
+                if (actualPlayer instanceof Host) {
+                    player.put("type", Host.class.getSimpleName().toUpperCase());
+                } else {
+                    player.put("type", Player.class.getSimpleName().toUpperCase());
+                }
+
+                playersJson.add(player);
+            }
+
+            sessionJson.put("players", playersJson);
+            sessionJson.put("status", true);
+           
+            return sessionJson.toJSONString();
+        } catch (SQLException | ClassNotFoundException ex) {
+            JSONObject returnJson = new JSONObject();
+            returnJson.put("status", false);
+            returnJson.put("message", ex.getMessage());
+            return returnJson.toJSONString();
+
+        }
+
     }
 }
