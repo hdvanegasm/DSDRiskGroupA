@@ -190,7 +190,8 @@ public class InvitationHandler {
      * the first field is a boolean value that is true if the transaction was
      * executed successfully, otherwhise it takes a "false" value; the second
      * attribute is a message related to the status of the transaction.
-     * @throws ParseException
+     * @throws org.json.simple.parser.ParseException This exeption is thrown if
+     * the JSON in the parameter has a syntax error.
      */
     public synchronized static String getAllUnansweredInvitations(String json) throws ParseException {
         try {
